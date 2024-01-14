@@ -1,20 +1,51 @@
-# c-cook-book-
+# c-cook-book
 
-C 언어 래시피 모음
+C 언어 래시피 모은 레포입니다. 더 정확히 C 언어로 배운 내용을 필기하고 줍줍한 레포입니다. 그래서 학습 자료가 체계적이지 않을 것입니다.
 
+이 레포를 만든 이유는 C 언어를 학습하기 위해서 만들었습니다. 그리고 C 언어를 학습하는 이유는 전공자와 차이가 안나기 위해서입니다. 참고로 나중에 정리는 블로그에서 하고 작업만 할지도 모릅니다.
 
-c언어를 연습하는 레포입니다.
+- [C/C++ 프로그래밍 입문자에게...](https://www.youtube.com/watch?v=J_CfRpCM_ic)
 
-neovim을 사용하고 바닥부터 설정하기 시작합니다.
+위 유튜브 영상을 참고하면 C언어로 최소한 B-Tree까지는 구현해야 합니다. 그것도 검색 없이 가능해야 합니다.
+
+저는 DB, 운영체제까지 흉내를 내보려고 하겠습니다. 그 뒤에 rust로 넘어가겠습니다. 그전까지는 신입개발자 주제에 프론트 병보다 심각하다는 RUST 병을 피하기 위한 조치라고 생각해주시기 바랍니다. 
+
+참고로 저는 neovim을 사용하고 바닥부터 설정하기 시작합니다. 원도우 사용하는 분들은 visual studio, Clion을 사용하든 알아서 하기 바랍니다.
+
+## 학습자료
+
+- 진행 중: [코딩도장](https://dojang.io/course/view.php?id=2)
+- [독하게 시작하는 C 프로그래밍](https://www.yes24.com/Product/Goods/18732021)
+- [Do it! 자료구조와 함께 배우는 알고리즘 입문 C 언어 편 (전면 개정판)](https://www.yes24.com/Product/Goods/114998692)
+- [C를 배우기 전에 반드시 알아야 할 것들](https://www.yes24.com/Product/Goods/17967251)
+- [전문가를 위한 C](https://www.yes24.com/Product/Goods/114250605)
+- [Effective C](https://www.yes24.com/Product/Goods/119423118)
+- [깐깐하게 배우는 C](https://www.yes24.com/Product/Goods/58215872)
+- [컴파일러 개발자가 들려주는 C 이야기](https://www.yes24.com/Product/Goods/105982099)
+- [Crafting Interpreters 로버트 나이스트롬의 인터프리터 in Java, C](https://www.yes24.com/Product/Goods/123859288)
+
+## 프로젝트
+
+- [ ] 숫자야구 CLI
+- [ ] http 서버
+- [ ] ws 서버
+- [ ] 프로그램 UI
+- [ ] 컴파일러
+- [ ] 데이터베이스
+- [ ] 운영체제
+- [ ] 자바스크립트 엔진
+- [ ] 브라우저
+
+## 기타
 
 gcc를 사용해서 컴파일 할 것입니다.
 
 ```sh
-gcc -o (생성할 실행 파일이름) (컴파일할 파일이름).c
+gcc -o 실행_파일이름 컴파일할_파일이름.c
 ```
 
-```
-./(생성한 파일이름)
+```sh
+./실행_파일이름
 ```
 
 HelloWorld.c -> HelloWorld.obj -> HelloWorld.exe
@@ -22,6 +53,8 @@ HelloWorld.c -> HelloWorld.obj -> HelloWorld.exe
 프로그래머가 작성한 코드의 확장자는 c입니다. 컴파일을 하면 obj 확장자를 만드는데 부품이라고 생각하면 됩니다. 최종 결과는 링크인데 부품을 모아 완제품 실행파일을 만드는 것입니다.
 
 지금 저는 vi에서 처리하면서 소스파일이 컴파일의 목적파일(obj)을 생성한 결과를 못보고 있습니다.
+
+C언어 내부적으로 정확히 무슨 동작을 수행하는지 파악해야 합니다. 일반적인 컴파일러 이론입니다.
 
 ## 자료형
 
