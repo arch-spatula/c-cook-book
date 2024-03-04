@@ -15,9 +15,10 @@ C 언어 래시피 모은 레포입니다. 더 정확히 C 언어로 배운 내�
 ## 학습자료
 
 - 진행 중: [코딩도장](https://dojang.io/course/view.php?id=2)
+- [C를 배우기 전에 반드시 알아야 할 것들](https://www.yes24.com/Product/Goods/17967251)
+  - [x] 단순하게 1회독
 - [독하게 시작하는 C 프로그래밍](https://www.yes24.com/Product/Goods/18732021)
 - [Do it! 자료구조와 함께 배우는 알고리즘 입문 C 언어 편 (전면 개정판)](https://www.yes24.com/Product/Goods/114998692)
-- [C를 배우기 전에 반드시 알아야 할 것들](https://www.yes24.com/Product/Goods/17967251)
 - [전문가를 위한 C](https://www.yes24.com/Product/Goods/114250605)
 - [Effective C](https://www.yes24.com/Product/Goods/119423118)
 - [깐깐하게 배우는 C](https://www.yes24.com/Product/Goods/58215872)
@@ -27,6 +28,7 @@ C 언어 래시피 모은 레포입니다. 더 정확히 C 언어로 배운 내�
 ## 프로젝트
 
 - [ ] 숫자야구 CLI
+- [ ] 잭블랙의 블랙잭 CLI
 - [ ] http 서버
 - [ ] ws 서버
 - [ ] 프로그램 UI
