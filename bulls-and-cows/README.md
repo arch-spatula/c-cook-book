@@ -14,4 +14,6 @@ gcc -o bullsAndCows bullsAndCows.c
 ./bullsAndCows
 ```
 
-실행 명령입니다. 
+실행 명령입니다.
+
+숫자 3개를 입력하고 맞추면 됩니다.
