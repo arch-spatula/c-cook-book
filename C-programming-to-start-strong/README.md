@@ -2086,3 +2086,141 @@ int main(void) {
 /*5*/
 /*10*/
 ```
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+
+int main(void) {
+  int nInput = 0, nSelect = 0;
+  scanf("%d", &nInput);
+
+  /*nInput <= 10 ? nSelect = 10 : nSelect = 20; // 컴파일 에러 발생*/
+  nInput <= 10 ? (nSelect = 10) : (nSelect = 20);
+  printf("%d\n", nSelect);
+
+  return EXIT_SUCCESS;
+}
+```
+
+
+`nInput <= 10 ? (nSelect = 10) : (nSelect = 20);`이렇게 작성해도 컴파일 에러가 발생하지 않아 놀랍습니다.
+
+`sizeof` 혹은 주소 연산자(`&`) 처럼 컴파일 타임에 사용되는 연산자가 있고 그 이후에 런타임에는 피연산자는 변수가 아니라 변수 안에 담긴 값입니다.
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+
+int main(void) {
+  int input = 0;
+
+  printf("키를 입력하세요. :");
+  scanf("%d%*c", &input);
+  printf("결과: %s\n", input >= 150 ? "합격" : "불합격");
+
+  return EXIT_SUCCESS;
+}
+```
+
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+
+int main(void) {
+  int nMax = 0;
+  int a, b, c;
+
+  scanf("%d %d %d", &a, &b, &c);
+
+  a > b ? (nMax = a) : (b > c ? (nMax = b) : (nMax = c));
+
+  printf("MAX: %d\n", nMax);
+  return EXIT_SUCCESS;
+}
+```
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+
+int main(void) {
+  int nMax = 0, nInput = 0;
+  scanf("%d", &nInput);
+  nMax = nInput;
+
+  scanf("%d", &nInput);
+  nMax = nInput > nMax ? nInput : nMax;
+
+  scanf("%d", &nInput);
+  nMax = nInput > nMax ? nInput : nMax;
+
+  printf("MAX: %d\n", nMax);
+  return EXIT_SUCCESS;
+}
+```
+
+각각 3번 입력하는 경우입니다. 간단합니다.
+
+여기서 알아야 할 것은 이방식이 유지보수하기 쉽습니다.
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+
+int main(void) {
+  int nMax = -100, nInput = -100;
+  scanf("%d", &nInput);
+  nMax = nInput > nMax ? nInput : nMax;
+
+  scanf("%d", &nInput);
+  nMax = nInput > nMax ? nInput : nMax;
+
+  scanf("%d", &nInput);
+  nMax = nInput > nMax ? nInput : nMax;
+
+  printf("MAX: %d\n", nMax);
+
+  return EXIT_SUCCESS;
+}
+```
+
+쉽게 풀이할 수 있습니다. 가장 작은 값보다 작을 수 없게 시작하면 됩니다.
+
+어떤 알고리즘이 좋은 알고리즘인가 평가할 때는 당연히 근거입니다. 그 중 하나는 동작횟수 지금의 경우 비교횟수에 해당합니다.
+
+지금 예시의 경우 이전과 크게 다르지 않습니다. 그래서 성능 비교는 무의미합니다.
+
+유지보수와 확장성을 생각해봐야 합니다. 
+
+몆출 복붙하는 관점으로 확장한다고 생각하면 당연히 매번 입력 받는 버전이 더 유리합니다. 
+
+메모리 사용량을 비교해볼 수 있습니다. 이것은 공간복잡성 문제입니다. 변수의 개수로 생각하면 이번에도 3번 변수로 받으면 변수마다 확보해야 하는 메모리 량이 많아집니다. 하지만 여러번 입력받는 버전은 입력 받을 때마다 새로운 메모리 확보는 안하고 사용했던 메모리를 계속 사용합니다. 
+
+1. 다음 코드의 실행 결과 및 원리에 대해 답하세요.
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+
+int main(void) {
+  int nResult, w = 0, x = -1, y = -1, z = 1;
+  nResult = w++ || x++ && ++y || ++z;
+  printf("%d %d %d %d %d\n", w, x, y, z, nResult); // 1 0 0 2 1
+  return EXIT_SUCCESS;
+}
+```
+
+표준 컴파일 플래그를 사용하면 소괄호 사용하라고 에러를 던집니다. 
+
+여기서 우위 연산은 늦게 동작합니다. 그래서 전위 연산 후위 연산 처리하면 다음과 같은 표현이 가능합니다.
+
+`0 \|\| -1 \&\& 0 \|\| 2` 여기서 이제 왼쪽에서 오른쪽 순서대로 처리하면 됩니다. AND, OR를 참 거짓을 받을 때 까지로 보면 이렇게 처리 될 수 있습니다. 또 논리연산자의 결과는 `0` 또는 `1`입니다.
+
+1. `0 \|\| -1 \&\& 0 \|\| 2` : 시작. OR(`\|\|`)은 `true`를 찾을 때까지 실행
+2. `1 \&\& 0 \|\| 2` : `0`은 `false`라 제거. AND(`\&\&`)는 `false`를 찾을 때까지 실행.
+3. `0 \|\| 2` : `0`은 `false`라 제거. AND(`\&\&`)는 `false`를 찾을 때까지 실행.
+4. `1` : 마지막은 둘 중 하나가 `true`라 결국 `1`이 됨.
+5. `1` : 후위연산은 할당이후 실행하기 때문에 `w`, `x`, `y`, `z`는 `1 0 0 2`가 됨
+ 
