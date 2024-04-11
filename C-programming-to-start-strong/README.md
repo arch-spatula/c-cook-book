@@ -1668,7 +1668,7 @@ int main(void) {
 
 비트 연산자는 일정 길이의 메모리에 담긴 2진수 정보를 말 그대로 비트 단위로 계산하는 연산자입니다.
 
-C ����������어가 제공하는 비트 연산자는 AND(`&`), OR(`|`), NOT(`~`), shift left(`<<`), shift right(`>>`)입니다. 단항 연산자인 NOT(`~`)을 제외하면 모두 이항연산자입니다.
+C 언어가 제공하는 비트 연산자는 AND(`&`), OR(`|`), NOT(`~`), shift left(`<<`), shift right(`>>`)입니다. 단항 연산자인 NOT(`~`)을 제외하면 모두 이항연산자입니다.
 
 비트 단위 상수를 작성할 때는 보통 16진수를 사용합니다.
 
@@ -2103,7 +2103,6 @@ int main(void) {
 }
 ```
 
-
 `nInput <= 10 ? (nSelect = 10) : (nSelect = 20);`이렇게 작성해도 컴파일 에러가 발생하지 않아 놀랍습니다.
 
 `sizeof` 혹은 주소 연산자(`&`) 처럼 컴파일 타임에 사용되는 연산자가 있고 그 이후에 런타임에는 피연산자는 변수가 아니라 변수 안에 담긴 값입니다.
@@ -2122,7 +2121,6 @@ int main(void) {
   return EXIT_SUCCESS;
 }
 ```
-
 
 ```c
 #include <stdio.h>
@@ -2192,11 +2190,11 @@ int main(void) {
 
 지금 예시의 경우 이전과 크게 다르지 않습니다. 그래서 성능 비교는 무의미합니다.
 
-유지보수와 확장성을 생각해봐야 합니다. 
+유지보수와 확장성을 생각해봐야 합니다.
 
-몆출 복붙하는 관점으로 확장한다고 생각하면 당연히 매번 입력 받는 버전이 더 유리합니다. 
+몆출 복붙하는 관점으로 확장한다고 생각하면 당연히 매번 입력 받는 버전이 더 유리합니다.
 
-메모리 사용량을 비교해볼 수 있습니다. 이것은 공간복잡성 문제입니다. 변수의 개수로 생각하면 이번에도 3번 변수로 받으면 변수마다 확보해야 하는 메모리 량이 많아집니다. 하지만 여러번 입력받는 버전은 입력 받을 때마다 새로운 메모리 확보는 안하고 사용했던 메모리를 계속 사용합니다. 
+메모리 사용량을 비교해볼 수 있습니다. 이것은 공간복잡성 문제입니다. 변수의 개수로 생각하면 이번에도 3번 변수로 받으면 변수마다 확보해야 하는 메모리 량이 많아집니다. 하지만 여러번 입력받는 버전은 입력 받을 때마다 새로운 메모리 확보는 안하고 사용했던 메모리를 계속 사용합니다.
 
 1. 다음 코드의 실행 결과 및 원리에 대해 답하세요.
 
@@ -2212,7 +2210,7 @@ int main(void) {
 }
 ```
 
-표준 컴파일 플래그를 사용하면 소괄호 사용하라고 에러를 던집니다. 
+표준 컴파일 플래그를 사용하면 소괄호 사용하라고 에러를 던집니다.
 
 여기서 우위 연산은 늦게 동작합니다. 그래서 전위 연산 후위 연산 처리하면 다음과 같은 표현이 가능합니다.
 
@@ -2223,6 +2221,539 @@ int main(void) {
 3. `0 \|\| 2` : `0`은 `false`라 제거. AND(`\&\&`)는 `false`를 찾을 때까지 실행.
 4. `1` : 마지막은 둘 중 하나가 `true`라 결국 `1`이 됨.
 5. `1` : 후위연산은 할당이후 실행하기 때문에 `w`, `x`, `y`, `z`는 `1 0 0 2`가 됨
- 
+
 ## Chapter 06 기본 제어문
+
+조건문은 다른 언어에서도 배우는 것이입니다. 본격적인 프로그래밍의 부분입니다. 자료형과 연산자는 단어와 숙어와 비슷합니다. 제어문은 문장과 비슷합니다.
+
+### if 문
+
+if 문은 다른 말로 분기문이라고 합니다. 조건을 기준으로 절차상 흐름을 제어합니다. 다른 제어문도 조건문을 기반으로 합니다. 처음 프로그래밍한다면 의식을 많이 하기 바랍니다.
+
+제어문은 연산자가 포함되어 있습니다. 연산에 참여하는 변숫값의 변화를 추적할 수 있어야 합니다.
+
+기본구조는 직관적입니다.
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+
+int main(void) {
+  int nAge = 0;
+  printf("나이를 입력하세요. : ");
+  scanf("%d", &nAge);
+  if (nAge >= 20) {
+    printf("당신의 나이는 %d세 입니다.\n", nAge);
+  }
+  printf("End");
+
+  return EXIT_SUCCESS;
+}
+/*나이를 입력하세요. : 20*/
+/*당신의 나이는 20세 입니다.*/
+/*End%*/
+```
+
+여기 예시에서 들여쓰기와 열맞춤에 신경쓰는 습관을 들이기 바랍니다. 안하면 읽기 어렵습니다.
+
+개발자의 소스코드는 문서입니다. 간결하고 가독성 높이는 것이 중요한 개발자의 덕목입니다.
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+
+int main(void) {
+  int nAge = 0;
+
+  printf("나이를 입력하세요. : ");
+  scanf("%d", &nAge);
+
+  if (nAge >= 20) {
+    printf("당신의 나이는 %d세 입니다.\n", nAge);
+		nAge = 20;
+  }
+  printf("당신의 나이는 %d세 입니다.\n", nAge);
+
+  return EXIT_SUCCESS;
+}
+/*나이를 입력하세요. : 30*/
+/*당신의 나이는 30세 입니다.*/
+/*당신의 나이는 20세 입니다.*/
+```
+
+나이 알고리즘이 이렇게 되면 좋겠습니다. 30대가 되어도 강제로 20살이 된다는 것이 행복할 것 같습니다.
+
+블록 스코프(`{}`)는 문법적으로 영역을 만드는 것입니다. 하지만 실행문은 아닙니다.
+
+C 언어는 괄호로 여러 항을 묶어 한 항우로 만들고 블록 스코프로 여러 구문을 묶어 한 구문을 만들 수 있습니다.
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+
+int main(void) {
+  int max = -100, input = -100;
+  scanf("%d", &input);
+  if (input > max)
+    max = input;
+  scanf("%d", &input);
+  if (input > max)
+    max = input;
+  scanf("%d", &input);
+  if (input > max)
+    max = input;
+
+  printf("MAX : %d\n", max);
+
+  return EXIT_SUCCESS;
+}
+/*10*/
+/*30*/
+/*-10*/
+/*MAX : 30*/
+```
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+
+int main(void) {
+  int age = 0, cost = 1000;
+  scanf("%d", &age);
+  if (age < 20) {
+    cost = cost * 75 / 100;
+  }
+
+  printf("최종요금: %d원\n", cost);
+  return EXIT_SUCCESS;
+}
+/*17*/
+/*최종요금: 750원*/
+```
+
+간단하게 해결했습니다.
+
+```c
+if (nAge >= 20);
+```
+
+여기서 주의할 점은 세미코론(`;`)이 조건식 끝에 붙으면 컴파일러는 그 지점에서 if문이 끝난 것으로 인식합니다.
+
+여러 줄이면 블록 스코프로 묶어야 합니다.
+
+### if else문
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+
+int main(void) {
+  int nInput = 0, nSelect = 0;
+  scanf("%d", &nInput);
+
+  if (nInput <= 10)
+    nSelect = 10;
+  else
+    nSelect = 20;
+  printf("%d\n", nSelect);
+  return EXIT_SUCCESS;
+}
+/*24*/
+/*20*/
+```
+
+`else`는 조건이 없습니다. 이전 모든 조건들에서 안 걸리면 실행하는 로직입니다.
+
+상호 배타적인 로직을 실행할 수 있습니다.
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+
+int main(void) {
+  int nInput = 0, nSelect = 0;
+  scanf("%d", &nInput);
+
+  if (nInput <= 10) {
+    if (nInput < 0)
+      nSelect = 0;
+    else
+      nSelect = 10;
+  } else {
+    nSelect = 20;
+  }
+
+  printf("%d\n", nSelect);
+  return EXIT_SUCCESS;
+}
+/*-10*/
+/*0*/
+```
+
+뭐 안 어려운 예제입니다.
+
+다음은 학점 분류 계산기입니다.
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+
+int main(void) {
+  int nInput = 0;
+  char ch = 'A';
+
+  printf("점수를 입력하세요: ");
+  scanf("%d", &nInput);
+
+  if (nInput >= 80) {
+    if (nInput >= 90)
+      ch = 'A';
+    else
+      ch = 'B';
+  } else {
+    if (nInput >= 70)
+      ch = 'C';
+    else
+      ch = 'D';
+
+    if (nInput < 60)
+      ch = 'F';
+  }
+
+  printf("%c\n", ch);
+  return EXIT_SUCCESS;
+}
+/*점수를 입력하세요: 85*/
+/*B*/
+/*점수를 입력하세요: 59*/
+/*F*/
+```
+
+조건에 의한 분류와 선택이 중요합니다.
+
+프로그래머는 발생 가능한 경우의 수를 나열한 후, 어떤 조건과 방법으로 하나를 정확히 선택할 수 있는지 기술할 수 있어야 합니다.
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+
+int main(void) {
+  int input = 0, discount = 100;
+  scanf("%d", &input);
+
+  if (input <= 13) {
+    if (input <= 3)
+      discount = 0;
+    else
+      discount = 50;
+  } else {
+    if (input <= 19)
+      discount = 75;
+    else
+      discount = 100;
+  }
+
+  printf("최종요금: %d원\n", 1000 * discount / 100);
+  return EXIT_SUCCESS;
+}
+```
+
+문제는 간단하게 풀 수 있습니다.
+
+식별자 검색순서
+
+변수의 통용범위는 그 변수를 선언한 블록 스코프로 제한됩니다. 스코프를 벗어나면 변수는 사라집니다. 기본적으로 local 변수이고 auto 변수이기 때문입니다.
+외부 스코프에서는 같은 변수선언도 가능합니다. 다음은 식별자 검색 실험입니다. 실무는 이렇게 하면 곤란합니다.
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+
+int main(void) {
+  int nInput = 0;
+  scanf("%d", &nInput);
+
+  if (nInput > 10) {
+    int nInput = 20;
+    printf("%d\n", nInput);
+
+    if (nInput < 20) {
+      int nInput = 30;
+      printf("%d\n", nInput);
+    }
+  }
+
+  printf("%d\n", nInput);
+
+  return EXIT_SUCCESS;
+}
+/*11*/
+/*20*/
+/*11*/
+```
+
+핵심입니다. 가장 최근에 형성된 스코프가 우선합니다. 스코프가 닫히면 그 내부에 선언된 변수는 소멸합니다. 코드를 복붙하면서 실수로 발생할 가능성이 있습니다.
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+
+int main(void) {
+  int nInput = 0;
+  char ch = 'A';
+
+  printf("점수를 입력하세요: ");
+  scanf("%d", &nInput);
+  if (nInput >= 90)
+    ch = 'A';
+  else if (nInput >= 80)
+    ch = 'B';
+  else if (nInput >= 70)
+    ch = 'C';
+  else if (nInput >= 60)
+    ch = 'D';
+  else
+    ch = 'F';
+
+  printf("점수: %d, 학점: %c\n", nInput, ch);
+  return EXIT_SUCCESS;
+}
+/*점수를 입력하세요: 59*/
+/*점수: 59, 학점: F*/
+```
+
+경우의 수가 늘어날수록 성능 문제가 있습니다. 2진 탐색과 선형탐색이 성능이 다른 것과 같습니다.
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+
+int main(void) {
+  int input = 0, discount = 100;
+  scanf("%d", &input);
+
+  if (input <= 3 || input >= 65)
+    discount = 0;
+  else if (input <= 13)
+    discount = 50;
+  else if (input <= 19)
+    discount = 75;
+  else
+    discount = 100;
+
+  printf("최종요금: %d원\n", 1000 * discount / 100);
+  return EXIT_SUCCESS;
+}
+```
+
+## switch-case문
+
+정보를 분류하는데 사용하는 제어문입니다. 경우의 수를 선택하지 않고 단 한번의 연산(혹은 변수)으로 특정한 경우 하나를 선택합니다.
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+
+int main(void) {
+  char cOperator = 0;
+  int x = 0, y = 0, nResult = 0;
+  scanf("%d%c%d", &x, &cOperator, &y);
+
+  switch (cOperator) {
+  case '+':
+    nResult = x + y;
+    break;
+  case '-':
+    nResult = x - y;
+    break;
+  case '*':
+    nResult = x * y;
+    break;
+  case '/':
+    nResult = x / y;
+    break;
+  default:
+    puts("ERROR: 알 수 없는 산술 연산입니다.");
+  }
+
+  printf("Result: %d\n", nResult);
+
+  return EXIT_SUCCESS;
+}
+/*3*2*/
+/*Result: 6*/
+```
+
+switch 문은 각 경우에 대응하는 값과 기술한 값을 비교하는 상등연산(`==`)을 수행합니다.
+
+case 문 끝에는 세미콜론(`;`)이 아닙니다. C 언어에서 레이블이 존재합니다. 연산식이 아니고 코드의 위치를 기술하는 것입니다. 레이블도 끝이 `:`입니다.
+
+break 문은 연산을 즉시 멈추고 자신이 속한 스코프를 벗어나도록 흐름을 변경합니다.
+
+case 문 내에서는 반드시 작성해야 합니다.
+
+때로는 의도적으로 break 문을 생략할 수 있습니다.
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+
+int main(void) {
+  char chCredit = 'x';
+  int nInput = 0;
+
+  printf("점수를 입력하세요. : ");
+  scanf("%d", &nInput);
+
+  switch (nInput / 10) {
+  case 10:
+  case 9:
+    chCredit = 'A';
+    break;
+  case 8:
+    chCredit = 'B';
+    break;
+  case 7:
+    chCredit = 'C';
+    break;
+  case 6:
+    chCredit = 'D';
+    break;
+  default:
+    chCredit = 'F';
+  }
+
+  printf("학점 : %c\n", chCredit);
+
+  return EXIT_SUCCESS;
+}
+
+/*점수를 입력하세요. : 95*/
+/*학점 : A*/
+```
+
+100점과 90이상인 경우 모두 포함합니다.
+
+## goto 문
+
+goto문은 break 문처럼 특정 위치로 프로그램의 흐름을 '즉시' 변경합니다. break문은 그 대상위치가 문법적으로 제한된 상태입니다. 변경이 불가능합니다.
+
+goto 문은 사용자가 레이블로 명시한 위치면 어디든지 이동할 수 있습니다. 아무 제한 없이 코드의 흐름을 변경할 수 있습니다.
+
+장점같지만 단점이 되기도 합니다. 코드의 흐름이 논리적으로 파악이 어려워 질 수 있습니다. 해결하기 어려운 상태가 될 가능성이 높습니다. 문법은 알아두고 필요한 상황에만 활용합니다.
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+
+int main(void) {
+  int nInput;
+
+INPUT:
+  printf("Input number : ");
+  scanf("%d", &nInput);
+
+  if (nInput < 0 || nInput > 10)
+    goto INPUT;
+
+  puts("End");
+
+  return EXIT_SUCCESS;
+}
+/*Input number : -1*/
+/*Input number : 11*/
+/*Input number : 5*/
+/*End*/
+```
+
+goto 문은 오른쪽에 레이블명을 기술합니다. 어디든 맥락에 상관없이 goto 문으로 이동할 수 있습니다. 편리하지만 꼬이면 스파게티코드가 됩니다. 많은 사람들이 goto문을 사악한 코드(evil code)라고 부르고 사용하지 말라고 권합니다.
+
+다익스트라이 주장이 와전된 것입니다.
+
+설계적으로 전혀 관련이 없어야 할 두 대상을 하나로 묶어줄 수 있기 때문에 구조적 결함을 만들 가능송이 높습니다. 유지보수 측면의 효율이 많이 떨어집니다.
+
+1. if문을 사용하여 사용자로부터 정수 5개를 입력받아 그중 가장 큰 수를 출력하는 프로그램을 작성하시오. 사용자는 0 ~ 100 사이 값만 입력하도록 강제합니다. 범위를 벗어난 숫자를 입력할 경우 0 미만은 0으로 100초과는 100으로 조정합니다.
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+
+int main(void) {
+  int input = 0, i = 0, max = 0;
+
+INPUT:
+  scanf("%d", &input);
+  i += 1;
+
+  if (input < 0)
+    input = 0;
+  if (input > 100)
+    input = 100;
+
+  if (input >= max)
+    max = input;
+
+  if (i < 5)
+    goto INPUT;
+
+  printf("Max : %d\n", max);
+
+  return EXIT_SUCCESS;
+}
+```
+
+2. 다음 코드에서 잘못된 부분은 무엇인가?
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+
+int main(void) {
+  int nAge = 0;
+
+  scanf("%d", &nAge);
+
+  if (nAge = 20)
+    puts("당신은 성인입니다.");
+
+  puts("End");
+
+  return EXIT_SUCCESS;
+}
+```
+
+```c
+  if (nAge == 20)
+```
+
+여기만 이렇게 고치면 됩니다.
+
+3. 다음 코드를 작성하고 사용자가 15를 입력했다면 어떤 결과가 출력되는지 쓰세요.
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+
+int main(void) {
+  int nInput = 0;
+  scanf("%d", &nInput);
+
+  if (nInput > 10) {
+    int nInput = 20;
+    printf("%d\n", nInput);
+
+    if (nInput < 20) {
+      int nInput = 30;
+      printf("%d\n", nInput);
+    }
+  }
+
+  printf("%d\n", nInput);
+  return EXIT_SUCCESS;
+}
+```
+
+`15`를 입력하고 `20`을 먼저 출력하고 다음에 `15`를 출력합니다.
+
+## 반복문
 
