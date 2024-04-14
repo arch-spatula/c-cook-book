@@ -2757,3 +2757,1002 @@ int main(void) {
 
 ## 반복문
 
+반복문은 일정구간의 코드를 연속적으로 반복해 실행하는 제어문입니다.
+
+사람이 할 귀찮은 일을 기계가 대신 실수 없이 반복하는 것이 업무 전산화의 목표 중 하나입니다. 다른 말로 중요합니다.
+
+### while - 조건 기반 반복문
+
+while은 if문과 유사합니다. 하지만 조건이 거짓이 될때까지 계속 실행합니다.
+
+이것은 아주 중요한 특징입니다.
+
+#### 기본구조 조건에 의한 제어
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+
+int main(void) {
+  char ch = 0;
+
+  while ((ch = getchar()) != '\n') {
+    putchar(ch);
+  }
+
+  return EXIT_SUCCESS;
+}
+/*TestString*/
+/*TestString%*/
+```
+
+`ch`는 `getchar`의 반환값을 할당합니다. `getchar`는 버퍼메모리에서 데이터를 꺼내는데 없으면 유저의 표준입력을 받습니다. `while`은 `\n`인 개행문자를 받을 때까지 실행합니다. 여기서는 입력을 받으면 계속 출력하기만 합니다.
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+
+int main(void) {
+  int input = 0, idx = 0;
+
+  scanf("%d%*c", &input);
+
+  while (idx != input) {
+    printf("*");
+    idx += 1;
+  }
+  printf("\n");
+
+  return EXIT_SUCCESS;
+}
+```
+
+#### 무한루프
+
+스킬이슈
+
+반복을 멈추기위한 조건부터 설계하도록 합니다. 종료조건에 영향을 주는 연산이 반복문 내부에 당연히 있어야합니다.
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+
+int main(void) {
+  int nInput = 0;
+
+  while (nInput >= 0) {
+    nInput + 1;
+  }
+  printf("%d\n", nInput);
+
+  return EXIT_SUCCESS;
+}
+```
+
+굳이 실행하지 않을 것입니다.
+
+실제로 CPU 코어 점유율을 보면 100% 금방 도달하는 것을 볼 수 있을 것입니다.
+
+다음은 `int` 오버플로우로 비정상적인 종료가 발생할 것입니다.
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+
+int main(void) {
+  int nInput = 0;
+
+  while (nInput >= 0) {
+    ++nInput;
+  }
+  printf("%d\n", nInput);
+
+  return EXIT_SUCCESS;
+}
+```
+
+`int` 가 최댓값을 초과하고 음수로 오버플로우하게 되면 `while` 조건을 깨는 상태를 충족하게 됩니다.
+
+종료하기는 하지만 의도랑 다르다는 것이 문제입니다. 대부분의 경우 의도가 다를 경우가 많을 것입니다.
+
+#### 반복문 내부에 선언한 자동변수
+
+반복문 내부에서 변수선언하는 행위는 자제해야 합니다. 프로그램이 비효율적이게 동작합니다. 스택영역으로 관리가 필요합니다.
+
+다음은 반복문 내부에 변수 선언을 안한 정상적인 코드입니다.
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+
+int main(void) {
+  char ch = 0;
+  int nIndex = 0;
+  while ((ch = getchar()) != '\n') {
+    printf("%02d\t%c\n", nIndex, ch);
+    ++nIndex;
+  }
+  return EXIT_SUCCESS;
+}
+/*Hello*/
+/*00	H*/
+/*01	e*/
+/*02	l*/
+/*03	l*/
+/*04	o*/
+```
+
+상당히 단순한 코드입니다. 이제는 의도적으로 오류를 만들어보겠습니다.
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+
+int main(void) {
+  char ch = 0;
+
+  while ((ch = getchar()) != '\n') {
+    int nIndex = 0;
+
+    printf("%02d\t%c\n", nIndex, ch);
+    ++nIndex;
+  }
+
+  return EXIT_SUCCESS;
+}
+/*Hello*/
+/*00	H*/
+/*00	e*/
+/*00	l*/
+/*00	l*/
+/*00	o*/
+```
+
+오류를 직접 만든입장에서는 이해가 쉽습니다. 스코프가 닫히면 그 내부에 선언 및 정의된 변수는 사라진다고 했습니다. 지금 같은 경우 특별하게 활용하는 경우가 아니라서 비효율적입니다. 메모리에 계속 데이터를 추가하고 삭제하면서 불필요한 작업을 많이 하게 됩니다.
+
+반복문 내부에서는 변수를 선언 및 정의하지 않습니다.
+
+#### 반복문의 중첩
+
+반복문은 if문을 중첩하는 것처럼 중첩이 가능합니다. 뭐 말해줘야 아는 사람들도 있어서 이야기합니다.
+
+다음은 구구단 출력하는 고전 문제입니다.
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+
+int main(void) {
+  int i = 2, j = 1;
+
+  while (i <= 9) {
+    j = 1;
+    putchar('\n');
+    while (j <= 9) {
+      printf("%d * %d = %d\n", i, j, i * j);
+      j += 1;
+    }
+    i += 1;
+  }
+
+  return EXIT_SUCCESS;
+}
+
+/*2 * 1 = 2*/
+/*2 * 2 = 4*/
+/*2 * 3 = 6*/
+/* ... */
+/*9 * 9 = 81*/
+```
+
+실습문제로 5x5 행렬을 출력하라고 합니다.
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+int main(void) {
+  int i = 0, j = 0;
+
+  while (i < 5) {
+    j = 0;
+    while (j < 5) {
+      j += 1;
+      printf("*\t");
+    }
+    putchar('\n');
+    i += 1;
+  }
+
+  return EXIT_SUCCESS;
+}
+/**	*	*	*	*	*/
+/**	*	*	*	*	*/
+/**	*	*	*	*	*/
+/**	*	*	*	*	*/
+/**	*	*	*	* */
+```
+
+정답지를 본게 아닌가 의심스러울 정도로 같았습니다.
+
+### for 문
+
+while 문은 실수할 가능성이 은근히 있습니다. 스킬 이슈입니다.
+
+for 문은 초기화, 계수기, 증가식 3가지를 한 행에 강제로 기술하게 만듭니다. while 문가 본질은 같지만 실수할 여지가 적습니다. 또 가독성 측면과 관용어구라는 측면에서 장점입니다.
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+
+int main(void) {
+  int i = 0;
+
+  for (i = 0; i < 5; ++i) {
+    printf("%dth\n", i);
+  }
+
+  return EXIT_SUCCESS;
+}
+/*0th*/
+/*1th*/
+/*2th*/
+/*3th*/
+/*4th*/
+```
+
+반복문 스코프의 머리부분 한줄로 시작과 끝을 단번에 알수 있다는 장점이 있습니다.
+
+for 문은 생략이 가능합니다. `for(;;)`이라고 표현도 가능합니다. 이렇게 되면 `while(1)`과 같습니다.
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+
+int main(void) {
+  int sum = 0;
+
+  for (int i = 1; i <= 10; ++i) {
+    sum += i;
+  }
+  printf("%d\n", sum);
+
+  return EXIT_SUCCESS;
+}
+/*55*/
+```
+
+쉽게 구할 수 있습니다.
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+
+int main(void) {
+  int input = 2;
+  scanf("%d%*c", &input);
+
+  if (input < 2 || input > 9) {
+    printf("Error\n");
+  } else {
+    for (int i = 1; i <= 9; ++i) {
+      printf("%d * %d = %d\n", input, i, input * i);
+    }
+  }
+
+  return EXIT_SUCCESS;
+}
+```
+
+상당히 문제를 쉽게 풀 수 있습니다.
+
+이전에 풀어본 문제를 while 문에서 for 문으로 풀어봅니다.
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+
+int main(void) {
+  for (int i = 0; i < 5; ++i) {
+    for (int j = 0; j < 5; ++j) {
+      printf("*\t");
+    }
+    putchar('\n');
+  }
+
+  return EXIT_SUCCESS;
+}
+/**	*	*	*	*	*/
+/**	*	*	*	*	*/
+/**	*	*	*	*	*/
+/**	*	*	*	*	*/
+/**	*	*	*	* */
+```
+
+논리구조는 상당히 단순합니다. 0에서 출발하는 zero-based index입니다.
+
+자주하는 것들 중 하나는 도형출력 과제합니다.
+
+뭐 처음하면 오래 걸릴 수 있지만 오래 걸리면 안되는 과제들입니다.
+
+본인이 작성하는 본인의 코드에 대해 기초적인 자각능력을 기르기 시작하는 기초 운동입니다.
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+
+int main(void) {
+  for (int i = 1; i <= 5; ++i) {
+    for (int j = 0; j < i; ++j) {
+      printf("*\t");
+    }
+    putchar('\n');
+  }
+
+  return EXIT_SUCCESS;
+}
+/**	*/
+/**	*	*/
+/**	*	*	*/
+/**	*	*	*	*/
+/**	*	*	*	*	*/
+```
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+
+int main(void) {
+  for (int i = 1; i <= 5; ++i) {
+    for (int j = 1; j <= 5 - i; ++j) {
+      printf("\t");
+    }
+    for (int j = 1; j <= i; ++j) {
+      printf("*\t");
+    }
+    putchar('\n');
+  }
+
+  return EXIT_SUCCESS;
+}
+/*
+				*
+			*	*
+		*	*	*
+	*	*	*	*
+*	*	*	*	*
+*/
+```
+
+첫 줄 줄바꿈 버그까지 주의해서 작성하도록 합니다.
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+
+int main(void) {
+  for (int i = 1; i <= 5; ++i) {
+
+    for (int j = 1; j <= 5 - i; ++j) {
+      printf("\t");
+    }
+
+    for (int j = 1; j <= 2 * i - 1; ++j) {
+      printf("*\t");
+    }
+
+    for (int j = 1; j <= 5 - i; ++j) {
+      printf("\t");
+    }
+
+    putchar('\n');
+  }
+
+  return EXIT_SUCCESS;
+}
+/*
+				*
+			*	*	*
+		*	*	*	*	*
+	*	*	*	*	*	*	*
+*	*	*	*	*	*	*	*	*
+*/
+```
+
+피라미드 출력은 쉽습니다.
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+
+int main(void) {
+  for (int i = 0; i < 5; ++i) {
+
+    for (int j = 0; j < 5 + i; ++j) {
+      if (i + j >= 4)
+        printf("*\t");
+      else
+        putchar('\t');
+    }
+    putchar('\n');
+  }
+
+  return EXIT_SUCCESS;
+}
+```
+
+이렇게 풀이하는 것이 더 올바릅니다.
+
+### do while 문
+
+반복 대상 단위 코드를 먼저 한번 실행하고 나중에 조건 비교를 합니다.
+
+적어도 한번은 실행이 필요한 로직에 유용합니다. 뭐 CLI로 게임만들 때 게임루프를 만들기 좋습니다.
+
+조건식을 괄호 뒤에 세미콜론을 붙인다는 점이 특이합니다.
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+
+int main(void) {
+  char ch = 0;
+
+  do {
+
+    ch = getchar();
+    putchar(ch);
+  } while (ch != '\n');
+
+  return EXIT_SUCCESS;
+}
+/*TestString*/
+/*TestString*/
+```
+
+입력의 유효함을 확인하고 다시 입력하게 만들 때 자주 활용하는 전략입니다.
+
+범위를 벗어나거 유효하지 않으면 무엇이 안 맞는지 알려주고 루프를 계속 돌게 만들 수 있습니다.
+
+### break와 continue
+
+break는 while, for, do while, switch-case 모두 사용합니다. 흐름을 벗어날 수 있게 해줍니다. continue는 반복문 내부에서 현재 수행을 종료하고 다음 반복문을 수행할 수 있게 합니다.
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+
+int main(void) {
+  int i = 0;
+  for (i = 0; i < 10; ++i) {
+    if (i > 4)
+      break;
+
+    printf("%dth\n", i);
+  }
+
+  printf("END: i == %d\n", i);
+  return EXIT_SUCCESS;
+}
+/*0th*/
+/*1th*/
+/*2th*/
+/*3th*/
+/*4th*/
+/*END: i == 5*/
+```
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+
+int main(void) {
+  int i = 0;
+  for (i = 0; i < 10; ++i) {
+    if (i > 4)
+      continue;
+
+    printf("%dth\n", i);
+  }
+
+  printf("END: i == %d\n", i);
+  return EXIT_SUCCESS;
+}
+/*0th*/
+/*1th*/
+/*2th*/
+/*3th*/
+/*4th*/
+/*END: i == 10*/
+```
+
+이것으로 알 수 있는 것은 다음으로 순회한다는 사실입니다. 그래서 9까지 순회합니다.
+
+반복문을 안 끝내고 다음으로 넘어갑니다.
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+
+int main(void) {
+  int i = 0, j = 0;
+  for (i = 0; i < 5; ++i) {
+    printf("i == %d\n", i);
+    for (j = 0; j < 5; ++j) {
+      if (j > 2)
+        break;
+      printf("\t%dth\n", j);
+    }
+    printf("end\n\n");
+  }
+
+  return EXIT_SUCCESS;
+}
+```
+
+1. 1 ~ 100까지 숫자 중에서 4의 배수가 몇개이며, 이들의 총합이 얼마인지 계산해 출력하는 프로그램을 작성하시오.
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+
+int main(void) {
+  int count = 0, sum = 0;
+
+  for (int i = 1; i <= 100; ++i) {
+    if (i % 4 == 0) {
+      count += 1;
+      sum += i;
+    }
+  }
+
+  printf("%d, %d\n", count, sum);
+
+  return EXIT_SUCCESS;
+}
+/*25, 1300*/
+```
+
+2. 다음과 같이 '\*'을 출력하는 프로그램을 작성하세요.
+
+```
+                *
+            *       *
+        *       *       *
+    *       *       *       *
+*       *       *       *       *
+```
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+
+int main(void) {
+  for (int i = 1; i <= 5; ++i) {
+
+    for (int j = 1; j <= 5 - i; ++j) {
+      putchar('\t');
+    }
+
+    for (int j = 1; j <= i; ++j) {
+      printf("*\t\t");
+    }
+
+    printf("\n");
+  }
+
+  return EXIT_SUCCESS;
+}
+```
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+
+int main(void) {
+  for (int i = 1; i <= 5; ++i) {
+    for (int j = 0; j < 5; ++j) {
+      if (5 - i > j)
+        printf("\t");
+      else
+        printf("*\t\t");
+    }
+    printf("\n");
+  }
+
+  return EXIT_SUCCESS;
+}
+```
+
+단 하나의 반복문으로 해결하는 방법은 이렇게 할 수 있습니다.
+
+작업 횟수 자체는 동일합니다. 저의 사고 방식이 상당히 약합니다.
+
+3. 다음 코드의 실행결과를 쓰시오.
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+
+int main(void) {
+  int i = 0;
+
+  for (i = 0; i < 10; ++i) {
+    if (i > 4)
+      continue;
+    printf("%dth\n", i);
+  }
+
+  printf("END: i == %d\n", i);
+  return EXIT_SUCCESS;
+}
+/*0th*/
+/*1th*/
+/*2th*/
+/*3th*/
+/*4th*/
+/*END: i == 10*/
+```
+
+4까지 출력함 마지막은 10을 출력함
+
+4. 다음 코드에서 goto문을 제거하고 반복문을 이용해서 같은 결과를 얻을 수 있도록 프로그램을 변경하시오.
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+
+int main(void) {
+
+  int nInput = 0;
+
+INPUT:
+  printf("Input number : ");
+  scanf("%d", &nInput);
+
+  if (nInput < 0 || nInput > 10)
+    goto INPUT;
+
+  puts("End");
+
+  return EXIT_SUCCESS;
+}
+```
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+
+int main(void) {
+  int nInput = 0;
+
+  do {
+    printf("Input number : ");
+    scanf("%d", &nInput);
+  } while (nInput < 0 || nInput > 10);
+
+  puts("End");
+  return EXIT_SUCCESS;
+}
+```
+
+이렇게 하는 것으로 goto 문을 우회할 수 있습니다.
+
+## 배열
+
+타입이 같은 데이터 여러 개가 모여 새로운 하나를 이룬 형식입니다.
+
+배열이 기존의 변수와 다른 점 중 하나는 배열의 이름은 변수의 이름과 달리 메모리의 주소라는 점입니다.
+
+여러 요소를 대표하는 첫 번째 요소의 메모리 주소에 부여하는 식별자입니다.
+
+다음은 배열이 해결하는 문제를 보고 배울 수 있게 해줍니다.
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+
+int main(void) {
+  int a, b, c, d, e;
+
+  scanf("%d%d%d%d%d", &a, &b, &c, &d, &e);
+
+  printf("%d\n", a);
+  printf("%d\n", b);
+  printf("%d\n", c);
+  printf("%d\n", d);
+  printf("%d\n", e);
+
+  return EXIT_SUCCESS;
+}
+/*1 2 3 4 5*/
+/*1*/
+/*2*/
+/*3*/
+/*4*/
+/*5*/
+```
+
+문법문제는 없습니다. 유지보수 문제가 있습니다.
+
+배열 연산자를 활용하면 됩니다. `배열이름[인덱스]`이 배열 연산자입니다.
+
+인덱스는 0부터 총 개수의 -1개까지입니다.
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+
+int main(void) {
+  int aList[5] = {0};
+  int i = 0;
+
+  for (i = 0; i < 5; ++i) {
+    scanf("%d", &aList[i]);
+  }
+  for (i = 0; i < 5; ++i) {
+    printf("%d\n", aList[i]);
+  }
+
+  return EXIT_SUCCESS;
+}
+/*1 2 3 4 5*/
+/*1*/
+/*2*/
+/*3*/
+/*4*/
+/*5*/
+```
+
+이전보다 유지보수하기 쉬워집니다.
+
+C 언어 배열은 zero-based index 입니다. 그래서 0번부터 4까지 인덱스가 지금 존재합니다.
+
+배열요소도 변수를 의미합니다. 그래서 포인터 연산자로 주소를 접근해야 합니다.
+
+### 1차원 배열의 기본 문법
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+
+int main(void) {
+  int aList[5] = {10, 20, 30, 40, 50};
+  int i = 0;
+  for (i = 0; i < 5; ++i) {
+    printf("%d\t", aList[i]);
+  }
+  putchar('\n');
+
+  aList[0] = 100;
+  aList[3] = 200;
+
+  for (i = 0; i < 5; ++i) {
+    printf("%d\t", aList[i]);
+  }
+
+  putchar('\n');
+  return EXIT_SUCCESS;
+}
+/*10	20	30	40	50	*/
+/*100	20	30	200	50	*/
+```
+
+배열연산의 결과는 L-value가 될 수 있습니다. 즉 변수가 될 수 있습니다.
+
+대괄호 안에 배열의 요소를 명시한 숫자 `5`를 빼고 `int aList[] = { 10, 20, 30, 40, 50};`라고 기술해도 상관없습니다. 컴파일러가 소스코드에 기술된 초깃값의 개수를 판별한 후 요소의 개수를 자동으로 확정하기 때문입니다.
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+
+int main(void) {
+  int aList[5] = {10, 20, 30, 40, 50};
+  int i = 0;
+
+  aList[0] = aList[4];
+  aList[1] += aList[2];
+  aList[4] = aList[3] * 2;
+
+  for (i = 0; i < 5; ++i) {
+    printf("%d\t", aList[i]);
+  }
+
+  putchar('\n');
+  return EXIT_SUCCESS;
+}
+/*50	50	30	40	80*/
+```
+
+배열을 변수라고 생각하면 상당히 직관적입니다.
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+
+int main(void) {
+  int aList[5] = {10, 20, 30, 40, 50};
+  int aListNew[5] = {0};
+  int i = 0;
+
+  aListNew = aList;
+
+  for (i = 0; i < 5; ++i) {
+    printf("%d\t", aList[i]);
+  }
+
+  putchar('\n');
+  return EXIT_SUCCESS;
+}
+```
+
+린트부터 에러를 던집니다.
+
+당연히 좌변이 피연산자가 아니라서 발생하는 문제입니다. 배열의 이름은 주소상수입니다. 상수는 읽기만 가능하고 쓰기를 할 수 없습니다. 즉 l-value가 아닙니다.
+
+배열은 인덱스를 모은 덩어리라고 생각하면 주소를 모아둔 주소입니다. 즉 하나의 주소를 다루는 상황이 아닙니다. 배열 복제는 하나하나 값을 대입하면 됩니다.
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+
+int main(void) {
+  int aList[5] = {10, 20, 30, 40, 50};
+  int aListNew[5] = {0};
+  int i = 0;
+
+  for (i = 0; i < 5; ++i) {
+    aListNew[i] = aList[i];
+  }
+
+  for (i = 0; i < 5; ++i) {
+    printf("%d\t", aListNew[i]);
+  }
+
+  putchar('\n');
+  return EXIT_SUCCESS;
+}
+/*10	20	30	40	50*/
+```
+
+### 최댓값/최솟값
+
+가장 큰수를 찾는 선형탐색 알고리즘입니다.
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+
+int main(void) {
+  int aList[5] = {30, 40, 10, 50, 20};
+  int i = 0, nMax = aList[0];
+
+  for (i = 1; i < 5; ++i) {
+    if (aList[i] > nMax)
+      nMax = aList[i];
+  }
+
+  for (i = 0; i < 5; ++i) {
+    printf("%d\t", aList[i]);
+  }
+
+  putchar('\n');
+  printf("MAX: %d\n", nMax);
+  return EXIT_SUCCESS;
+}
+/*30	40	10	50	20	*/
+/*MAX: 50*/
+```
+
+선형탐색이고 뭐 원포인터 문제라고 생각할 수 있습니다. 초기화를 0으로 하면 습관이 잘못된 것입니다. 불필요한 연산을 하기 때문입니다. 안해도 될 비교를 한번더 하게 되기 때문입니다.
+
+또 1부터시작하는 이유는 이미 첫번째부터 포인터가 찍혀있는데 굳이 비교를 할 필요가 없습니다.
+
+시험문제입니다. 위 코드에서 `nMax`를 사용할 수 없고 추가 변수를 만들 수 없습니다. 
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+
+int main(void) {
+  int aList[5] = {30, 40, 10, 50, 20};
+  int i = 0;
+
+  // 여기부터 코드를 작성할 수 있습니다.
+
+  // 여기까지 코드를 작성할 수 있습니다.
+  for (i = 0; i < 5; ++i) {
+    printf("%d\t", aList[i]);
+  }
+
+  putchar('\n');
+  printf("MAX: %d\n", nMax);
+  return EXIT_SUCCESS;
+}
+/*50	40	10	50	20	*/
+/*MAX: 50*/
+```
+
+그냥 변수 취급하면 되는데 30분은 오버입니다.
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+
+int main(void) {
+  int aList[5] = {30, 40, 10, 50, 20};
+  int i = 0;
+
+  // 여기부터 코드를 작성할 수 있습니다.
+  for (i = 1; i < 5; ++i) {
+    if (aList[i] > aList[0])
+      aList[0] = aList[i];
+  }
+  // 여기까지 코드를 작성할 수 있습니다.
+  for (i = 0; i < 5; ++i) {
+    printf("%d\t", aList[i]);
+  }
+
+  putchar('\n');
+  printf("MAX: %d\n", aList[0]);
+  return EXIT_SUCCESS;
+}
+```
+
+교환방식으로 최솟값 구하기 과제입니다.
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+
+int main(void) {
+  int aList[5] = {30, 40, 10, 50, 20};
+  int i = 0, nTmp = 0;
+
+  // 여기부터 코드를 작성할 수 있습니다.
+  
+  // 여기까지 코드를 작성할 수 있습니다.
+  for (i = 0; i < 5; ++i) {
+    printf("%d\t", aList[i]);
+  }
+
+  putchar('\n');
+  printf("MIN: %d\n", aList[0]);
+  return EXIT_SUCCESS;
+}
+/*10	40	30	50	20	*/
+/*MAX: 10*/
+```
+
+값의 유실을 막는 것이 중요합니다.
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+
+int main(void) {
+  int aList[5] = {30, 40, 10, 50, 20};
+  int i = 0, nTmp = 0;
+
+  // 여기부터 코드를 작성할 수 있습니다.
+  for (i = 1; i < 5; ++i) {
+    if (aList[i] < aList[0]) {
+      nTmp = aList[0];
+      aList[0] = aList[i];
+      aList[i] = nTmp;
+    }
+  }
+  // 여기까지 코드를 작성할 수 있습니다.
+  for (i = 0; i < 5; ++i) {
+    printf("%d\t", aList[i]);
+  }
+
+  putchar('\n');
+  printf("MIN: %d\n", aList[0]);
+  return EXIT_SUCCESS;
+}
+/*10	40	30	50	20	*/
+/*MAX: 10*/
+```
+
+이번에도 간단합니다.
+
