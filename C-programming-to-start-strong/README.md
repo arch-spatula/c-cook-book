@@ -1668,7 +1668,7 @@ int main(void) {
 
 비트 연산자는 일정 길이의 메모리에 담긴 2진수 정보를 말 그대로 비트 단위로 계산하는 연산자입니다.
 
-C 언어가 제공하는 비트 연산자는 AND(`&`), OR(`|`), NOT(`~`), shift left(`<<`), shift right(`>>`)입니다. 단항 연산자인 NOT(`~`)을 제외하면 모두 이항연산자입니다.
+- C 언어가 제공하는 비트 연산자는 AND(`&`), OR(`|`), NOT(`~`), shift left(`<<`), shift right(`>>`)입니다. 단항 연산자인 NOT(`~`)을 제외하면 모두 이항연산자입니다.
 
 비트 단위 상수를 작성할 때는 보통 16진수를 사용합니다.
 
@@ -3647,7 +3647,7 @@ int main(void) {
 
 또 1부터시작하는 이유는 이미 첫번째부터 포인터가 찍혀있는데 굳이 비교를 할 필요가 없습니다.
 
-시험문제입니다. 위 코드에서 `nMax`를 사용할 수 없고 추가 변수를 만들 수 없습니다. 
+시험문제입니다. 위 코드에서 `nMax`를 사용할 수 없고 추가 변수를 만들 수 없습니다.
 
 ```c
 #include <stdio.h>
@@ -3709,7 +3709,7 @@ int main(void) {
   int i = 0, nTmp = 0;
 
   // 여기부터 코드를 작성할 수 있습니다.
-  
+
   // 여기까지 코드를 작성할 수 있습니다.
   for (i = 0; i < 5; ++i) {
     printf("%d\t", aList[i]);
@@ -3756,3 +3756,328 @@ int main(void) {
 
 이번에도 간단합니다.
 
+```c
+#include <stdio.h>
+#include <stdlib.h>
+
+int main(void) {
+  /*int aList[5] = {30, 40, 10, 50, 20};*/
+  char szBuffer[6] = {'H', 'e', 'l', 'l', 'o', '\0'};
+
+  char szData[8] = {"Hello"};
+
+  char *pszBuffer = "Hello";
+
+  puts(szBuffer);
+  puts(szData);
+  puts(pszBuffer);
+
+  return EXIT_SUCCESS;
+}
+/*Hello*/
+/*Hello*/
+/*Hello*/
+```
+
+자주 사용하는 문자열 배열 선언은 `szData` 방식입니다. 하지만 내부적으로는 `szBuffer`입니다. 보편적인 `szData`는 표현할 때 Null 문자를 생략한다는 점을 볼 필요가 있습니다.
+
+`Hello`라는 문자열 표기를 풀어보면 `'H'`, `'e'`, `'l'`, `'l'`, `'o'`, `'\0'`입니다. 문자상수 하나하나 일일이 표기하기에는 번거롭습니다. 보통 문자열을 표기할 할 때 `\0`을 생략해도 괜찮습니다. 문자배열은 명시하지 않으면 0으로 초기화합니다. 이렇게 되면`szData`는 `'H'`, `'e'`, `'l'`, `'l'`, `'o'`, `'\n'`, `'0'`, `'0'`이 될 것입니다.
+
+포인터 변수의 선언은 기존 배열과 다릅니다. 포인터 변수라는 것은 메모리의 주소를 저장하기 위한 전용변수입니다. 동작원리를 생각하면 직관적입니다. `"Hello"`는 문자의 배열이고 배열은 주소로 식별합니다. 이 주소로 식별하는 것을 포인터 변수의 초깃값으로 명시한 것입니다.
+
+문자열의 끝이 `\0`인 이유는 무엇인가?
+
+암기로 알고 있는 것중 하나는 문자열의 끝은 `\0`이라는 것입니다. 이론자체는 어려운 것이 아닙니다. 하지만 눈에 안보여서 실수할 여지가 많습니다. 문제점을 인식하고 있어서도 먼저 이유를 알아야 합니다.
+
+이런것은 C 언어의 설계와 철학의 문제입니다. 데니스 리치에게 직접 인터뷰나와 말해줬으면 하는 것입니다. 다음은 영어 이름을 입력받아 문자열의 길이를 출력하는 프로그램입니다. 문자열의 길이를 `\0`이 나올 때까지 반복해서 확인하는 방법입니다.
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+
+int main(void) {
+  char szBuffer[32] = {0};
+  int nLenght = 0;
+
+  printf("Input your name : ");
+  fgets(szBuffer, sizeof(szBuffer), stdin);
+
+  while (szBuffer[nLenght] != '\0') {
+		nLenght += 1;
+  }
+
+  printf("Your name is %s(%d).\n", szBuffer, nLenght);
+  return EXIT_SUCCESS;
+}
+/*Input your name : arch-spatula*/
+/*Your name is arch-spatula*/
+/*(13).*/
+```
+
+문자열의 길이를 측정하는 방식은 단순 무식해보입니다. 문자열의 길이를 측정하는 것은 실망스로운데 만일 배열원소 처음부터 `\0`이면 논리적 오류입니다. 또 만약에 배열 요소 안에 `\0`이 없으면 무한루프에 빠집니다.
+
+표준입력을 받기위해 32바이트를 확보해야 합니다. 사용자의 입력은 동적인데 메모리에 확보하는 사이즈는 고정적입니다. 지금의 경우 오른쪽은 활용을 못한 경우입니다. 사용중 영역과 사용하지 않는 영역을 구분할 때도 `\0`을 활용할 수 있습니다.
+
+### 다차원 배열
+
+1차원 배열은 메모리가 1차원 선형구조입니다. 이 선형구조를 쌓으면 2차원인 면이 됩니다. 다차원 배열은 메모리의 실제 모습과 상관없이 논리적 구조입니다. 자료의 접근방법에 한정된 것입니다.
+
+2차원 배열을 행렬입니다. 관습상 `자료형 배열이름[row][col]` 이런식으로 부릅니다. 초깃값 정의도 약간 다릅니다. 예시를 보면 잘 이해될 것입니다.
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+
+int main(void) {
+  int aList[3][4] = {{10, 20, 30, 40}, {50, 60, 70, 80}, {90, 100, 110, 120}};
+  int i = 0, j = 0;
+
+  for (i = 0; i < 3; ++i) {
+    for (j = 0; j < 4; ++j) {
+      printf("%d\t", aList[i][j]);
+    }
+    putchar('\n');
+  }
+
+  return EXIT_SUCCESS;
+}
+/*10	20	30	40	*/
+/*50	60	70	80	*/
+/*90	100	110	120	*/
+```
+
+다른 언어로 프로그래밍 경험이 있으면 크게 어려울 것은 없습니다.
+
+배열연산을 한번만 수행하면 이것은 주소를 의미하는 r-value입니다. 수소가 상수라 편집이 불가능합니다. 다음은 정의할 때말고 순회하면서 채우는 예시를 보여주겠습니다.
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+
+int main(void) {
+  int aList[3][4] = {0};
+  int i = 0, j = 0, nCounter = 0;
+
+  for (i = 0; i < 3; ++i) {
+    for (j = 0; j < 4; ++j) {
+      aList[i][j] = ++nCounter;
+    }
+  }
+
+  for (i = 0; i < 3; ++i) {
+    for (j = 0; j < 4; ++j) {
+      printf("%d\t", aList[i][j]);
+    }
+    putchar('\n');
+  }
+
+  return EXIT_SUCCESS;
+}
+/*1	2	3	4	*/
+/*5	6	7	8	*/
+/*9	10	11	12*/
+```
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+
+int main(void) {
+  int aList[3][4] = {
+      {10, 20, 30},
+      {40, 50, 60},
+  };
+  int i = 0, j = 0;
+
+	// 여기에 코드가 들어감
+
+  for (i = 0; i < 3; ++i) {
+    for (j = 0; j < 4; ++j) {
+      printf("%d\t", aList[i][j]);
+    }
+    putchar('\n');
+  }
+
+  return EXIT_SUCCESS;
+}
+/*10	20	30	60	*/
+/*40	50	60	150	*/
+/*50	70	90	210*/
+```
+
+위 출력을 만족하게 만들면 됩니다.
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+
+int main(void) {
+  int aList[3][4] = {
+      {10, 20, 30},
+      {40, 50, 60},
+  };
+  int i = 0, j = 0;
+
+  for (i = 0; i < 3; ++i) {
+    for (j = 0; j < 4; ++j) {
+      if (j < 3) {
+        aList[i][3] += aList[i][j];
+        if (i < 2) {
+          aList[2][j] += aList[i][j];
+        }
+      }
+    }
+  }
+
+  for (i = 0; i < 3; ++i) {
+    for (j = 0; j < 4; ++j) {
+      printf("%d\t", aList[i][j]);
+    }
+    putchar('\n');
+  }
+
+  return EXIT_SUCCESS;
+}
+/*10	20	30	60	*/
+/*40	50	60	150	*/
+/*50	70	90	210*/
+```
+
+어려운 로직은 아닌데 스스로 작성하면 오래걸리는 과제입니다. 입문자는 범위초과 오류를 많이 경험하게 됩니다. 문제는 컴파일러가 에러가 있을 것임에도 불구하고 막지 않습니다. 잘못된 접근으로 엉뚱한 인접 원소의 값을 변경하는 현상이 자주 발생합니다.
+
+다음은 0부터 시작한다는 것을 몰라 발생할 수 있는 버그입니다.
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+
+int main(void) {
+  int aList[3][4] = {
+      {10, 20, 30, 40},
+      {50, 60, 70, 80},
+      {90, 100, 110, 120},
+  };
+
+  int i = 0, j = 0;
+
+  aList[0][4] = 300;
+
+  for (i = 0; i < 3; ++i) {
+    for (j = 0; j < 4; ++j) {
+      printf("%d\t", aList[i][j]);
+    }
+    putchar('\n');
+  }
+
+  return EXIT_SUCCESS;
+}
+```
+
+저는 린트를 띄웠습니다. 거기에 다가 GCC가 컴파일 경고를 해줘서 문제는 없습니다.
+
+논리적으로는 2차원이지만 물리적으로는 1차원 비슷하다고 생각할 수 잇습니다. 메모리 공간이 연속되어 있습니다. 원래 컴파일 에러가 없으면 `aList[1][0]`에 `300`이 할당 될 것입니다.
+
+연속된 공간에서 다음 공간에 할당하기 때문에 `[0][4]`와 `[1][0]`은 같습니다. 이런거는 GCC를 사용할 수 있는 환경이면 괜찮은데 아닌 환경이 훨씬더 많습니다.
+
+3차원 배열도 존재합니다.
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+
+int main(void) {
+  int aList[4][2][3] = {0};
+  int i = 0, j = 0, k = 0, nCounter = 0;
+
+  for (i = 0; i < 4; ++i) {
+    printf("Plane number : %d\n", i);
+    for (j = 0; j < 2; ++j) {
+      for (k = 0; k < 3; ++k) {
+        aList[i][j][k] = ++nCounter;
+        printf("%d\t", aList[i][j][k]);
+      }
+      putchar('\n');
+    }
+    printf("\n\n");
+  }
+
+  return EXIT_SUCCESS;
+}
+/*Plane number : 0*/
+/*1	2	3	*/
+/*4	5	6	*/
+
+/*Plane number : 1*/
+/*7	8	9	*/
+/*10	11	12	*/
+
+/*Plane number : 2*/
+/*13	14	15	*/
+/*16	17	18	*/
+
+/*Plane number : 3*/
+/*19	20	21	*/
+/*22	23	24	*/
+```
+
+3차원 배열은 2차원 배열을 여러 개 다룬다는 생각으로 접근합니다. 크게 어려울 것은 없습니다.
+
+논리구조를 그대로 코드로 옮기는 행위는 어렵습니다. 말과 설명은 쉬워도 그대로 코드로 작성하는 것은 생각보다 어렵습니다.
+
+1. 원소의 자료형이 `int`이고 길이가 5인 배열을 선언한 후, 사용자가 입력한 다섯 개의 정수로 초기화합니다. 그리고 그중에서 가장 큰수와 가장 작은수를 출력하는 프로그램을 작성합니다.
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+
+int main(void) {
+  int num[5] = {0};
+  int i = 0, min = 0, max = 0;
+
+  for (i = 0; i < 5; ++i) {
+    scanf("%d", &num[i]);
+  }
+
+  min = num[0];
+  max = num[0];
+
+  for (i = 1; i < 5; ++i) {
+    if (num[i] > max)
+      max = num[i];
+    if (num[i] < min)
+      min = num[i];
+  }
+
+  printf("MIN: %d, MAX: %d\n", min, max);
+  return EXIT_SUCCESS;
+}
+/*1 2 3 4 5*/
+/*MIN: 1, MAX: 5*/
+```
+
+2. 사용자로부터 문자열을 입력받은 후 문자열의 길이를 출력하는 프로그램을 작성합니다. 단, 입력되는 문자열이 한글이라고 가정하고 한글 문자의 개수를 출력해야 합니다. 사용자가 영문, 숫자 입력은 고려할 필요 없습니다. 글자 사이 공백, 탭도 없는 것으로 간주합니다.
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+
+int main(void) {
+  char szBuffer[32] = {0};
+  int nLenght = 0;
+
+  scanf("%s%*c", szBuffer);
+
+  while (szBuffer[nLenght] != '\0') {
+    nLenght += 1;
+  }
+
+	nLenght /= 3;
+
+  printf("Your name is %s(%d).\n", szBuffer, nLenght);
+  return EXIT_SUCCESS;
+}
+```
+
+우아하지 않지만 해결했습니다.
+
+## 배열을 활용한 프로그래밍 기법
