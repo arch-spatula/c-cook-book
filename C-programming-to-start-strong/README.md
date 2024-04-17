@@ -4073,11 +4073,536 @@ int main(void) {
 
 	nLenght /= 3;
 
-  printf("Your name is %s(%d).\n", szBuffer, nLenght);
+  printf("한글 문자의 개수는 %d자 입니다.\n", szBuffer, nLenght);
   return EXIT_SUCCESS;
 }
 ```
 
-우아하지 않지만 해결했습니다.
+우아하지 않지만 해결했습니다. 한글은 1자당 2바이트를 확보해야 합니다. 하지만 3배수로 버퍼에 저장합니다.
 
 ## 배열을 활용한 프로그래밍 기법
+
+C 언어의 문법보단 프로그래밍 기법들에 가깝습니다.
+
+### 배열 요소의 정렬
+
+정렬 알고리즘에 기본 학습용 정렬은 2개 있습니다. 선택정렬, 버블정렬입니다. 쉬워서 가르칩니다. 초보자에게도 쉽습니다. 이론도 쉽습니다. 코드도 쉽게 나와야 합니다. 그냥 선형탐색 응용한 것에 불과합니다.
+
+#### 선택정렬로 알려진 버블 정렬
+
+모두 정렬될 때까지 최솟값을 구하는 알고리즘입니다. 하나의 포인터를 잡고 다음을 순회합니다. 보다 더 크면 자리를 교환합니다. 가장 작은 값이 앞으로 버블링(더 정확히 싱킹)하면서 정렬되는 알고리즘입니다.
+
+```
+ v  v
+30 40 10 50 20
+```
+
+무시합니다.
+
+```
+ v     v
+30 40 10 50 20
+```
+
+이럴 때는 교환합니다.
+
+```
+ v     v
+10 40 30 50 20
+```
+
+```
+ v     v
+10 40 30 50 20
+```
+
+하지만 여기서 앞의 비유적인 포인터를 유지하고 뒤를 계속 순회합니다.
+
+```
+ v           v
+10 40 30 50 20
+```
+
+여기까지 순회해도 새로운 교환은 발생하지 않습니다. 이럴 때는 앞의 비유적인 포인터를 찍고 그 다음을 순회합니다.
+
+```
+    v  v      
+10 40 30 50 20
+```
+
+앞이 더 작으니까 교환합니다.
+
+```
+    v  v      
+10 30 40 50 20
+```
+
+여기서 부터 이어서 마지막까지 순회해봅니다.
+
+```
+    v        v
+10 30 40 50 20
+```
+
+30 보다 작으니까 교환합니다.
+
+```
+    v        v
+10 20 40 50 30
+```
+
+앞에 2번째 즉 1번인덱스까지는 정렬되어 있습니다. 선택정렬로 알려져 있습니다. 하지만 버블 정렬입니다. 이런 교환은 버블링입니다. 큰값이 뒤로 모이고 작은 값이 교환하면서 앞으로 모입니다. 각항을 비교하고 값이 작은 것을 확인될 때마다 즉시 교환하기 때문입니다.
+
+실제 선택정렬은 각 항을 비교하지만 더 작은 값이 발견되면 즉시 값을 교환하지 않고 더 작은 값이 저장된 배열의 인덱스를 따로 저장했다가 안쪽 반복문이 끝난 후 한번만 두 항의 값을 교환하는 방식으로 구현합니다. 즉 선택을 하고 작은지 확인하고 교환합니다. 버블정렬은 매번 교환합니다.
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+
+int main(void) {
+  int aList[5] = {30, 40, 10, 50, 20};
+  int i = 0, j = 0, nTmp = 0;
+
+	// 여기서부터
+	// 여기까지만
+
+  for (i = 0; i < 5; ++i) {
+    printf("%d\t", aList[i]);
+  }
+  putchar('\n');
+
+  return EXIT_SUCCESS;
+}
+/*10 20 30 40 50*/
+```
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+
+int main(void) {
+  int aList[5] = {30, 40, 10, 50, 20};
+  int i = 0, j = 0, nTmp = 0;
+
+  for (i = 0; i < 5; ++i) {
+    for (j = i + 1; j < 5; ++j) {
+      if (aList[i] > aList[j]) {
+        nTmp = aList[i];
+        aList[i] = aList[j];
+        aList[j] = nTmp;
+      }
+    }
+  }
+
+  for (i = 0; i < 5; ++i) {
+    printf("%d\t", aList[i]);
+  }
+
+  putchar('\n');
+
+  return EXIT_SUCCESS;
+}
+/*10 20 30 40 50*/
+```
+
+금방 구현합니다. 
+
+이번에는 버블 정렬입니다. 이것도 나름 재미있을 것입니다.
+
+버블정렬은 서로 연접한 두 항을 계속해서 비교하는 방식입니다. 비교하고 즉시 정렬합니다. 선택정렬과 버블정렬은 효율이 같습니다. 인덱스가 1개 작습니다. 
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+
+int main(void) {
+  int aList[5] = {30, 40, 10, 50, 20};
+  int i = 0, j = 0, nTmp = 0;
+
+	// 여기서부터
+	// 여기까지만
+
+  for (i = 0; i < 5; ++i) {
+    printf("%d\t", aList[i]);
+  }
+  putchar('\n');
+
+  return EXIT_SUCCESS;
+}
+/*10 20 30 40 50*/
+```
+
+시작하는 템플릿은 같습니다.
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+
+int main(void) {
+  int aList[5] = {30, 40, 10, 50, 20};
+  int i = 0, j = 0, nTmp = 0;
+
+  for (i = 0; i < 5; ++i) {
+    for (j = 0; j < 4; ++j) {
+      // 앞 aList[j] 뒤 aList[j + 1]
+      if (aList[j] > aList[j + 1]) {
+        nTmp = aList[j];
+        aList[j] = aList[j + 1];
+        aList[j + 1] = nTmp;
+      }
+    }
+  }
+
+  for (i = 0; i < 5; ++i) {
+    printf("%d\t", aList[i]);
+  }
+  putchar('\n');
+
+  return EXIT_SUCCESS;
+}
+```
+
+틀린구현을 했습니다. 불필요하게 많은 순회를 하고 있습니다. 가장 큰게 뒤에 모입니다. 그래서 올바르게 고쳐야 합니다. 상위 반복문은 이전보다 1인덱스식 줄여줘야 합니다.
+
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+
+int main(void) {
+  int aList[5] = {30, 40, 10, 50, 20};
+  int i = 0, j = 0, nTmp = 0;
+
+	// 4 3 2 1
+  for (i = 4; i > 0; --i) {
+    for (j = 0; j < i; ++j) {
+      // 앞 aList[j] 뒤 aList[j + 1]
+      if (aList[j] > aList[j + 1]) {
+        nTmp = aList[j];
+        aList[j] = aList[j + 1];
+        aList[j + 1] = nTmp;
+      }
+    }
+  }
+
+  for (i = 0; i < 5; ++i) {
+    printf("%d\t", aList[i]);
+  }
+  putchar('\n');
+
+  return EXIT_SUCCESS;
+}
+```
+
+성능까지 올바르게 구현해야 올바른 구현입니다. 상위 윈도우가 줄어들면서 다음순회할 때마다 순회해야 하는 대상이 작아집니다. 우리가 매번 순회할 때 가장 큰 값이 제일 뒤에 있을 것이라는 것을 보장할 수 있습니다. 이래서 버블정렬이라고 부릅니다.
+
+이번에는 선택정렬을 구현합니다. 이전 선택정렬은 계속 여러변 교환했습니다. 하지만 선택정렬은 내부 루프가 끝나면 1번만 교환합니다. 작은 값을 저장하는 것이 아니라 인덱스를 저장합니다. 그리고 이 인덱스를 활용해서 자리를 바꿉니다.
+
+
+```
+ v  v
+30 40 10 50 20
+```
+
+무시합니다.
+
+```
+ v     v
+30 40 10 50 20
+```
+
+값을 변경하지 않습니다. 기준으로 하는 인덱스를 더 작은 값으로 합니다.
+
+```
+       v  v
+30 40 10 50 20
+```
+
+더 큰 값을 확인합니다.
+
+```
+       v     v
+30 40 10 50 20
+```
+
+더 큰것을 확인합니다. 하지만 10이 제일 작습니다. 
+
+```
+ v     v      
+10 40 30 50 20
+```
+
+큰 순회를 하고 난 다음에 제일 작은 곳을 고르고 자리를 교환합니다.
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+
+int main(void) {
+  int aList[5] = {30, 40, 10, 50, 20};
+  int i = 0, j = 0, nMinIndex = 0, nTmp = 0;
+
+  // 여기서부터
+  // 여기까지만
+  for (i = 0; i < 5; ++i) {
+    printf("%d\t", aList[i]);
+  }
+  putchar('\n');
+
+  return EXIT_SUCCESS;
+}
+```
+
+여기서 시작합니다.
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+
+int main(void) {
+  int aList[5] = {30, 40, 10, 50, 20};
+  int i = 0, j = 0, nMinIndex = 0, nTmp = 0;
+
+  for (i = 0; i < 5; ++i) {
+    // 가장 작은 값을 순회할 때 시작하는 곳에 둠
+    nMinIndex = i;
+    for (j = i + 1; j < 5; ++j) {
+      // 더 작은 값이 있으면 갱신
+      if (aList[nMinIndex] > aList[j]) {
+        nMinIndex = j;
+      }
+    }
+
+    // 같은 값에 메모리 쓰기는 불필요하게 동작횟수로 성능을 낭비함
+    if (i != nMinIndex) {
+      // 가장 작은 인덱스를 기준으로 교환
+      nTmp = aList[i];
+      aList[i] = aList[nMinIndex];
+      aList[nMinIndex] = nTmp;
+    }
+  }
+
+  for (i = 0; i < 5; ++i) {
+    printf("%d\t", aList[i]);
+  }
+  putchar('\n');
+
+  return EXIT_SUCCESS;
+}
+```
+
+이번에는 배열을 교차구현합니다. 순방향 역방향으로 돌아가면서 채우면 됩니다.
+
+```
+01 02 03 04 05
+10 09 08 07 06
+11 12 13 14 15
+20 19 18 17 16
+21 22 23 24 25
+```
+
+이렇게 채우면 됩니다. 정답을 다양하게 인정하고 싶지만 대부분 대학교 시험문제라고 생각하면 10점 만점에 5점만 줄 것입니다. 기존 템플릿을 최대한 활용하고 중첩 for 문을 통해서 구현해야 합니다. 추가 변수는 금지입니다. 구현되고 성능도 같지만 비즈니스 요구사항에서 10개 중 9개만 된 것이라면 가치가 50%가 감소한다는 훈련을 위해 이렇게 채점할 것입니다. 당신은 개발자입니다. 배로 키우는 것은 없어도 깎아먹는 짓거리를 하는데 돈받아 먹고 싶으면 깎아먹는 짓거리 하지 말라고 이렇게 할 것입니다. 
+
+하지만 오답들도 학습 리소스입니다.
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+
+int main(void) {
+  int aList[5] = {30, 40, 10, 50, 20};
+  int i = 0, j = 0, nMinIndex = 0, nTmp = 0;
+
+  // 여기서부터
+  for (i = 0; i < 5; ++i) {
+    for (j = 0; j < 5; ++j) {
+    }
+  }
+  // 여기까지만
+  for (i = 0; i < 5; ++i) {
+    for (j = 0; j < 5; ++j) {
+      printf("%d\t", aList[i][j]);
+    }
+    putchar('\n');
+  }
+  return EXIT_SUCCESS;
+}
+```
+
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+
+int main(void) {
+  int aList[5][5] = {0};
+  int i = 0, j = 0;
+
+  for (i = 0; i < 5; ++i) {
+    for (j = 0; j < 5; ++j) {
+      if (i % 2 == 0)
+        aList[i][j] = i * 5 + j + 1;
+      if (i % 2 != 0)
+        aList[i][j] = i * 5 - j + 5;
+    }
+  }
+
+  for (i = 0; i < 5; ++i) {
+    for (j = 0; j < 5; ++j) {
+      printf("%d\t", aList[i][j]);
+    }
+    putchar('\n');
+  }
+
+  return EXIT_SUCCESS;
+}
+/*1	2	3	4	5	*/
+/*10	9	8	7	6	*/
+/*11	12	13	14	15	*/
+/*20	19	18	17	16	*/
+/*21	22	23	24	25*/
+```
+
+대단한거 하나 없이 그냥 조건문 사용하면 됩니다. 하지만 다음은 틀렸지만 접근은 학습할 가치가 있어서 공유합니다. 무조건 틀린 것입니다. 90% 맞다는 것은 틀리다는 것입니다. 100% 맞을 때 맞다고 하는 것입니다. 
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+
+int main(void) {
+  int aList[5][5] = {0};
+  int i = 0, j = 0, nCounter = 0;
+
+  for (i = 0; i < 5; ++i) {
+    if (i % 2 == 0)
+      for (j = 0; j < 5; ++j)
+        aList[i][j] = ++nCounter;
+    else
+      for (j = 0; j < 5; ++j)
+        aList[i][4 - j] = ++nCounter;
+  }
+
+  for (i = 0; i < 5; ++i) {
+    for (j = 0; j < 5; ++j) {
+      printf("%d\t", aList[i][j]);
+    }
+    putchar('\n');
+  }
+
+  return EXIT_SUCCESS;
+}
+```
+
+순회할 반복문을 쪼갠 것입니다.
+
+이런 분기처리가 나쁘다는 것은 아닙니다. 이것은 인덱스를 뒤에서 부터 채우는 것입니다. 인덱스를 순회할 때 홀수는 뒤에서 빼면서 접근합니다. 
+
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+
+int main(void) {
+  int aList[5][5] = {0};
+  int i = 0, j = 0, nCounter = 0, nOffset = 1;
+
+  for (i = 0; i < 5; ++i) {
+    if (i % 2 == 0)
+      nCounter = i * 5;
+    else
+      nCounter = (i + 1) * 5 + 1;
+
+    for (j = 0; j < 5; ++j) {
+			nCounter += nOffset;
+      aList[i][j] = nCounter;
+    }
+		nOffset = -nOffset;
+  }
+
+  for (i = 0; i < 5; ++i) {
+    for (j = 0; j < 5; ++j) {
+      printf("%d\t", aList[i][j]);
+    }
+    putchar('\n');
+  }
+
+  return EXIT_SUCCESS;
+}
+```
+
+아까보단 정답에 가깝지만 변수가 2개나 더 필요합니다.
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+
+int main(void) {
+  int aList[5][5] = {0};
+  int i = 0, j = 0, nCounter = 0, nFlag = 1;
+
+  for (i = 0; i < 5; ++i) {
+    if (nFlag) {
+      for (j = 0; j < 5; ++j) {
+        aList[i][j] = ++nCounter;
+      }
+      nFlag = 0;
+    } else {
+      for (j = 0; j < 5; ++j) {
+        aList[i][4 - j] = ++nCounter;
+      }
+      nFlag = 1;
+    }
+  }
+
+  for (i = 0; i < 5; ++i) {
+    for (j = 0; j < 5; ++j) {
+      printf("%d\t", aList[i][j]);
+    }
+    putchar('\n');
+  }
+
+  return EXIT_SUCCESS;
+}
+```
+
+플래그를 활용하면서 이전보다 가동성은 약간더 좋습니다. 물론 이전 코드도 쉽게 읽혀야 합니다.
+
+### 달팽이 배열 채우기
+
+이전은 아주 쉽습니다. 지금도 쉬울 것입니다. 시계방향 달팽이 배열입니다.
+
+```
+01 02 03 04 05
+16 17 18 19 06
+15 24 25 20 07
+13 23 22 21 08
+14 12 11 10 09
+```
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+
+int main(void) {
+  int aList[5][5] = {0};
+  int i = 0, j = 0, nCounter = 0, nFlag = 1;
+  // 여기서부터
+  for (i = 0; i < 5; ++i) {
+    for (j = 0; j < 5; ++j) {
+    }
+  }
+  // 여기까지만
+
+  for (i = 0; i < 5; ++i) {
+    for (j = 0; j < 5; ++j) {
+      printf("%d\t", aList[i][j]);
+    }
+    putchar('\n');
+  }
+
+  return EXIT_SUCCESS;
+}
+```
+
+반복문은 4개이상 사용은 금지입니다.
+
