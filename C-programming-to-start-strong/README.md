@@ -4126,14 +4126,14 @@ C 언어의 문법보단 프로그래밍 기법들에 가깝습니다.
 여기까지 순회해도 새로운 교환은 발생하지 않습니다. 이럴 때는 앞의 비유적인 포인터를 찍고 그 다음을 순회합니다.
 
 ```
-    v  v      
+    v  v
 10 40 30 50 20
 ```
 
 앞이 더 작으니까 교환합니다.
 
 ```
-    v  v      
+    v  v
 10 30 40 50 20
 ```
 
@@ -4153,7 +4153,7 @@ C 언어의 문법보단 프로그래밍 기법들에 가깝습니다.
 
 앞에 2번째 즉 1번인덱스까지는 정렬되어 있습니다. 선택정렬로 알려져 있습니다. 하지만 버블 정렬입니다. 이런 교환은 버블링입니다. 큰값이 뒤로 모이고 작은 값이 교환하면서 앞으로 모입니다. 각항을 비교하고 값이 작은 것을 확인될 때마다 즉시 교환하기 때문입니다.
 
-실제 선택정렬은 각 항을 비교하지만 더 작은 값이 발견되면 즉시 값을 교환하지 않고 더 작은 값이 저장된 배열의 인덱스를 따로 저장했다가 안쪽 반복문이 끝난 후 한번만 두 항의 값을 교환하는 방식으로 구현합니다. 즉 선택을 하고 작은지 확인하고 교환합니다. 버블정렬은 매번 교환합니다.
+실제 ������택정렬은 각 항을 비교하지만 더 작은 값이 발견되면 즉시 값을 교환하지 않고 더 작은 값이 저장된 배열의 인덱스를 따로 저장했다가 안쪽 반복문이 끝난 ��� 한번만 두 항의 값을 교환하는 방식으로 구현합니다. 즉 선택을 하고 작은지 확인하고 교환합니다. 버블정렬은 매번 교환합니다.
 
 ```c
 #include <stdio.h>
@@ -4205,11 +4205,11 @@ int main(void) {
 /*10 20 30 40 50*/
 ```
 
-금방 구현합니다. 
+금방 구현합니다.
 
 이번에는 버블 정렬입니다. 이것도 나름 재미있을 것입니다.
 
-버블정렬은 서로 연접한 두 항을 계속해서 비교하는 방식입니다. 비교하고 즉시 정렬합니다. 선택정렬과 버블정렬은 효율이 같습니다. 인덱스가 1개 작습니다. 
+버블정렬은 서로 연접한 두 항을 계속해서 비교하는 방식입니다. 비교하고 즉시 정렬합니다. 선택정렬과 버블정렬은 효율이 같습니다. 인덱스가 1개 작습니다.
 
 ```c
 #include <stdio.h>
@@ -4264,7 +4264,6 @@ int main(void) {
 
 틀린구현을 했습니다. 불필요하게 많은 순회를 하고 있습니다. 가장 큰게 뒤에 모입니다. 그래서 올바르게 고쳐야 합니다. 상위 반복문은 이전보다 1인덱스식 줄여줘야 합니다.
 
-
 ```c
 #include <stdio.h>
 #include <stdlib.h>
@@ -4298,7 +4297,6 @@ int main(void) {
 
 이번에는 선택정렬을 구현합니다. 이전 선택정렬은 계속 여러변 교환했습니다. 하지만 선택정렬은 내부 루프가 끝나면 1번만 교환합니다. 작은 값을 저장하는 것이 아니라 인덱스를 저장합니다. 그리고 이 인덱스를 활용해서 자리를 바꿉니다.
 
-
 ```
  v  v
 30 40 10 50 20
@@ -4325,10 +4323,10 @@ int main(void) {
 30 40 10 50 20
 ```
 
-더 큰것을 확인합니다. 하지만 10이 제일 작습니다. 
+더 큰것을 확인합니다. 하지만 10이 제일 작습니다.
 
 ```
- v     v      
+ v     v
 10 40 30 50 20
 ```
 
@@ -4401,7 +4399,7 @@ int main(void) {
 21 22 23 24 25
 ```
 
-이렇게 채우면 됩니다. 정답을 다양하게 인정하고 싶지만 대부분 대학교 시험문제라고 생각하면 10점 만점에 5점만 줄 것입니다. 기존 템플릿을 최대한 활용하고 중첩 for 문을 통해서 구현해야 합니다. 추가 변수는 금지입니다. 구현되고 성능도 같지만 비즈니스 요구사항에서 10개 중 9개만 된 것이라면 가치가 50%가 감소한다는 훈련을 위해 이렇게 채점할 것입니다. 당신은 개발자입니다. 배로 키우는 것은 없어도 깎아먹는 짓거리를 하는데 돈받아 먹고 싶으면 깎아먹는 짓거리 하지 말라고 이렇게 할 것입니다. 
+이렇게 채우면 됩니다. 정답을 다양하게 인정하고 싶지만 대부분 대학교 시험문제라고 생각하면 10점 만점에 5점만 줄 것입니다. 기존 템플릿을 최대한 활용하고 중첩 for 문을 통해서 구현해야 합니다. 추가 변수는 금지입니다. 구현되고 성능도 같지만 비즈니스 요구사항에서 10개 중 9개만 된 것이라면 가치가 50%가 감소한다는 훈련을 위해 이렇게 �������� ���������다. 당신은 개발자입니다. 배로 키우는 것은 없어도 깎아먹는 짓거리를 하는데 돈받아 먹고 싶으면 깎아먹는 짓거리 하지 말라고 이렇게 할 것입니다.
 
 하지만 오답들도 학습 리소스입니다.
 
@@ -4428,7 +4426,6 @@ int main(void) {
   return EXIT_SUCCESS;
 }
 ```
-
 
 ```c
 #include <stdio.h>
@@ -4463,7 +4460,7 @@ int main(void) {
 /*21	22	23	24	25*/
 ```
 
-대단한거 하나 없이 그냥 조건문 사용하면 됩니다. 하지만 다음은 틀렸지만 접근은 학습할 가치가 있어서 공유합니다. 무조건 틀린 것입니다. 90% 맞다는 것은 틀리다는 것입니다. 100% 맞을 때 맞다고 하는 것입니다. 
+대단한거 하나 없이 그냥 조건문 사용하면 됩니다. 하지만 다음은 틀렸지만 접근은 학습할 가치가 있어서 공유합니다. 무조건 틀린 것입니다. 90% 맞다는 것은 틀리다는 것입니다. 100% 맞을 때 맞다고 하는 것입니다.
 
 ```c
 #include <stdio.h>
@@ -4495,8 +4492,7 @@ int main(void) {
 
 순회할 반복문을 쪼갠 것입니다.
 
-이런 분기처리가 나쁘다는 것은 아닙니다. 이것은 인덱스를 뒤에서 부터 채우는 것입니다. 인덱스를 순회할 때 홀수는 뒤에서 빼면서 접근합니다. 
-
+이런 분기처리가 나쁘다는 것은 아닙니다. 이것은 인덱스를 뒤에서 부터 채우는 것입니다. 인덱스를 순회할 때 홀수는 뒤에서 빼면서 접근합니다.
 
 ```c
 #include <stdio.h>
@@ -4606,3 +4602,779 @@ int main(void) {
 
 반복문은 4개이상 사용은 금지입니다.
 
+남은 예제는 쉽고 사실 작성하다가 날려서 생략하겠습니다.
+
+또 달팽이 탐색은 학습해야 하는 중요한 개념입니다. 나중에 2차원 배열 그래프 순회할 때 활용될 개념이라 복습겸 남겨 두겠습니다.
+
+Lookup 개념도 있는데 그렇게 가치있는 개념은 아닙니다. 그냥 중간에 읽기용으로 배열인덱스를 확인하고 조회하는 용도입니다.
+
+## 함수에 대한 기본 이론
+
+지금부터 다루는 것은 사용자 정의 함수입니다. 기존에는 라이브러리 함수를 호출하고 있던 것입니다.
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+
+int Add(int a, int b) {
+  int nData = 0;
+  nData = a + b;
+  return nData;
+}
+
+int main(void) {
+  int nResutl = 0;
+
+  nResutl = Add(3, 4);
+  printf("Result: %d\n", nResutl);
+
+  return EXIT_SUCCESS;
+}
+/*Result : 7*/
+```
+
+크게 어려운 것은 없습니다.
+
+프로그램의 시작은 언제나 `main()` 함수입니다.
+
+#### 매개변수
+
+함수의 매개변수는 호출자와 피호출자 함수를 연결해주는 매개체입니다. 파라미터라는 말을 더 자주 사용합니다.
+
+모든 호출자 함수는 피호출자 함수 매개변수의 초깃값을 '실인수'로 명시할 의무가 있습니다. 매개변수는 변수입니다. 호출자 입장에서는 지역변수입니다. 같은 이름은 함수 몸 스코프에서 공존할 수 없습니다.
+
+```c
+int Add(int a, int b) {
+  int nData = 0, a;
+  nData = a + b;
+  return nData;
+}
+```
+
+린트부터 에러를 던져 줄 것입니다.
+
+#### 반환 자료형
+
+함수의 반환 자료형은 호출자 함수가 피호출자 함수를 호출해서 얻을 수 있는 정보의 형식입니다.
+
+반환값은 다시 받아 저장하지 않으면 잃습니다. 당연합니다. 사용하고 싶으면 변수에 대입해서 보관하면 됩니다.
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+
+int GetMax(int a, int b, int c) {
+
+  int nMax = a;
+  if (b > nMax)
+    nMax = b;
+  if (c > nMax)
+    nMax = c;
+
+  return nMax;
+}
+
+int main(void) {
+  int nResutl = 0;
+
+  printf("MAX: %d\n", GetMax(1, 2, 3));
+  printf("MAX: %d\n", GetMax(2, 3, 1) * 2);
+  printf("MAX: %d\n", nResutl = GetMax(3, 1, 3));
+
+  return EXIT_SUCCESS;
+}
+/*MAX: 3*/
+/*MAX: 6*/
+/*MAX: 3*/
+```
+
+`printf("MAX: %d\n", nResutl = GetMax(3, 1, 3));` 이렇게 작성하는 경우는 거의 없습니다. 별도 구분으로 분리하는 방식이 일반적입니다. 보통 컨벤션에 어긋나는 것이지 큰 결함을 만드는 것은 아닙니다.
+
+### 두 가지 함수 설계 원칙
+
+C 언어는 여러 항을 구문으로 작성하고, 여러 구문을 함수단위로 구성합니다.
+
+C 언어 프로그래머가 해야할 고민은 무엇을(어떤 기능을 수행하는) 함수로 만들어야 하는가입니다. 이런 고민은 설계에 대한 고민입니다.
+
+공학적으로 접근하기보다는 개인경험을 근거로 몇 가지 규칙을 다음과 같이 제안하고자 합니다.
+
+- 사용자 인터페이스(겉으로 드러나는 외형)와 내부기능은 반드시 분리할 것
+- 하나의 단위기능으로 규정할 수 있는 대상은 함수로 만들 것
+
+#### UI와 기능의 분리
+
+프로그램의 사용자 인터페이스는 인간과 기계가 상호작용할 수 있도록 연결되는 형식을 말합니다. 인간은 명령하고 기계는 출력합니다.
+
+인터페이스가 없는 프로그램이 아니라면 모든 프로그램은 UI와 기능으로 나눌 수 있습니다. 함수 단위에서 이 2가지는 분리되어야 합니다. 이것은 C 언어만 해당하지 않습니다.
+
+다음은 팩토리얼 함수입니다.
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+
+int GetFactorial(int nParam) {
+  int nResult = 1, i = 0;
+  if (nParam < 1 || nParam > 10) {
+    puts("ERROR: 1 ~ 10 사이의 정수를 입력하세요.");
+    return EXIT_FAILURE;
+  }
+
+  for (i = 1; i <= nParam; ++i) {
+    nResult *= i;
+  }
+
+  return nResult;
+}
+
+int main(void) {
+
+  printf("MAX: %d\n", GetFactorial(1));
+  printf("MAX: %d\n", GetFactorial(5));
+  printf("MAX: %d\n", GetFactorial(11));
+  printf("MAX: %d\n", GetFactorial(10));
+
+  return EXIT_SUCCESS;
+}
+
+/*MAX: 1*/
+/*MAX: 120*/
+/*ERROR: 1 ~ 10 사이의 정수를 입력하세요.*/
+/*MAX: 1*/
+/*MAX: 3628800*/
+```
+
+반환값은 지금은 오류인지 판단하기 어렵습니다.
+
+기능 함수 내부에서 사용자 인터페이스 영역에서 해야 할 일을 처리하는 것은 생각해볼 문제입니다. 지금 프로그램에서 인터페이스 역할을 하는 함수는 `main`입니다. 오류메시지 출력의 책임은 `main`에게 부여하는 것이 더 바람직합니다.
+
+지금은 호출하는 부분부터 잘못되었습니다. 그래서 일반적인 상황은 아닙니다.
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+
+int GetFactorial(int nParam) {
+  int nResult = 1, i = 0;
+
+  if (nParam < 1 || nParam > 10)
+    return 0;
+
+  for (i = 1; i <= nParam; ++i) {
+    nResult *= i;
+  }
+
+  return nResult;
+}
+
+int main(void) {
+  int nResult = 0, nInput = 0;
+  printf("팩토리얼을 구할 정수(1 ~ 10)를 입력하세요. :  ");
+  scanf("%d", &nInput);
+
+  nResult = GetFactorial(nInput);
+
+  if (nResult == 0) {
+    puts("ERROR: 1 ~ 10 사이의 정수를 입력하세요.");
+    return EXIT_FAILURE;
+  }
+
+  printf("Result: %d\n", nResult);
+
+  return EXIT_SUCCESS;
+}
+/*팩토리얼을 구할 정수(1 ~ 10)를 입력하세요. :  5*/
+/*Result: 120*/
+```
+
+기능과 UI 분리가 명확합니다. 적절한 입력을 유도하고 처리까지 고려했습니다.
+
+이번에는 UI에서 성적을 입력받고 학점을 출력하는 부분으로 분리되어 있습니다. 계산도 별도로 분리되어 있습니다.
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+
+int GetResult(void) {
+  int nResult = 0;
+  printf("성적(0~100)을 입력하세요. : ");
+  scanf("%d", &nResult);
+  return nResult;
+}
+
+char GetGrade(int nScore) {
+  if (nScore >= 90)
+    return 'A';
+  else if (nScore >= 80)
+    return 'B';
+  else if (nScore >= 70)
+    return 'C';
+  else if (nScore >= 60)
+    return 'D';
+
+  return 'F';
+}
+
+int main(void) {
+  int nResult = 0;
+  nResult = GetResult();
+
+  printf("당신의 학점은 '%c'(%d)입니다.\n", GetGrade(nResult), nResult);
+
+  return EXIT_SUCCESS;
+}
+/*성적(0~100)을 입력하세요. : 90*/
+/*당신의 학점은 'A'(90)입니다.*/
+```
+
+UI와 기능은 분리를 어설프게 했습니다. 방어적으로 범위를 파악하고 반환 값을 확인하는 부분이 없습니다. 다음은 UI만 존재하는 프로그램입니다.
+
+메뉴 이벤트 루프 구현
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+
+int PrintMenu(void) {
+  int nInput = 0;
+
+  system("clear"); // windows 운영체제는 cls
+  printf("[1]New\t[2]Search\t[3]Print\t[4]Remove\t[0]Exit\n:");
+  scanf("%d", &nInput);
+
+  return nInput;
+}
+
+int main(void) {
+  int nMenu = 0;
+
+  while ((nMenu = PrintMenu()) != 0) {
+    switch (nMenu) {
+    case 1:
+      puts("새 항목을 추가합니다.");
+      break;
+    case 2:
+      puts("기존 항목에서 검색합니다.");
+      break;
+    case 3:
+      puts("전체 내용을 출력합니다.");
+      break;
+    case 4:
+      puts("기존 항목을 삭제합니다.");
+      break;
+    default:
+      puts("알 수 없는 명령입니다.");
+      break;
+    }
+    getchar();
+  }
+
+  puts("Bye~~!");
+
+  return EXIT_SUCCESS;
+}
+```
+
+`0`을 받으면 종료하고 다른 입력을 받을 때마다 계속 처리합니다. GUI도 같은 구조를 같습니다.
+
+이런 반복구조를 이벤트 루프라고 부릅니다.
+
+#### 재사용 가능한 단위 기능의 구현
+
+반복하는 코드는 함수로 만드는 것이 당연히 좋습니다.
+
+프로그램이 제공하는 여러 기능 각각을 하나의 함수로 만들어버리면 코드관리하기 좋고 구조도 깔끔해집니다.
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+
+int GetFee(int nAge) {
+  int nFee = 1000;
+  if (nAge < 20)
+    nFee /= 2;
+  return nFee;
+}
+
+int PrintMenu(void) {
+  int nInput = 0;
+
+  system("clear"); // windows 운영체제는 cls
+  printf("[1]New\t[2]Search\t[3]Print\t[4]Remove\t[0]Exit\n:");
+  scanf("%d", &nInput);
+
+  return nInput;
+}
+
+int GetAge(void) {
+  int nAge = 0;
+  printf("나이를 입력하세요. :");
+  scanf("%d", &nAge);
+  return nAge;
+}
+
+int main(void) {
+  int nMenu = 0, nAge = 0;
+
+  while ((nMenu = PrintMenu()) != 0) {
+    if (nMenu == 1) {
+      nAge = GetAge();
+      printf("요금은 %d원 입니다.\n", GetFee(nAge));
+    }
+    getchar();
+  }
+
+  puts("Bye~~!");
+
+  return EXIT_SUCCESS;
+}
+```
+
+나이를 받는 부분과 받아서 처리하는 부분이 다릅니다. 다른 부분에서도 요금 계산 기능이 필요할 수 있습니다. 소스코드에서 요금계산 코드만 따로 찾아내기 좋습니다.
+
+함수설계 원칙보다 더 큰 범위의 설계 원칙으로 DRY 원칙이 있습니다. 실용주의 프로그래머 도서에서 등장하는 프로그래밍 원칙입니다.
+
+같은 일을 수행하는 코드가 중복(여러 곳에 존재)되지 않도록 하라입니다. 논리적 오류 방지와 유지보수 편의성 때문에 그렇습니다. 소프트웨어는 수시로 바뀝니다. 한국은 하드웨어도 바뀌지만 한국이 아닌 국가에서는 변화가 느린 편입니다. 변화하는 현경에 능동적으로 적응하기 위해서 유용한 원칙입니다.
+
+변경해야 하는 곳을 1곳만 변경하는 점에서 유지보수하기 유리합니다.
+
+### 코드 분할
+
+UI와 기능을 분리하는 것, 단위 기능을 분리하는 것말고 또 분리할 이유가 있습니다. 코드 분할이라는 이유도 있습니다. 덩치가 너무 큰 코드는 변화에 대응하기 어렵습니다. 유지보수하기 어렵습니다.
+
+너무 큰 코드라고 판단되면 일정 수준으로 크기를 줄여 여러 함수로 코드를 나누는 것이 좋습니다. 분할은 근거가 있어야 합니다. 무엇을 주의할지 파악해야 합니다. 코드 분할 고려사항입니다.
+
+- 함수의 이름에서 기능이 무엇인지 직관적으로 알 수 있어야 합니다.
+- 분할 된 코드가 들어 있는 호출 함수에 반드시 전달되어야 할 정보는 무엇인지 확정(매개변수)해야 합니다.
+- 호출자 함수는 피호출 함수를 호출하는 것으로 끝나는 것인지 아니면 반드시 어떤 정보를 반환받아야 하는지 확정(반환 타입)해야 합니다.
+
+매개변수와 반환 타입은 두 함수가 서로 만나는 접점입니다. 타입으로 어떻게 주고 받을지 결정해야 합니다.
+
+매개변수와 반환 자료형을 명확히 선언할 수 있는 능력은 기본입니다. 다양한 코드를 보는 것이 유용합니다. 잘 짜인 코드는 많이 접하고 경험을 늘려야 합니다.
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+
+int main(void) {
+  int aList[3] = {0};
+  int nMax = -9999, i = 0;
+
+  for (i = 0; i < 3; ++i) {
+    printf("정수를 입력하세요. : ");
+    scanf("%d", &aList[i]);
+  }
+
+  nMax = aList[0];
+  for (i = 1; i < 3; ++i) {
+    if (aList[i] > nMax) {
+      nMax = aList[i];
+    }
+  }
+
+  printf("%d, %d, %d 중 가장 큰 수는 %d 입니다.\n", aList[0], aList[1],
+         aList[2], nMax);
+
+  return EXIT_SUCCESS;
+}
+
+/*정수를 입력하세요. : 3*/
+/*정수를 입력하세요. : 2*/
+/*정수를 입력하세요. : 1*/
+/*3, 2, 1 중 가장 큰 수는 3 입니다.*/
+```
+
+`main()`함수를 다음처럼 수정해도 결과 같게 만들어주세요.
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+
+int main(void) {
+  int aList[3] = {0};
+  int nMax = -9999, i = 0;
+
+  for (i = 0; i < 3; ++i) {
+    printf("정수를 입력하세요. : ");
+    aList[i] = GetData();
+  }
+
+  nMax = GetMax(aList[0], aList[1], aList[2]);
+
+  printf("%d, %d, %d 중 가장 큰 수는 %d 입니다.\n", aList[0], aList[1],
+         aList[2], nMax);
+
+  return EXIT_SUCCESS;
+}
+```
+
+이렇게 때로 분리한 함수를 작성하기 바랍니다.
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+
+int GetData(void) {
+  int input = 0;
+  scanf("%d", &input);
+  return input;
+}
+
+int GetMax(int a, int b, int c) {
+  int max = a;
+  if (b > max)
+    max = b;
+  if (c > max)
+    max = c;
+  return max;
+}
+
+int main(void) {
+  int aList[3] = {0};
+  int nMax = -9999, i = 0;
+
+  for (i = 0; i < 3; ++i) {
+    printf("정수를 입력하세요. : ");
+    aList[i] = GetData();
+  }
+
+  nMax = GetMax(aList[0], aList[1], aList[2]);
+
+  printf("%d, %d, %d 중 가장 큰 수는 %d 입니다.\n", aList[0], aList[1],
+         aList[2], nMax);
+
+  return EXIT_SUCCESS;
+}
+```
+
+간단합니다.
+
+변수와 함수는 문법적으로 선언과 정의는 분리될 수 있습니다. 변수는 선언으로 끝날 수 있습니다. 하지만 함수는 선언과 정의를 분리할 수 있습니다.
+
+함수 정의보다 함수 호출하는 코드가 먼저 등장하는 경우 원형(prototype)을 상단에 선언하는 것으로 컴파일러에게 존자한다고 알려줍니다.
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+
+int Add(int, int);
+
+int main(void) {
+
+  printf("%d\n", Add(3, 4));
+  return EXIT_SUCCESS;
+}
+/*7*/
+
+int Add(int x, int y) { return x + y; }
+```
+
+컴파일러 에러가 없습니다. 경고도 없습니다. 선언을 하는 것으로 아직 정의되기 전에 존재하지도 않는 함수를 호출하고 있습니다. 오류가 발생하지 않는 이유는 선언 및 정의가 되어 있기 때문입니다.
+
+하지만 여전히 컴파일러 오류는 발생할 수 있습니다. 더 정확히 링크 오류입니다. 있어야 할 정의가 없거나 하나만 있어야 할 정의에 여러 개가 있는 경우 발생합니다.
+
+#### 전역변수
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+
+int g_nCounter = 0;
+
+void InitCounter(int nData) { g_nCounter = nData; }
+
+void IncreaseCounter(void) { ++g_nCounter; }
+
+int main(void) {
+  InitCounter(10);
+  printf("%d\n", g_nCounter);
+  IncreaseCounter();
+  printf("%d\n", g_nCounter);
+  IncreaseCounter();
+  printf("%d\n", g_nCounter);
+
+  return EXIT_SUCCESS;
+}
+/*10*/
+/*11*/
+/*12*/
+```
+
+거의 소스코드 전체에서 접근이 가능합니다.
+
+전역변수를 남용하면 서로 독립적으로 둘 전역변수를 매개로 묶어 버릴 수 있습니다.
+
+다음은 나쁜 예시입니다.
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+
+int g_aList[5] = {0};
+
+void initList(void) {
+  int i = 0;
+  for (i = 0; i < 5; ++i) {
+    printf("정수를 입력하세요. : ");
+    scanf("%d", &g_aList[i]);
+  }
+}
+
+void SortList(void) {
+  int i = 0, j = 0, nTmp = 0;
+  for (i = 0; i < 4; ++i) {
+    for (j = i + 1; j < 5; ++j) {
+      if (g_aList[j] < g_aList[i]) {
+        nTmp = g_aList[j];
+        g_aList[j] = g_aList[i];
+        g_aList[i] = nTmp;
+      }
+    }
+  }
+}
+
+void PrintList(void) {
+  int i = 0;
+  for (i = 0; i < 5; ++i) {
+    printf("%d\t", g_aList[i]);
+  }
+}
+
+int main(void) {
+  initList();
+  SortList();
+  PrintList();
+  return EXIT_SUCCESS;
+}
+/*정수를 입력하세요. : 20*/
+/*정수를 입력하세요. : 40*/
+/*정수를 입력하세요. : 30*/
+/*정수를 입력하세요. : 10*/
+/*정수를 입력하세요. : 50*/
+/*10	20	30	40	50	%*/
+```
+
+이것은 사실상 한덩어리의 코드입니다. 만약에 전역변수의 배열크기를 10으로 바꾸면 다른 함수 모두 영향을 받습니다.
+
+좋은 설계 중 하나는 서로 변화에 대해서 갖는 의존성을 최대한 낮추는 것입니다.
+
+다음은 더 좋은 설계 예시입니다.
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+
+void initList(int *pList, int nSize) {
+  int i = 0;
+  for (i = 0; i < nSize; ++i) {
+    printf("정수를 입력하세요. : ");
+    scanf("%d", &pList[i]);
+  }
+}
+
+void SortList(int *pList, int nSize) {
+  int i = 0, j = 0, nTmp = 0;
+  for (i = 0; i < nSize - 1; ++i) {
+    for (j = i + 1; j < 5; ++j) {
+      if (pList[j] < pList[i]) {
+        nTmp = pList[j];
+        pList[j] = pList[i];
+        pList[i] = nTmp;
+      }
+    }
+  }
+}
+
+void PrintList(int *pList, int nSize) {
+  int i = 0;
+  for (i = 0; i < nSize; ++i) {
+    printf("%d\t", pList[i]);
+  }
+}
+
+int main(void) {
+  int aList[5] = {0};
+  initList(aList, 5);
+  SortList(aList, 5);
+  PrintList(aList, 5);
+
+  return EXIT_SUCCESS;
+}
+/*정수를 입력하세요. : 20*/
+/*정수를 입력하세요. : 40*/
+/*정수를 입력하세요. : 30*/
+/*정수를 입력하세요. : 10*/
+/*정수를 입력하세요. : 50*/
+/*10	20	30	40	50	%*/
+```
+
+당연한 말이지만 C 언어도 식별자의 스코프 체이닝을 지원합니다.
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+
+int nInput = 100;
+
+void TestFunc(void) { printf("TestFunc() : %d\n", nInput); }
+
+int main(void) {
+  int nInput = 0;
+  printf("%d\n", nInput);
+  {
+
+    int nInput = 20;
+    printf("%d\n", nInput);
+  }
+
+  TestFunc();
+  return EXIT_SUCCESS;
+}
+/*0*/
+/*20*/
+/*TestFunc() : 100*/
+```
+
+스코프 체이닝 더 정확히 식별자를 검색하는 순서는 당연히 알아야 할 개념입니다.
+
+1. 매개변수로 `int` 타입 자료 4개를 받아 그중 가장 작은 숫자를 반환하는 `GetMin` 함수를 작성하세요.
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+
+int GetMin(int a, int b, int c, int d) {
+  int max = a;
+  if (max < b)
+    max = b;
+  if (max < c)
+    max = c;
+  if (max < d)
+    max = d;
+  return max;
+}
+
+int main(void) {
+  int a = 0, b = 0, c = 0, d = 0;
+  scanf("%d%d%d%d", &a, &b, &c, &d);
+  printf("%d\n", GetMin(a, b, c, d));
+  return EXIT_SUCCESS;
+}
+/*1 2 3 4*/
+/*4*/
+```
+
+2. 다음 코드는 팩토리얼을 계산하는 `GetFactorial` 함수의 예를 보인 것입니다. 설계 원칙상 이 코드의 문제점으로 지적할 수 있는 부분은 무엇이며, 그 문제점을 수정하려면 `GetFactorial` 함수의 코드는 어떻게 수정되어야 하는지 기술하세요.
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+
+int getfactorial(int nParam) {
+  int nResult = 1, i = 0;
+  if (nParam < 1 || nParam > 10) {
+    puts("ERROR: 1 ~ 10 사이의 정수를 입력하세요.");
+    return 0;
+  }
+
+  for (i = 1; i <= nParam; ++i) {
+    nResult *= i;
+  }
+
+  return nResult;
+}
+
+int main(void) {
+
+  printf("MAX: %d\n", GetFactorial(1));
+  printf("MAX: %d\n", GetFactorial(5));
+  printf("MAX: %d\n", GetFactorial(11));
+  printf("MAX: %d\n", GetFactorial(10));
+
+  return EXIT_SUCCESS;
+}
+
+/*MAX: 1*/
+/*MAX: 120*/
+/*ERROR: 1 ~ 10 사이의 정수를 입력하세요.*/
+/*MAX: 1*/
+/*MAX: 3628800*/
+```
+
+UI와 기능이 결합되어 있습니다. 입력을 받아 예외에 해당해서 처리를 중단할 것과 처리하는 부분이 공존합니다.
+
+puts로 에러츨 출력하고 에러에 해당하는 부분인지 확인하는 부분은 main에 들어와야 합니다. 예외를 수동으로 입력은 상황에 따라 남겨둬도 가능한 제거합니다.
+
+표준 입력을 받고 범위를 초과하면 로직을 중단하게 만들어야 합니다.
+
+3. 기본요금과 나이를 매개변수로 받아서 나이에 따른 최종요금을 계산해 반환하는 `GetFee` 함수를 작성하세요. 단 나이별 할인률은 다음과 같습니다.
+
+00 ~ 03 : 100% (무료)
+04 ~ 13 : 50%
+14 ~ 19 : 75%
+20이상 : 0%
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+
+int GetFee(int price, int age) {
+  if (age > 19)
+    return price;
+  if (age > 13)
+    return price * 75 / 100;
+  if (age > 3)
+    return price * 50 / 100;
+  return 0;
+}
+
+int main(void) {
+  int price = 0, age = 0;
+
+  printf("요금을 입력하세요. : ");
+  scanf("%d", &price);
+
+  printf("나이를 입력하세요. : ");
+  scanf("%d", &age);
+
+  printf("최종요금 : %d원\n", GetFee(price, age));
+
+  return EXIT_SUCCESS;
+}
+```
+
+4. 함수의 원형 선언이 필요한 이유를 설명하세요.
+
+선언과 정의는 C 언어에서 별개의 것입니다. `main`을 상단에 두고 프로토타입을 선언해줘야 정의 전에 위치한 함수가 나중에 접근할 수 있다고 컴파일러에게 알려줘야 합니다.
+
+5. 다음 코드를 작성하고 실행하여 `11`을 입력한다면 어떤 결과가 출력되는지 쓰세요.
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+
+int nInput = 100;
+
+void TestFunc(void) { printf("%d\n", nInput); }
+
+int main(void) {
+  int nInput = 0;
+  scanf("%d", &nInput);
+  if (nInput > 10) {
+    int nInput = 20;
+    printf("%d\n", nInput);
+
+    TestFunc();
+    if (nInput >= 100) {
+      printf("%d\n", nInput);
+    }
+  }
+
+  printf("%d\n", nInput);
+  return EXIT_SUCCESS;
+}
+/*20*/
+/*100*/
+```
+
+20이 출력되고 100이 다음에 출력됩니다.
