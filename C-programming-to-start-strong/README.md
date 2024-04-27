@@ -4153,7 +4153,7 @@ C 언어의 문법보단 프로그래밍 기법들에 가깝습니다.
 
 앞에 2번째 즉 1번인덱스까지는 정렬되어 있습니다. 선택정렬로 알려져 있습니다. 하지만 버블 정렬입니다. 이런 교환은 버블링입니다. 큰값이 뒤로 모이고 작은 값이 교환하면서 앞으로 모입니다. 각항을 비교하고 값이 작은 것을 확인될 때마다 즉시 교환하기 때문입니다.
 
-실제 ������택정렬은 각 항을 비교하지만 더 작은 값이 발견되면 즉시 값을 교환하지 않고 더 작은 값이 저장된 배열의 인덱스를 따로 저장했다가 안쪽 반복문이 끝난 ��� 한번만 두 항의 값을 교환하는 방식으로 구현합니다. 즉 선택을 하고 작은지 확인하고 교환합니다. 버블정렬은 매번 교환합니다.
+- 실제 스택정렬은 각 항을 비교하지만 더 작은 값이 발견되면 즉시 값을 교환하지 않고 더 작은 값이 저장된 배열의 인덱스를 따로 저장했다가 안쪽 반복문이 끝난 뒤 한번만 두 항의 값을 교환하는 방식으로 구현합니다. 즉 선택을 하고 작은지 확인하고 교환합니다. 버블정렬은 매번 교환합니다.
 
 ```c
 #include <stdio.h>
@@ -4399,7 +4399,7 @@ int main(void) {
 21 22 23 24 25
 ```
 
-이렇게 채우면 됩니다. 정답을 다양하게 인정하고 싶지만 대부분 대학교 시험문제라고 생각하면 10점 만점에 5점만 줄 것입니다. 기존 템플릿을 최대한 활용하고 중첩 for 문을 통해서 구현해야 합니다. 추가 변수는 금지입니다. 구현되고 성능도 같지만 비즈니스 요구사항에서 10개 중 9개만 된 것이라면 가치가 50%가 감소한다는 훈련을 위해 이렇게 �������� ���������다. 당신은 개발자입니다. 배로 키우는 것은 없어도 깎아먹는 짓거리를 하는데 돈받아 먹고 싶으면 깎아먹는 짓거리 하지 말라고 이렇게 할 것입니다.
+- 이렇게 채우면 됩니다. 정답을 다양하게 인정하고 싶지만 대부분 대학교 시험문제라고 생각하면 10점 만점에 5점만 줄 것입니다. 기존 템플릿을 최대한 활용하고 중첩 for 문을 통해서 구현해야 합니다. 추가 변수는 금지입니다. 구현되고 성능도 같지만 비즈니스 요구사항에서 10개 중 9개만 된 것이라면 가치가 50%가 감소합니다. 당신은 개발자입니다. 배로 키우는 것은 없어도 깎아먹는 짓거리를 하는데 돈받아 먹고 싶으면 깎아먹는 짓거리 하지 말라고 이렇게 할 것입니다.
 
 하지만 오답들도 학습 리소스입니다.
 
@@ -5378,3 +5378,1257 @@ int main(void) {
 ```
 
 20이 출력되고 100이 다음에 출력됩니다.
+
+## 메모리와 포인터
+
+연산자, 함수, 제어문 같은 내용은 컴퓨터 기계와 직접 연결되는 내용을 덜 다루었습니다.
+
+프로그래밍은 하드웨어적 이해를 기반으로 반드시 해야 합니다. 안하고 이런저런 것들을 해도 결국 코드 멍키에 불과합니다.
+
+C 언어는 운영체제, 하드웨어 제어처럼 일상적으로 작성하는 프로그램에 좋습니다. 메모리를 직접다루는 것은 큰 축복입니다. 코드와 기계를 결합하는 프로그램이 정상적인 프로그램입니다.
+
+이번에는 가능하면 디버거를 활용해서 메모리의 변화를 추적할 수 있어야 합니다.
+
+### 컴퓨터와 메모리
+
+변수의 본질은 메모리이며 모든 메모리는 자신의 위치를 식별하기 위한 근거로 일렬번호를 갖는데 이 번호를 메모리의 주소라고 부릅니다.
+
+32비트 App에서 1바이트 단위 메모리에 부여된 일렬 번호는 부호 없는 32비트 정수입니다. 보통 16진수로 표기합니다.
+
+주소로 메모리를 식별하는 것은 low-level 특성 중 하나입니다. high-level은 변수명 같은 식별자로 식별합니다. 변수 선언과 정의는 메모리 확보를 의미합니다.
+
+이전에 배운것과 마찬가지로 변수를 이류는 3가지 요소가 있습니다.
+
+1. 이름이 부여된 메모리
+2. 그 안에 담긴 정보
+3. 메모리의 주소
+
+기본적인 연산은 변수에 저장된 정보가 연산에 참여합니다. 하지만 메모리 자체가 관심인 경우도 많습니다. 대표적인 경우가 주소 연산자입니다.
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+
+int main(void) {
+  int nData = 10;
+
+  printf("%s\n", "nData");
+  printf("%d\n", nData);
+  printf("%p\n", (void *)(&nData));
+
+  return EXIT_SUCCESS;
+}
+/*nData*/
+/*10*/
+/*0x16dc670f8*/
+```
+
+> 이름이 nData인 부호 있는 64비트 정수형 메모리의 실제 주소는 0x16dc670f8이고, 그안에 저장된 정보를 해석하면 10진 정수인 10이다.
+
+뭐 그냥 본인 CPU 아키텍쳐에서 변수하나 말한 것입니다.
+
+메모리의 종류
+
+메모리는 용도에 따라 스택, 힙, 데이터 영역, 텍스트 영역 등으로 나눕니다.
+
+- 스택: 자동변수이고 지역변수인 변수가 사용하는 메모리 영역이며, 임시 메모리의 성격을 가진다. 크기가 작고(기본 설정을 기준으로 최대 1MB) 관리(할당 및 반환)가 자동으로 이루어지는 장점이 있다.
+- 힙: 동적 할당할 수 있는 자유 메모리 영역이며, 개발자 스스로 직접 관리(수동)해야 한다. 32 App의 경우 대략 1xGB 정도를 사용할 수 있다. 따라서 대량의 메모리가 필요하거나 필요한 메모리의 크기를 미리 알 수 없을 때 사용한다.
+- PE image (Protable Executable, 실행파일) 영역
+  - Text Section: C 언어의 소스코드가 번역된 기계어가 저장된 메모리 영역이며, 기본적으로는 읽기전용 메모리이다. 어떤 식으로든 이 영역의 메모리를 변조하면, 해킹이라 할 수 있다.
+  - Data Section 영역
+    - Read Only: 상수 형태로 기술하는 문자열(예: `Hello`)이 저장된 메모리 영역이며, Text 영역처럼 읽기는 가능하나 쓰기는 허용되지 않는다.
+    - Read/Write: 정적변수나 전역변수들이 사용하는 메모리 영역이며, 별도로 초기화하지 않아도 0으로 초기화된다. 관리는 자동이라서 힙 영역 메모리처럼 할당 및 해제를 신경 쓸 필요는 없다.
+
+포인터 변수의 선언 및 정의
+
+포인터 변수는 메모리의 주소를 저장하기 위한 전용 변수입니다. 포인터라는 것도 "주소가 적힌 메모지"로 생각할 수 있습니다. 짬질방 라커룸과 상당히 유사합니다.
+
+바이트 단위 메모리는 고유한 번호가 붙어 잇습니다. 이 번호는 주소라고 부르지만 위치정보라고 생각할 수 있는 찜질방 사물함과 같습니다.
+
+비유가 꽤 괜찮은게 사물함은 연속됩니다. 100번이 있고 101번이 있고 그옆에 또 102번이 있습니다. 우리가 100번을 사람이름을 붙이는 것은 변수명이 붙는 것과 유사합니다.
+
+메모리의 주소를 세세하게 의식하지 않고 코드를 작성할 수 있게 컴파일러가 추리해줍니다. 메모리에 대해 기술적인 정보를 몰라도 메모리를 사용할수 있게 됩니다. 그렇다고 해도 메모리를 직접 다루어야 하는 경우가 많습니다. 이럴 때는 컴파일러에 주소를 물어봐야 합니다.
+
+컴파일러는 메모리주소를 알려줄 것입니다. 그 방법은 바로 단항 연산자인 주소 포인터 연산자입니다. 식별자의 실제 메모리주소를 의미합니다. 연산이 문법적으로 잘못되지 않았다면 컴파일러는 주소를 알려주지 않는 경우는 없습니다.
+
+주소 연산과 정반대되는 개념은 연산자를 바로 간접지정 연산자(`*`)입니다. 지정이라는 말은 대상 메모리에 대한 길이와 해석방법을 즉 자료형을 지정한다는 의미입니다. 예를들어, 4바이트를 한 세트로 보고 `int`형으로 취급하겠다는 것과 같습니다.
+
+> 일정 크기의 메모리에 저장된 정보를 해석하는 방법
+
+이 말을 정확히 이해하기 바랍니다. 직접지정자와 간접지정자가 있는데 직접지정은 4바이트 int형으로 확정하는 것입니다. 간접지정은 변경될 수 있는 임의의 기준주소로 상대적인 주소를 식별하는 방식입니다.
+
+예시 코드를 보면 이해가 쉬울 것입니다.
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+
+int main(void) {
+  int x = 10;
+  int *pnData = &x;
+
+  printf("x : %d\n", x);
+
+  *pnData = 20;
+
+  printf("x : %d\n", x);
+
+  return EXIT_SUCCESS;
+}
+/*x : 10*/
+/*x : 20*/
+```
+
+변수에 주소자체를 저장합니다. 주소자체가 저정된 변수에 지금은 `20`으로 정보를 갱신한 것입니다.
+
+지금의 경우가 바로 간접 지정에 해당합니다.
+
+`int *pnData`은 주소를 받겠다는 의미고 `int` 타입을 갖는 변수의 주소를 받겠다는 것입니다. 그리고 `*pnData = 20`으로 좌변에 주소가 `x`변수의 주소에 `20`을 쓰기하겠다는 것입니다.
+
+#### 포인터와 배열
+
+배열의 이름은 0번 주소고 전체 배열을 대표하는 식별자입니다. 포인터 변수는 주소를 저장하기 위한 변수입니다. 이 둘을 조합해 다음을 추론할 수 있습니다. "배열의 이름이 주소이므로, 포인터 변수에 저장할 수 있다."입니다. `int` 포인터는 `int` 형 변수의 주소만 담을 수 있는 것이 아니라 `int`배열 이름도 담을 수 있습니다.
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+
+int main(void) {
+  int aList[5] = {0};
+  int *pnData = aList;
+
+  printf("aList[0] : %d\n", aList[0]);
+
+  *pnData = 20;
+
+  printf("aList[0] : %d\n", aList[0]);
+
+  return EXIT_SUCCESS;
+}
+/*aList[0] : 0*/
+/*aList[0] : 20*/
+```
+
+문제가 전혀 없습니다. 초기화할 때 `0`으로 초기화 했습니다.
+
+간접지정 연산자는 단항 연산자이고 `pnData` 포인터이고 저장된 주소의 메모리를 `int` 변수로 보겠다는 의미입니다. 주소가 직접 기술되는 형식이 아니고 변수에 담긴 주소를 통해 간접적인 방법으로 지정했으니 간접지정입니다.
+
+`*(pnData + 0)`을 의미합니다. 포인터 변수 `pnData`에 저장된 주소를 기준으로 오른쪽으로 `int 0`개 떨어진 위치의 메모리를 `int` 변수로 지정한다는 것입니다.
+
+이번에는 문자열을 다룹니다. 하지만 끝이 `\0`인 확인하는 방법과 다릅니다. 배열인덱스말고 포인터 변수에 저장된 주솟값을 계속 증가시키는 방법으로 배열의 처음부터 `\0`이 저장된 메모리가 나올 때까지 차례로 접근합니다.
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+int main(void) {
+  char szBuffer[16] = {"Hello"};
+  char *pszData = szBuffer;
+  int nLength = 0;
+  while (*pszData != '\0') {
+    pszData++;
+    nLength++;
+  }
+
+  printf("Length : %d\n", nLength);
+  printf("Length : %lu\n", strlen(szBuffer));
+  printf("Length : %lu\n", strlen("World"));
+
+  return EXIT_SUCCESS;
+}
+/*Length : 5*/
+/*Length : 5*/
+/*Length : 5*/
+```
+
+오른쪽으로 `char` 타입 크기만큼 한 칸식 이동(주소 증가)했기 때문입니다. 이것은 주소 차이를 이용해 문자열의 길이를 측정하는 예시입니다.
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+int main(void) {
+  char szBuffer[16] = {"Hello"};
+  char *pszData = szBuffer;
+
+  while (*pszData != '\0') {
+    pszData++;
+  }
+
+  printf("Length : %ld\n", pszData - szBuffer);
+
+  return EXIT_SUCCESS;
+}
+/*Length : 5*/
+```
+
+곰곰히 생각해보면 직관적입니다. 임의로 주소를 부여해도 결국에는 시작주소와 크기만큼 순회한 주소의 차이를 구한 것입니다. 인덱스는 문자열 길이랑 일치할 수 밖에 없습니다.
+
+상대주소에서 기준주소를 빼 역으로 인덱스를 계산하는 방법입니다.
+
+### 메모리 동적 할당 및 관리
+
+`malloc`, `free`를 다룹니다. 동적할당과 해제하는 함수입니다. 메모리를 할당하고 다시 운영체제 반환하는 일렬의 과정은 크게 할 것은 없습니다. 지금까지 배운 예제는 모두 자동변수입니다.
+
+메모리의 동적 할당 및 해제는 다릅니다. 이전까지는 어린이 코딩수업과 비슷합니다. 다 알아서 해줍니다. 이번에는 어른들을 위한 코딩 수업입니다. 우리가 알아서 해줘야 합니다. "자유에 대한 책임이 따르는 메모리 사용법"이라고 생각할 수 있습니다.
+
+자유롭게 메모리 할당이 가능하게 때문에 유연하지만 반드시 해제해줘야 합니다.
+
+```c
+void *malloc (size_t size);
+```
+
+인자는 할당받을 메모리의 바이트 단위 크기입니다.
+
+반환 값은 힙 영역에 할당된 첫번째 바이트 메모리 주소입니다. 에러가 발생하면 `NULL`입니다.
+
+할당받은 메모리는 반드시 `free` 함수를 이용해 반환해야 합니다. 메모리를 초기화하려면 `memset`함수를 이용해야 합니다. 기본적으로 쓰레기 값이 들어 있습니다.
+
+```c
+void free(void *memblock);
+```
+
+인자는 반환할 메모리이 주소입니다. 반환 값은 없습니다. 동적으로 할당받은 메모리를 운영체제에 반환하는 함수입니다.
+
+`malloc`은 주소를 반환합니다. 이 주소를 사용해서 접근할 수 있습니다. 사용이 끝나면 반드시 `free` 함수를 해용해 메모리를 운영체제에 반환해야 합니다. `free` 함수의 인자는 `malloc`의 반환 기준 주소를 명시해야 합니다.
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+
+int main(void) {
+  int *pList = NULL, i = 0;
+
+  pList = (int *)malloc(sizeof(int) * 3); // 정수 3개 만큼 공간 확보
+
+  pList[0] = 10;
+  pList[1] = 20;
+  pList[2] = 30;
+
+  for (i = 0; i < 3; ++i) {
+    printf("%d\n", pList[i]);
+  }
+
+  free(pList);
+  return EXIT_SUCCESS;
+}
+/*10*/
+/*20*/
+/*30*/
+```
+
+`(int *)`은 void 포인터를 int 포인터로 형변환한 것입니다. 이것은 C++에서 강력하게 문제지적을 합니다. 코드 호환성을 유지하기 위해 형변한 연산을 추가하는 것이 일반적입니다.
+
+void 포인터는 길이도 해석방법도 없습니다. 본질이 포인터인 것은 맞지만 이 주소가 가리키는 대상 메모리를 어떤 타입으로 해석할지 아직 결정되지 않음을 의미합니다. void는 인스턴스화를 허용하지 않습니다. 논리적으로 불가능한 것입니다.
+
+`free`를 호출하고 `pList`를 인자로 대입했는데 결과나는 안 바뀝니다. 하지만 반환하지 않으면 메모리를 사용할 수 없기 때문에 메모리 누수라고 부릅니다.
+
+이 코드는 `*(pList + 0) = 10; *(pList + 1) = 20;` 이렇게 바꿔도 상관 없습니다.
+
+#### 메모리 초기화 및 사용(배열)
+
+변수를 선언 했을 때 기본적으로 0으로 초기화 되었을 것이라고 많이 생각합니다. 일부 운영체제는 그렇지만 모든 운영체제가 그런 것은 아닙니다. 그게 아닌 경우 무슨 값이 있는지 모릅니다. 이런 이유로 사용자가 그냥 0으로 초기화하는 것을 명시하는 것이 좋습니다.
+
+다음 예제를 참고하기 바랍니다.
+
+```c
+#include <stdlib.h>
+#include <string.h>
+
+int main(void) {
+  int *pList = NULL, *pNewList = NULL;
+  /*int aList[3] = {0};*/
+
+  pList = (int *)malloc(sizeof(int) * 3);
+  memset(pList, 0, sizeof(int) * 3);
+
+  pNewList = (int *)calloc(3, sizeof(int));
+
+  free(pList);
+  free(pNewList);
+
+  return EXIT_SUCCESS;
+}
+```
+
+코드는 크게 3구간입니다. `aList`는 사용 안해서 주석 처리했습니다. `malloc` 함수는 동적할당을 하고 `memset` 함수로 0으로 초기화합니다. 마지막은 `calloc`은 초기화하고 모두 0으로 동적 할당방법처럼 보입니다.
+
+```c
+void *memset(void *dest, int c, size_t count);
+```
+
+- `dest`는 초기화할 대상 메모리 주소입니다. `c`는 초깃값입니다. `count`는 초기화할 메모리의 바이트 단위 크기입니다.
+- 반환값은 대상 메모리 주소입니다.
+- 동적으로 할당 받은 메모리에 쓰레기 값이 있으므로 일반적으로 0으로 치가화하여 사용한다.
+
+경험 많은 C 프로그래머는 `memset`을 이렇게만 사용하고 그외 사용 예시가 기억에 없을 정도로 일반적인 사용법입니다.
+
+```c
+void *calloc(size_t num, size_t size);
+```
+
+- 인자 `num`은 요수의 개수를 받습니다. `size` 각 요소의 바이트 단위 크기입니다.
+- 힙 영역에 할당된 메모리 덩어리 중 첫 번째 바이트 주소를 반환합니다.
+  - 할당된 메모리 크기는 `num` 인자와 `size` 인자의 값을 곱한 크기
+  - 에러가 발생하면 `NULL`을 반환
+
+배열 선언과 비슷하게 요소의 크기와 개수를 받습니다. 의도적으로 12 대신에 `sizeof` 연산자를 이용하면 의도를 더 잘 들어낼 수 있기 때문입니다.
+
+동적 할당한 메모리를 사용할 때 배열처럼 다루듯 처리할 수 있다는 사실은 이미 확인했습니다. 다음 예제는 6바이트 메모리를 동적으로 할당하고 `char` 타입 배열처럼 사용한 예시입니다. 기존과 약간 다른 방식으로 배열 선언 및 데이터 영역에 저장된 문자열에 대한 포인터를 다루는 방법을 비교해서 설명한 것입니다.
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+int main(void) {
+  char szBuffer[] = {"Hello"};
+  char *pszBuffer = "Hello";
+  char *pszData = NULL;
+
+  pszData = (char *)malloc(sizeof(char) * 6);
+  pszData[0] = 'H';
+  pszData[1] = 'e';
+  pszData[2] = 'l';
+  pszData[3] = 'l';
+  pszData[4] = 'o';
+  pszData[5] = '\0';
+
+  puts(szBuffer);
+  puts(pszBuffer);
+  puts(pszData);
+
+  free(pszData);
+
+  return EXIT_SUCCESS;
+}
+/*Hello*/
+/*Hello*/
+/*Hello*/
+```
+
+`char szBuffer[] = {"Hello"};` 이렇게 선언하는 것은 문법적으로 문제가 되지 않습니다. 컴파일 단계에서 사이즈를 보고 처리하면 되기 때문입니다. 이렇게 선언하면 여전히 스텍에 할당됩니다.
+
+`char *pszBuffer = "Hello";` 이렇게 정의하면 그냥 포인터를 할당한 것입니다. 이렇게 선언하면 읽기 전용에 저장하고 메모리 주소를 통해 접근해서 읽기를 하는 것입니다. 포인터가 가리키는 대상이라 r-value입니다.
+
+`malloc`을 통해 선언한 경우가 동적할 당에 해당합니다. 또 일반배열처럼 사용할 수 있습니다. l-value처럼 사용할 수 있습니다.
+
+```c
+#include <malloc/malloc.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+int main(void) {
+  char *pszData = NULL;
+
+  pszData = (char *)malloc(sizeof(char) * 6);
+  if (pszData == NULL) {
+    perror("Failed to allocate memory");
+    return EXIT_FAILURE;
+  }
+
+  printf("Allocated memory size: %zu\n", malloc_size(pszData));
+  printf("Usable memory size: %zu\n", malloc_good_size(sizeof(char) * 6));
+
+  free(pszData);
+  return EXIT_SUCCESS;
+}
+```
+
+메모리 사이즈를 알려준다고 했는데 C 언어에서 약간의 저혼자 경험하는 난제를 발견했네요.
+
+#### 메모리 복사
+
+배열은 여러 인스턴스가 뭉쳐진 경우엔 절대로 단순 대입으로 r-value를 l-value로 복사할 수 없습니다. 배열 문법 배울 때 이미 다루었습니다.
+
+- 다음은 메모리 복사를 다루는 예제입니다.
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+int main(void) {
+  char szBuffer[12] = {"HelloWorld"};
+  char szNewBuffer[12] = {0};
+
+  memcpy(szNewBuffer, szBuffer, 4);
+  puts(szNewBuffer);
+
+  memcpy(szNewBuffer, szBuffer, 6);
+  puts(szNewBuffer);
+
+  memcpy(szNewBuffer, szBuffer, sizeof(szBuffer));
+  puts(szNewBuffer);
+
+  return EXIT_SUCCESS;
+}
+/*Hell*/
+/*HelloW*/
+/*HelloWorld*/
+```
+
+배열 식별자는 주소상수입니다. 그래서 메모리상 쓰기를 직접할 수 없습니다. 배열 식별자에 직접 할당 연산(`szNewBuffer = szBuffer`)이 허용되지 않습니다. 이런 이유로 전에는 배열의 인덱스를 알아내고 요소별로 할당을 수행하고 복사를 했습니다. 이런 것은 `memcpy`로 이제 대체할 수 있게 됩니다.
+
+```c
+void *memcpy(void *dest, const void *src, size_t count);
+```
+
+- dest는 복사하고 붙여넣기 할 메모리 주소입니다. src는 복하기 위한 원본 메모리 주소입니다. count는 복사할 메모리의 크기입니다.
+- 반환 값은 복하고 붙여 넣은 메모리 주소입니다.
+- 특정 메모리 주소로 시작하는 메모리 주소에서 복하려는 사이즈 만큼 그대로 복사해줍니다.
+
+문자열 끝에 `\0`은 그래도 유지됩니다.
+
+연습 문제입니다. 2가지 심각한 오류 및 결함을 찾고 수정하세요.
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+
+int main(void) {
+  char szBuffer[12] = {"HelloWorld"};
+  char *pszData = NULL;
+
+  pszData = (char *)malloc(sizeof(char) * 12);
+  pszData = szBuffer;
+  puts(pszData);
+
+  return EXIT_SUCCESS;
+}
+/*HelloWorld*/
+```
+
+위 코드입니다.
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+int main(void) {
+  char szBuffer[12] = {"HelloWorld"};
+  char pszData[sizeof(szBuffer)] = {0};
+
+  memcpy(pszData, szBuffer, sizeof(szBuffer));
+  puts(pszData);
+
+  return EXIT_SUCCESS;
+}
+/*HelloWorld*/
+```
+
+이렇게 수정할 수 있습니다. 문제를 엉뚱하게 다루었습니다.
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+
+int main(void) {
+  char szBuffer[12] = {"HelloWorld"};
+  char *pszData = NULL;
+
+  pszData = (char *)malloc(sizeof(char) * 12);
+  pszData = szBuffer;
+  puts(pszData);
+
+  return EXIT_SUCCESS;
+}
+/*HelloWorld*/
+```
+
+여기서 문제가 되는부분은 `free`입니다. 할당을 하면 해제를 해줘야 합니다. 배열을 할당 연산으로 복사하려는 것이 잘못되는 것도 맞기는 하지만 해제가 더 큰 문제입니다.
+
+`pszData = szBuffer;` 이렇게 되면 복사가 아닙니다. 배열에 담긴 내용이 동적 할당한 메모리로 복사되는 것이 아니라 `pzsData` 포인터 변수에 `szBuffer` 라는 메모리 주소만 넣은 것입니다. 그래서 저장된 메모리 주소의 값을 출력하지만 복사는 아닙니다.
+
+`pszData`를 담겨 있던 정보가 단순 대입연산으로 유실됩니다. 점유하는 메모리를 해제할 방법이 없어집니다. 할당을 받아도 반환 방법이 없고 메모리 누수가 발생할 것입니다. 복사를 할 때는 주소를 복사하지 말고 내용을 복사해야 합니다. 즉 깊은 복사를 수행해야 합니다.
+
+2개의 메모리 주소가 접근할 수 있어야 합니다. 독립적인 동일한 내용을 복사하는 것을 보고 깊은 복사라고 부릅니다.
+
+지금의 주소만 복사하는 것은 얕은 복사라고 합니다. 포인터는 주소만 담는 경우도 있습니다. 하지만 지금은 적절하지 않습니다.
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+int main(void) {
+  char szBuffer[12] = {"HelloWorld"};
+  char *pszData = NULL;
+
+  pszData = (char *)malloc(sizeof(char) * 12);
+  strcpy(pszData, szBuffer);
+
+  puts(pszData);
+  free(pszData);
+  return EXIT_SUCCESS;
+}
+```
+
+`strcpy`를 이용해 메모리에 저장된 문자열을 깊은 복사를 할 수 있도록 함수입니다. `memcpy`를 사용해도 문제 없습니다. 그냥 더 편한 것 뿐입니다. 메모리를 헤제하는 부분까지 포함해야 정답입니다.
+
+```c
+void *strcpy(char *strDestination, const char *strSource);
+```
+
+```c
+void *strncpy(char *strDestination, const char *strSource, size_t count);
+```
+
+`strcpy`는 `memcpy`와 비슷합니다. 두 함수는 메모리 내용을 복사합니다. `strcpy`는 메모리의 내용이 모두 문자열이라고 간주합니다. 복사해야 할 메모리의 크기는 함수 스스로 결정합니다. `memcpy`처럼 복사할 크기를 명시할 필요가 없습니다. `strncpy`는 크기를 명시해야 합니다. 바이트 단위가 아니고 문자열 단위입니다.
+
+`strcpy`는 깊은 복사 때문에 자주 사용될 수 밖에 없습니다. 잘 알아둬야 할 점은 보안 결함이 있는 함수입니다. 윈도우는 `strcpy_s`을 사용하고 리눅스 계열은 `strncpy`를 대체함수로 사용합니다. 문제의 정답은 결국에는 틀린 것입니다.
+
+#### 메모리 비교 `memcmp`, `strcmp`
+
+```c
+void *memcmp(const void *buf1, const void *buf2, size_t count);
+```
+
+- `buf1`은 원본 메모리 주소입니다. `buf2`는 비교 대상 메모리 주소입니다. `const`는 비교할 메모리의 바이트 단위 크기입니다.
+- 반환 값은 `0`이면 같은 것입니다. 논리적으로 `buf1 - buf2`로 같은지 알아냅니다. unsigned char처럼 음수가 언더 플로우 현상이 발생해 제일 큰 숫자라 될 수 있습니다. 핵심은 `0`이면 같은 것입니다.
+- 주어진 길이만큼 두 메모리 주소를 비교하는 함수입니다.
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+int main(void) {
+  char szBuffer[12] = {"TestString"};
+  char *pszData = "TestString";
+
+  printf("%d\n", memcmp(szBuffer, pszData, 10));
+  printf("%d\n", memcmp("testString", pszData, 10));
+  printf("%d\n", memcmp("DataString", pszData, 10));
+
+  return EXIT_SUCCESS;
+}
+/*0*/
+/*1*/
+/*-1*/
+```
+
+이 코드를 제대로 이해하려면 우선 `szBuffer` 배열과 `pszData`가 가리키는 메모리의 내용이 어떻게 다른지 생각해볼 필요가 있습니다. `memcmp` 함수는 두 메모리가 저장된 정보를 일정 단위로 잘라서 감산 연산한 결과가 0인 동안 계속 반복하기 때문입니다.
+
+10번 비교해서 10개 항이 모두 결과가 0이면 같은 것입니다. 하나라도 다르면 아니라고 결론을 내려야 합니다. 결국에는 문자열은 숫자입니다. 이숫자를 비교하면 됩니다. 아스키 표를 보고 비교를 하면 됩니다. 지금의 경우 소문자(지금 예시에서 `t`)가 큰 경우 양수가 되고 더 작은 `D`의 경우 음수가 나온 것입니다. 이 원리를 충실하게 따르고 있습니다.
+
+다음은 문자열 비교에 논리적으로 심각한 결함이 있습니다. 입문자에게 자주 있는 실수입니다. 기억하기 바랍니다.
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+
+int main(void) {
+  char szBuffer[12] = {"TestString"};
+  char *pszData = "TestString";
+
+  printf("%d\n", szBuffer == pszData);
+  printf("%d\n", "TestString" == pszData);
+  printf("%d\n", "DataString" == pszData);
+
+  return EXIT_SUCCESS;
+}
+```
+
+일단 린트에러부터 발생합니다. 그리고 컴파일에러도 발생하고 있습니다. 배열의 이름은 주소사숭입니다. 포인터 변수에 저장된 정보는 메모리의 주소입니다. 주소가 같은 주소인지 비교하는 것에 불과합니다. 수소가 같은지 확인하는 것이 아니라 문자열 정보가 같은지 비교하려는 의도였으면 당연히 틀렸습니다. 주소 말고 내용으로 비교해야 합니다.
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+int main(void) {
+  char szBuffer[12] = {"TestString"};
+  char *pszData = "TestString";
+
+  printf("%d\n", strcmp(szBuffer, pszData));
+  printf("%d\n", strcmp("TestString", pszData));
+  printf("%d\n", strcmp("DataString", pszData));
+
+  return EXIT_SUCCESS;
+}
+/*0*/
+/*0*/
+/*-1*/
+```
+
+이렇게 해야 올바른 비교가 됩니다. `strcmp`는 `memcmp`와 비슷합니다. 특히 뻴셈 연산으로 정보 비교하는 원리는 같습니다. 하지만 비교 대상을 문자열로 가정하고 실행합니다. 메모리 길이를 받지 않습니다. `memcmp`는 함수는 같지만 문자열의 경우 길이가 다를 수 있습니다.
+
+길이가 다르면 일단 둘다 다른 문자열입니다.
+
+문자열을 비교했을 때 어느 문자열의 값이 더 큰지 비교하는 방법은 사전을 검색하는 방법과 일치합니다. `strncmp`함수를 이용하면 문자열의 앞에서 일정 길이만 비교할 수 있습니다.
+
+#### 문자열 검색
+
+```c
+void *strstr(const char *string, const char *strCharSet);
+```
+
+- 첫번째 인자는 검색 대상이 되는 문자열이 저장된 메모리 주소입니다. 주번째 인자는 검색할 문자가 저정된 메모리 주소입니다.
+- 문자열을 찾으면 해당 문자열이 저장된 메모리 주소를 반환합니다. 없으면 `NULL`을 반환합니다.
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+int main(void) {
+  char szBuffer[32] = {"I am a boy."};
+  printf("%p\n", (void *)(szBuffer));
+
+  printf("%p\n", (void *)(strstr(szBuffer, "am")));
+  printf("%p\n", (void *)(strstr(szBuffer, "boy")));
+
+  printf("index : %ld\n", strstr(szBuffer, "am") - szBuffer);
+  printf("index : %ld\n", strstr(szBuffer, "boy") - szBuffer);
+  return EXIT_SUCCESS;
+}
+/*0x16d5030b0*/
+/*0x16d5030b2*/
+/*0x16d5030b7*/
+/*index : 2*/
+/*index : 7*/
+```
+
+인덱스를 찾거나 직접 주소를 찾거나 가능합니다. 이 정보를 활용하면 메모리 주소의 연속된 구조를 생각해볼 수 있습니다. 메모리 주소의 마지막 위치만 보면 인덱스를 그대로 출력하고 있습니다.
+
+`strstr` 함수가 검색에 성공했을 때 반환하는 메모리의 주소는 첫번째 인수로 절달된 메모리의 주소보다 값이 더 큰 숫자입니다. 더 큰 줏자에서 기준이 되는 주소를 빼면 바로 인덱스가 나옵니다.
+
+#### 배열 연산자 풀어쓰기
+
+1차원 배열 포인터 관점입니다. 기준주소에서 일정 인덱스만큼 떨어진 상대주소를 배열의 원소의 변수로 지정하는 연산이라고 할 수 있습니다.
+
+`*(기준주소 + 인덱스)` 혹은 `기준주소[인덱스]`과 같은 의미입니다. 내부원리는 명확히 파악하기 어려워도 반드시 알아야 합니다. 간접지정 연산자를 활용하면 이해가 수월합니다.
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+
+int main(void) {
+  char szBuffer[32] = {"You are a girl."};
+  printf("%c\n", szBuffer[0]);
+  printf("%c\n", *szBuffer);
+  printf("%c\n", *(szBuffer + 0));
+
+  printf("%c\n", szBuffer[5]);
+  printf("%c\n", *(szBuffer + 5));
+
+  printf("%s\n", &szBuffer[4]);
+  printf("%s\n", &*(szBuffer + 4));
+  printf("%s\n", szBuffer + 4);
+
+  return EXIT_SUCCESS;
+}
+/*Y*/
+/*Y*/
+/*Y*/
+/*r*/
+/*r*/
+/*are a girl.*/
+/*are a girl.*/
+/*are a girl.*/
+```
+
+`*(szBuffer + 0)`은 `szBuffer[0]`을 풀어 쓴 것입니다. `0`은 안 더해도 상관없습니다. 배열을 이루고 있는 요소의 자료형이 char 타입입니다. 간접 지정 연산의 결과 모두 char 타입 l-value입니다.
+
+어려우면 `%s`는 배열의 이름과 대응되면 된다고 생각하면 됩니다.
+
+마지막은 인덱스가 모두 4인 원소의 주소입니다. 그이후부터 문자열끝까지 하나로 묶어서 출력합니다.
+
+이해가 어렵다면 그림을 그려보고 DAP을 활성화해보기 바랍니다.
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+
+int main(void) {
+  char szBuffer[32] = {"You are a girl."};
+  char *pszData = szBuffer + 4;
+
+  printf("%c\n", szBuffer[0]);
+  printf("%c\n", pszData[0]);
+  printf("%c\n", pszData[6]);
+
+  printf("%s\n", szBuffer + 4);
+  printf("%s\n", pszData);
+  printf("%s\n", pszData + 4);
+
+  return EXIT_SUCCESS;
+}
+/*Y*/
+/*a*/
+/*g*/
+/*are a girl.*/
+/*are a girl.*/
+/*a girl.*/
+```
+
+`szBuffer[0]`은 직관적입니다. 첫번째 문자을 바로 보여줍니다. `pszData[0]`은 4만큼 인덱스를 이동한 주소입니다. 이 주소의 시작 문자를 출력합니다. 시작하는 인덱스에서 6인덱스만 큼이동한 것입니다.
+
+`szBuffer + 4`은 문자열 주소를 받는데 거기서 인덱스를 4만큼 이동하고 거기서부터 읽기 시작한 것입니다. `pszData + 4`은 정의할 때부터 4만큼 이동했는데 4를 또 이동한만큼 출력한 것입니다.
+
+```c
+void *realloc(void *memblock, size_t size);
+```
+
+- `memblock` 기존에 동적할당된 메모리 주소
+  - 만일 이 주소가 `NULL` 이면 `malloc` 함수와 동일하게 동작
+- `size` 다시 할당받을 메모리의 바이트 단위 크기
+- 다시 할당된 메모리 덩어리 중 첫번째 바이트의 메모리 주소
+  - 재할당에 실패하면 NULL 반환
+    - 재할당 실패할 경우 첫번째 인자로 전달된 메모리를 수동으로 해제해야 함
+- 이미 할당된 메모리를 이름처럼 재할당하는 함수입니다.
+
+```c
+void *sprintf(char *buffer, const char *format [, argument]...);
+```
+
+- `buffer` 출력 문자열이 저장된 메모리 주소
+- `format` 형식 문자열이 저장된 메모리 주소
+- `[, argument]` 형식 문자열에 대응되는 가변 인자들
+- 출력된 문자열의 개수를 반환
+- 형식 문자열에 맞추어 특정 메모리에 문자열을 저장하는 함수
+
+문자열이 콘솔 화면에 출력되는 것이 아니라 특정 주소의 메모리에 출력합니다. 형식 문자열을 조합할 수 있었어 편리합니다.
+
+```c
+#include <malloc/malloc.h>
+#include <stdio.h>
+#include <stdlib.h>
+
+int main(void) {
+
+  char *pszBuffer = NULL, *pszNewBuffer = NULL;
+
+  pszBuffer = (char *)malloc(12);
+  sprintf(pszBuffer, "%s", "TestString");
+  printf("[%p] %ld %s\n", (void *)pszBuffer, malloc_size(pszBuffer), pszBuffer);
+
+  pszNewBuffer = (char *)realloc(pszBuffer, 32);
+  if (pszNewBuffer == NULL) {
+    free(pszBuffer);
+  }
+  sprintf(pszNewBuffer, "%s", "TestStringData");
+  printf("[%p] %ld %s\n", (void *)pszNewBuffer, malloc_size(pszNewBuffer),
+         pszNewBuffer);
+  free(pszNewBuffer);
+
+  return EXIT_SUCCESS;
+}
+/*[0x600003220020] 16 TestString*/
+/*[0x600003025240] 32 TestStringData*/
+```
+
+메모리 패딩 현상이 발생해서 12를 16으로 채운 것 같습니다.
+
+최초로 할당받은 메모리가 32바이트로 늘리는데 성공했습니다. 확장에 실패하면 다른 주소를 반환 할 것입니다. 중요한 것은 `realloc`이 실패할 수 있는 경우입니다. 너무 큰 크기의 메모리로 확장을 시도하면 운영체제가 못늘려줄 수 있습니다. `realloc`이 `NULL`을 반환하고 첫번째 인자를 메모리를 해제해주지도 않습니다.
+
+동적 할당하는 메모리가 내부적으로는 일정 크기의 덩어리로 관리되기 때문입니다. 덩어리가 지금은 16입니다. 그래서 12를 해도 12 단위로 소비하게 됩니다.
+
+`malloc`과 `realloc`은 메모리 소매상으로 생각할 수 있습니다. 운영체제를 메모리 공장으로 비유하면 사용자는 메모리 소비자입니다. 소매상은 공장에서 꽤 큰 덩어리의 메모리를 가져와 일정 크기로 잘라 소비자에게 전달합니다.
+
+#### 잘못된 메모리 접근
+
+C/C++ 개발을 할 때 경계 검사는 영원한 숙제입니다. 다음은 배열의 경계문제를 보여주는 예시입니다.
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+
+#define MAX_BUF_SIZE 32
+
+int main(void) {
+  char *pszBuffer = NULL;
+  pszBuffer = (char *)malloc(MAX_BUF_SIZE);
+  fgets(pszBuffer, sizeof(pszBuffer), stdin);
+  puts(pszBuffer);
+
+  free(pszBuffer);
+
+  return EXIT_SUCCESS;
+}
+/*Hong gildong*/
+/*Hong gi*/
+```
+
+- 경계를 초가하면 동적 할당된 메모리 단편이 훼손됩니다. 그 회손 사실이 확인되는 것은 메모리가 반환될 때입니다.
+
+- 먼저 `fgets`를 사용해야 컴파일러 에러를 통과할 수 있습니다.
+
+- 문자열이 깨졌다라는 말이 가끔 있습니다. 문자열 입출력 과정에서 메모리를 잘못 사용한 것입니다. 가장 흔한 실수는 메모리의 경계를 넘긴 입/출력을 수행한 것입니다. 자신에게 할당된 메모리가 아니라 엉뚱한 메모리에 대해 입출력을 수행한 경우입니다. 이런 오류를 해결할 때는 메모리를 그림으로 그려보고 디버거를 사용하기 바랍니다.
+
+### 포인터의 배열과 다중 포인터
+
+포인터는 변수 자체의 주소와 변수에 저장된 주소, 이렇게 2개의 주소가 공존합니다.
+
+다중 포인터라는 것도 사실은 단순히 일반 포인터와 다를 것이 없습니다. 포인터가 가리키는 것이 포인터 변수일뿐입니다. `int` 타입에 대한 포인터는 `int *`으로 기술하고 그에 대한 포인터는 `int **`으로 기술합니다. 선언된 포인터 변수에 대해 간접지정 연산을 수행한 결과는 포인터의 대상 자료형에 `*` 하나 지운것과 같습니다.
+
+다중 포인터를 배우기 전에 포인터도 변수라는 사실과 간접지정 연산결과의 자료형이 무엇인지 명확히 알 수 있어야 이해력을 높일 수 있습니다.
+
+| 포인터 자료형 | 간접지정 연산결과       | 코드 예                                 |
+| ------------- | ----------------------- | --------------------------------------- |
+| `char *`      | `*(char *) == char`     | `int nData = 10; int *pnData = &nData;` |
+| `char **`     | `*(char **) == char*`   | `int* *ppnData = &pnData;`              |
+| `char ***`    | `*(char ***) == char**` | `int** *pppnData = &ppnData;`           |
+
+#### `char*`의 배열
+
+다중 포인터가 등장하는 흔한 이유는 '포인터의 배열' 때문입니다. 포인터 배열이란 배열의 원소가 포인터 변수인 경우를 말합니다.
+
+배열(`char[5]`)을 이루고 있는 원소 자료형(`char`)에 대한 포인터(`char*`)에 담습니다.
+
+`%s` 형식문자는 자료형이 `char*`에 대응해야 하며, `%c`는 `char` 타입에 대응해야 합니다.
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+
+int main(void) {
+  char *astrList[3] = {"Hello", "World", "String"};
+
+  printf("%s\n", astrList[0]);
+  printf("%s\n", astrList[1]);
+  printf("%s\n", astrList[2]);
+
+  printf("%s\n", astrList[0] + 1);
+  printf("%s\n", astrList[1] + 2);
+  printf("%s\n", astrList[2] + 3);
+
+  printf("%c\n", astrList[0][3]);
+  printf("%c\n", astrList[1][3]);
+  printf("%c\n", astrList[2][3]);
+
+  return EXIT_SUCCESS;
+}
+/*Hello*/
+/*World*/
+/*String*/
+/*ello*/
+/*rld*/
+/*ing*/
+/*l*/
+/*l*/
+/*i*/
+```
+
+1차원 구조의 자료형 두 종류(포인터 배열과 문자 배열)가 묶여서 논리적인 2차원 구조를 만들었습니다.
+
+배열 속에는 문자배열의 주소만 있는 것입니다.
+
+`*` 표시가 붙어있으면 보통 따라가라고 생각할 수 있습니다.
+
+`astrList[0] + 1`을 보면 `*(astrList + 인덱스)`로 생각할 수 있습니다. 기준주소에서 인덱스만큼 이동한 상대 주소를 지정한다는 의미로 생각할 수 있습니다.
+
+`*(배열요소에 대한 포인터 + 인덱스)`로 생각하는 것도 가능합니다. `*(char** + int)` 이런식으로 생각하는 것도 가능합니다.
+
+`astrList[1][3]`을 풀어서 생각하면 `*(*(astrList + 1) + 3)`이 됩니다. 간접지정 연산 두번 수행한 것에 불과합니다. ~~책 오타인지 모르겠습니다.~~
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+
+int main(int argc, char *argv[]) {
+  int i = 0;
+  for (i = 0; i < argc; ++i) {
+    puts(argv[i]);
+  }
+
+  puts("End");
+  return EXIT_SUCCESS;
+}
+```
+
+`main`의 원형입니다. 첫번째 매개변수는 커맨드 개수이고 두번째 매개변수는 개별 커맨드입니다.
+
+매개변수를 출력하는 예제입니다. 배열 다중 포인터의 해당하는 경우입니다.
+
+#### 다중 포인터
+
+포인터에 대한 포인터 변수를 선언 및 정의한 다중 포인터 예제입니다. 3중 포인터도 자주 사용합니다. 문법으로 사용하는 방법을 익히는 것은 당연합니다.
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+
+int main(void) {
+  char ch = 'A';
+  char *pData = &ch;
+  char **ppData = &pData;
+  char ***pppData = &ppData;
+
+  printf("%c\n", ch);
+  printf("%c\n", *pData);
+  printf("%c\n", **ppData);
+  printf("%c\n", ***pppData);
+
+  return EXIT_SUCCESS;
+}
+/*A*/
+/*A*/
+/*A*/
+/*A*/
+```
+
+생각조금 하면 단순한 예제입니다.
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+
+int main(void) {
+  char *astrList[3] = {"Hello", "World", "String"};
+  char **ppstrList = astrList;
+  char ***pppstrList = &ppstrList;
+
+  puts(ppstrList[0]);
+  puts(ppstrList[1]);
+  puts(ppstrList[2]);
+
+  puts(*pppstrList[0]);
+  puts(*(*(pppstrList + 0) + 1));
+
+  return EXIT_SUCCESS;
+}
+/*Hello*/
+/*World*/
+/*String*/
+/*Hello*/
+/*World*/
+```
+
+#### 다차원 배열에 대한 포인터
+
+2차원 배열은 원소가 배열인 배일입니다. 배열의 식별자인 주소를 저장할 수 있는 포인터 변수는 배열 원소의 자료형에 대한 포인터입니다.
+
+`char[3][16]`은 `char[16]`이 3개인 배열입니다. 이 주소를 답을 변수 `char[16]*`입니다. 하지만 이렇게 표현하면 문법오류입니다. 한 단계 더 처리해야 합니다. 다차원 배열에 대한 포인터 변수를 선언할 수 있습니다.
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+
+int main(void) {
+  char astrList[2][12] = {"Hello", "World"};
+  char(*pstrList)[12] = astrList;
+
+  puts(pstrList[0]);
+  puts(pstrList[1]);
+  return EXIT_SUCCESS;
+}
+/*Hello*/
+/*World*/
+```
+
+문법적으로 바른 표현이 되려면 위처럼 작성해야 합니다. `char (*) [12]`으로 표현해야 합니다. 사람들은 `char[12] *`로 선언해야 할 것이라고 많이 착각합니다. 이렇게 되면 문법 오류입니다.
+
+배열의 요소 타입에 대한 포인터를 담는다고 해야 합니다. 이렇게 되면 생각이 조금 쉬워집니다. 영상처리에는 다차원 배열 포인터를 자주 사용합니다. 눈으로 볼 수 있는 이미지는 논리적으로 2차원 배열입니다.
+
+### 변수와 메모리
+
+변수의 본질은 메모리입니다. 스택, 힙, 텍스트, 데이터 영역 메모리를 주로 사용할 수 있습니다. 변수를 선언하는 것은 함수 내부에 속한 지역 변수이고 지역 변수는 4종류 메모리 중에도 스택에 할당합니다. 스택 구조는 메모리는 관리가 자동으로 처리합니다. 사용하는 변수를 자동변수라고 부릅니다.
+
+아무런 언급이 없는 지역변수는 컴파일러가 알아서 모두 자종변수로 처리합니다. 이런 이유로 특별히 명시한 것은 아닙니다. 메모리 부류 지정자를 앞으로 다룰 것입니다.
+
+C 언어는 지정자로 기술 할 수 있는 예약어에 `extern`, `auto`, `static`, `register` 등이 있습니다. 여기서 레지스터는 메모리가 아니라 진짜 CPU 레지스터를 의미합니다. 가장 빠른 메모리에 해당합니다.
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+
+int main(void) {
+  auto int aList[3] = {10, 20, 30};
+  auto int i = 0;
+
+  for (i = 0; i < 3; ++i) {
+    printf("%d\t", aList[i]);
+  }
+
+  return EXIT_SUCCESS;
+}
+/*10	20	30*/
+```
+
+스코프 내부에서는 메모리 지정자를 생략하면 모두 `auto`로 간주합니다. 하지만 C++ 11부터 `auto`의 의미가 달라졌습니다. 그래서 이 설명은 C++에 적용되지 않습니다.
+
+전역변수 정적변수가 사용하는 데이터 영역 메모리는 프로그램이 시작될 때 확보되어 정료까지 유지합니다. 함수가 호출되어 스코프가 열리고 닫혀도 사라지는 것이 아닙니다.
+
+#### 정적변수 static
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+
+int TestFunc(void) {
+  static int nData = 10;
+  ++nData;
+  return nData;
+}
+
+int main(void) {
+  printf("%d\n", TestFunc());
+  printf("%d\n", TestFunc());
+  printf("%d\n", TestFunc());
+
+  return EXIT_SUCCESS;
+}
+/*11*/
+/*12*/
+/*13*/
+```
+
+static 변수는 전역변수처럼 선언될 때 단 한번만 초기화합니다.
+
+함수가 반환해(메모리가 사라지지 않으므로) `nData` 변수는 전역변수처럼 그대로 존재합니다.
+
+기술적으로 전역변수나 정적변수는 모두 동시성을 지원하가 어렵습니다. 멀티 스레드를 넘어 물리적으로 CPU 코어 개수가 여러 개인 지금 동시성, 병렬처리랑 직결되고 병렬처리를 다시 성능과 직결됩니다.
+
+#### 레지스터 변수 register
+
+레지스터 변수는 CPU 레지스터를 사용하기 위한 것입니다. 지금도 레지스터 변수를 다루는 일은 있을 것입니다. 임베디드 운영체제는 한국에서 자주 제작하기 때문에 가끔은 따질 필요가 있습니다. 문법상 주의할 것이 있습니다.
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+
+int main(void) {
+  register int i = 0;
+  printf("%d\n", i);
+  /*printf("%d\n", &i);*/
+
+  return EXIT_SUCCESS;
+}
+/*0*/
+```
+
+레티스터 변수는 CPU의 일부이므로 별도로 주소거 없습니다.
+
+CPU의 일부인 레지스터는 일반 메모리와 달리 주소가 아니라 고유명사로 식별됩니다. 저마다 고유한 기능과 이름이 붙어있습니다. 범용 레지스터라는 것이 존재하기는 하지만 그 레지스터들도 자기 이름이 있습니다.
+
+레지스터 변수에 대해 일반 변수처럼 주소 연산을 수행할 수 없습니다. 그 외에 사용방법은 일반 자동변수랑 다르지 않습니다.
+
+1. `int` 형 변수 `nData`가 선언되었다고 가정한다면, 소스코드에 기술된 `nData`와 `&nData`의 차이점이 무엇인지 기술하세요.
+
+`nData`는 주소에 있는 값을 접근합니다. `&nData`는 변수의 주소를 접근합니다.
+
+2. 매개변수로 `char *` 타입을 받아서 문자열의 길이를 계산해 반환하는 함수를 작성하세요. 함수의 이름은 `GetLength()`입니다.
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+
+/* 
+ * 매개변수로 `char *` 타입을 받아서 문자열의 길이를 계산해 반환하는 함수를
+ * 작성하세요. 함수의 이름은 `GetLength()`입니다. 
+ */
+int GetLength(char *str) {
+  char *startRef = str;
+
+  while (*startRef != '\0') {
+    startRef++;
+  }
+
+  return startRef - str;
+}
+
+int main(void) {
+  char szBuffer[16] = {"Hello"};
+
+  printf("%d\n", GetLength(szBuffer));
+
+  return EXIT_SUCCESS;
+}
+/*5*/
+```
+
+3. 다음 코드의 논리적 오류 2가지는 무엇이고 어떻게 수정해야 하는지 기술하시오.
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+
+int main(void) {
+  char szBuffer[12] = {"HelloWorld"};
+  char *pszData = NULL;
+
+  pszData = (char *)malloc(sizeof(char) * 12);
+  pszData = szBuffer;
+  puts(pszData);
+
+  return EXIT_SUCCESS;
+}
+```
+
+`malloc`이 있으면 `free`가 필요합니다. 힙할당을 하면 나중에 해제를 해줘야 합니다.
+
+`pszData`은 포인터 변수입니다. 문자열을 받기위한 포인터입니다. 하지만 지금은 
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+
+int main(void) {
+  char szBuffer[12] = {"HelloWorld"};
+  char *pszData = NULL;
+
+  pszData = (char *)malloc(sizeof(char) * 12);
+  sprintf(pszData, "%s", szBuffer);
+  puts(pszData);
+  free(pszData);
+  return EXIT_SUCCESS;
+}
+```
+
+출력하고 해제하면 됩니다. 그리고 복사용 함수를 사용해서 문자열 복사를 하면 됩니다.
+
+4. 인터넷에서 `strrev()` 함수의 사용법에 대해 찾아보고 이 함수와 동일한 기능을 수행할 수 있는 `MyStrrev()` 함수를 작성하세요.
+
+```c
+#include <malloc/malloc.h>
+#include <stdio.h>
+#include <stdlib.h>
+
+int GetLength(char *str) {
+  char *startRef = str;
+
+  while (*startRef != '\0') {
+    startRef++;
+  }
+
+  return startRef - str;
+}
+
+char *MyStrrev(char *str) {
+  // 처음부터 가운데까지 순회
+  char temp = '\0';
+  int i = 0, length = GetLength(str);
+  for (i = 0; i < length / 2; ++i) {
+    if (i == length - i - 1)
+      break;
+    // 양끝을 고르기
+    // 자리를 교환
+    temp = str[i];
+    str[i] = str[length - i - 1];
+    str[length - i - 1] = temp;
+  }
+
+  return str;
+}
+
+int main(void) {
+  char *pszData = NULL;
+  pszData = (char *)malloc(sizeof(char) * 16);
+  sprintf(pszData, "%s", "HelloWorld"); // 힙 할당
+  puts(pszData);
+
+  MyStrrev(pszData);
+  puts(pszData);
+  free(pszData);
+  return EXIT_SUCCESS;
+}
+/*HelloWorld*/
+/*dlroWolleH*/
+```
+
+문자열 뒤집는 예제였습니다. 새로운 힙할당을 할 필요는 없고 주소를 전달하면 주소에 있는 값을 갱신하는 것이었습니다.
+
+5. 사용자로부터 입력받은 첫 번째 문자열을 동적 할당된 메모리에 저장한 후 화면에 출력하고, 두 번째로 입력 받은 문자열을 첫 번째로 동적 할당된 메모리에 덧붙여 출력하는 프로그램을 작성합니다. 이때, 메모리가 부족해서 문제가 발생하지 않도록 메모리의 크기를 조정합니다. 기존에 할당받은 메모리의 크기를 늘려도 좋고 다시 할당받아도 좋습니다. 혹은 두 경우를 모두 구현하는 것도 좋습니다.
+
+```c
+#include <malloc/malloc.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+#define BUF_UNIT 16 * sizeof(char)
+
+/*
+ * 사용자로부터 입력받은 첫 번째 문자열을 동적 할당된 메모리에 저장한 후 화면에
+ * 출력하고, 두 번째로 입력 받은 문자열을 첫 번째로 동적 할당된 메모리에 덧붙여
+ * 출력하는 프로그램을 작성합니다. 이때, 메모리가 부족해서 문제가 발생하지
+ * 않도록 메모리의 크기를 조정합니다. 기존에 할당받은 메모리의 크기를 늘려도
+ * 좋고 다시 할당받아도 좋습니다. 혹은 두 경우를 모두 구현하는 것도 좋습니다.
+ */
+int main(void) {
+  printf("%ld글자 이하로 입력하세요. : ", BUF_UNIT);
+  char *firstInput = NULL;
+  firstInput = (char *)malloc(BUF_UNIT);             // 힙에 저장
+  fgets(firstInput, malloc_size(firstInput), stdin); // 사용자로부터 입력
+  puts(firstInput);
+
+  // 개행문자 제거
+  firstInput[strlen(firstInput)-1] = 0;
+
+  printf("%ld글자 이하로 입력하세요. : ", BUF_UNIT);
+  char *secondInput = NULL;
+  secondInput = (char *)malloc(BUF_UNIT);              // 힙에 저장
+  fgets(secondInput, malloc_size(secondInput), stdin); // 사용자로부터 입력
+
+  if (strlen(firstInput) + strlen(secondInput) + 1 >= BUF_UNIT) {
+    printf("메모리 확장\n");
+    firstInput = (char *)realloc(firstInput, BUF_UNIT * 2); // 공간 확장
+    if (firstInput == NULL) {
+      free(firstInput);
+      free(secondInput);
+      return EXIT_FAILURE;
+    }
+  }
+
+  strcat(firstInput, secondInput);
+  printf("붙인 문자열: %s\n", firstInput);
+
+  free(firstInput);
+  free(secondInput);
+  return EXIT_SUCCESS;
+}
+```
+
+교훈 `\0`을 만나면 형식문자는 더이상 출력을 하지 않습니다. `\0`이 붙은 상태로 이어 붙인 것이었습니다.
+
+6. 정수를 입력받고, 그 개수만큼 `char *`를 여러 개 저장할 수 있는 메모리를 동적 할당합니다. 그리고 입력할 문자열의 최대 길이를 입력받고, 최대 길이의 문자열을 저장할 수 있는 크기의 메모리를 동적 할당하여 입력받은 문자열을 저장한 후 출력하는 프로그램을 작성합니다.
+
+```c
+#include <malloc/malloc.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+/*
+ * 정수를 입력받고, 그 개수만큼 `char *`를 여러 개 저장할 수 있는 메모리를 동적
+ * 할당합니다. 그리고 입력할 문자열의 최대 길이를 입력받고, 최대 길이의 문자열을
+ * 저장할 수 있는 크기의 메모리를 동적 할당하여 입력받은 문자열을 저장한 후
+ * 출력하는 프로그램을 작성합니다.
+ */
+int main(void) {
+  int inputNum = 0, bufSize = 0, i = 0;
+  unsigned long max = 0;
+  printf("비교할 문자열의 개수를 정해주세요 : ");
+  scanf("%d%*c", &inputNum);
+  printf("최대 문자열의 길이를 정해주세요 : ");
+  scanf("%d%*c", &bufSize);
+  bufSize = sizeof(char) * bufSize;
+
+  if (inputNum <= 0 || bufSize <= 0) {
+    return EXIT_FAILURE;
+  }
+
+  // 배열의 원소는 포인터
+  char *(inputArray)[inputNum];
+
+  for (i = 0; i < inputNum; ++i) {
+    inputArray[i] = malloc(bufSize);
+    fgets(inputArray[i], bufSize, stdin);
+  }
+
+  for (i = 0; i < inputNum; ++i) {
+    printf("%s\n", inputArray[i]);
+    if (strlen(inputArray[i]) > max)
+      max = strlen(inputArray[i]);
+    free(inputArray[i]);
+  }
+  printf("max: %ld\n", max);
+  return EXIT_SUCCESS;
+}
+```
