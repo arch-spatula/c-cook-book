@@ -6155,7 +6155,7 @@ int main(void) {
 /*Hong gi*/
 ```
 
-- 경계를 초가하면 동적 할당된 메모리 단편이 훼손됩니다. 그 회손 사실이 확인되는 것은 메모리가 반환될 때입니다.
+- 경계를 초가하면 동적 할당된 메모리 단편이 훼손됩니다. 그 훼손 사실이 확인되는 것은 메모리가 반환될 때입니다.
 
 - 먼저 `fgets`를 사용해야 컴파일러 에러를 통과할 수 있습니다.
 
@@ -6383,7 +6383,7 @@ static 변수는 전역변수처럼 선언될 때 단 한번만 초기화합니�
 
 함수가 반환해(메모리가 사라지지 않으므로) `nData` 변수는 전역변수처럼 그대로 존재합니다.
 
-기술적으로 전역변수나 정적변수는 모두 동시성을 지원하가 어렵습니다. 멀티 스레드를 넘어 물리적으로 CPU 코어 개수가 여러 개인 지금 동시성, 병렬처리랑 직결되고 병렬처리를 다시 성능과 직결됩니다.
+- 기술적으로 전역변수나 정적변수는 모두 동시성을 지원하가 어렵습니다. 멀티 스레드를 넘어 물리적으로 CPU 코어 개수가 여러 개인 지금 동시성, 병렬처리랑 직결되고 병렬처리를 다시 성능과 직결됩니다.
 
 #### 레지스터 변수 register
 
@@ -6419,9 +6419,9 @@ CPU의 일부인 레지스터는 일반 메모리와 달리 주소가 아니라 
 #include <stdio.h>
 #include <stdlib.h>
 
-/* 
+/*
  * 매개변수로 `char *` 타입을 받아서 문자열의 길이를 계산해 반환하는 함수를
- * 작성하세요. 함수의 이름은 `GetLength()`입니다. 
+ * 작성하세요. 함수의 이름은 `GetLength()`입니다.
  */
 int GetLength(char *str) {
   char *startRef = str;
@@ -6463,7 +6463,7 @@ int main(void) {
 
 `malloc`이 있으면 `free`가 필요합니다. 힙할당을 하면 나중에 해제를 해줘야 합니다.
 
-`pszData`은 포인터 변수입니다. 문자열을 받기위한 포인터입니다. 하지만 지금은 
+`pszData`은 포인터 변수입니다. 문자열을 받기위한 포인터입니다. 하지만 지금은
 
 ```c
 #include <stdio.h>
@@ -6630,5 +6630,1456 @@ int main(void) {
   }
   printf("max: %ld\n", max);
   return EXIT_SUCCESS;
+}
+```
+
+## 함수 응용
+
+기본 이론은 포인터를 배우기 전과 후로 나눕니다. C 언어에서 함수를 제대로 활용하려면 반드시 포인터를 알아야 합니다.
+
+지금부터는 기본적인 함수 관련 문법, 메모리의 동적 할당 및 해제에 대해 알고 있다고 가정합니다.
+
+가장 실질적인 포인터, 함수활용 사례가 담긴 것은 바로 이번 장도 해당합니다. 실무에서 가장 많이 등장할 가능성이 높은 형식들을 설명한다고 생각해도 좋습니다.
+
+### 매개변수 전달 방법
+
+호출자 정의자의 관계를 묶는 것은 바인딩입니다. 두 함수가 서로 연결되는 인터페이스는 바로 매개변수와 반환 타입입니다. 매개변수로 전달하는 정보가 무엇이냐에 따라 매개변수 전달방법이 달라집니다. 기본적으로 Call by Value, Call by Reference로 나누어집니다.
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+
+int add(int a, int b) { return a + b; }
+
+int main(void) {
+  printf("%d\n", add(3, 4));
+  return EXIT_SUCCESS;
+}
+/*7*/
+```
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+
+int add(int *a, int *b) { return *a + *b; }
+
+int main(void) {
+  int a = 3, b = 4;
+  printf("%d\n", add(&a, &b));
+  return EXIT_SUCCESS;
+}
+/*7*/
+```
+
+핵심은 매개변수가 포인터라는 점입니다. 호출자는 주소를 인자로 대입해야 합니다. 주소를 받은 매개변수는 주소가 가리키는 값을 활용해서 계산을 처리합니다.
+
+이런 것의 장점은 배열처럼 큰 메모리를 매개변수로 전달할 수 있다는 점입니다.
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+
+void initList(int *pList, int nSize) {
+  int i = 0;
+  for (i = 0; i < nSize; ++i) {
+    printf("정수를 입력하세요. : ");
+    scanf("%d", &pList[i]);
+  }
+}
+
+void SortList(int *pList, int nSize) {
+  int i = 0, j = 0, nTmp = 0;
+  for (i = 0; i < nSize - 1; ++i) {
+    for (j = i + 1; j < 5; ++j) {
+      if (pList[j] < pList[i]) {
+        nTmp = pList[j];
+        pList[j] = pList[i];
+        pList[i] = nTmp;
+      }
+    }
+  }
+}
+
+void PrintList(int *pList, int nSize) {
+  int i = 0;
+  for (i = 0; i < nSize; ++i) {
+    printf("%d\t", pList[i]);
+  }
+}
+
+int main(void) {
+  int aList[5] = {0};
+  initList(aList, 5);
+  SortList(aList, 5);
+  PrintList(aList, 5);
+
+  return EXIT_SUCCESS;
+}
+/*정수를 입력하세요. : 20*/
+/*정수를 입력하세요. : 40*/
+/*정수를 입력하세요. : 30*/
+/*정수를 입력하세요. : 10*/
+/*정수를 입력하세요. : 50*/
+/*10	20	30	40	50	%*/
+```
+
+이전에 봤던 예시이고 포인터를 이해하고 있었지만 뭐 알 수 있습니다.
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+
+void GetName(char *pszName, int nSize) {
+  printf("이름을 입력하세요. : ");
+  fgets(pszName, nSize, stdin);
+}
+
+int main(void) {
+  char szName[32] = {0};
+  GetName(szName, sizeof(szName));
+  printf("당신의 이름은 %s입니다.\n", szName);
+  return EXIT_SUCCESS;
+}
+/*이름을 입력하세요. : asdf*/
+/*당신의 이름은 asdf*/
+/*입니다.*/
+```
+
+포인터의 가장 큰 문제는 가리키는 대상의 실제 크기를 포인터 자체만으로는 알 수 없다는 점입니다.
+
+`char *pszName`을 `char pszName[]`으로 정의했으면 더 명시적이었을 것입니다.
+
+다음은 조금 변형한 예시입니다. 피 호출자 함수가 동적으로 할당한 메모리를 호출자 함수에서 해제하는 특징이 있습니다.
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+
+char *GetName(void) {
+  char *pszName = NULL;
+  pszName = (char *)calloc(32, sizeof(char));
+  printf("이름을 입력하세요. : ");
+  fgets(pszName, sizeof(char) * 32, stdin);
+  return pszName;
+}
+
+int main(void) {
+  char *pszName = NULL;
+  pszName = GetName();
+  printf("당신의 이름은 %s입니다.\n", pszName);
+  free(pszName);
+  return EXIT_SUCCESS;
+}
+/*이름을 입력하세요. : asdf*/
+/*당신의 이름은 asdf*/
+/*입니다.*/
+```
+
+`pszName`은 이름은 같지만 속한 스코프가 다릅니다. 당연히 다른 변수입니다. 각자 메모리 주소가 다를 것입니다. `calloc` 함수가 반환한 주소가 동적 할당한 메모리 주소입니다.
+
+메모리를 할당하는 함수와 해제하는 함수가 달라질 수 있는 예시도 사용한다는 것을 기억하기 바랍니다. 정의자가 할당하고 호출자가 해제해야 하는 방식으로 작성하는 경우가 있습니다.
+
+개발자는 변화를 하나하나 추적하는 것처럼 작성해서 오류를 해결해야 합니다. 메모리 혹은 변수를 추적할 수 없으면 개발자가 되려는 의지가 없는 것입니다.
+
+다음은 Call By Reference로 자주 사용하는 예시입니다. 이해력이 부족하면 암기라도 하기 바랍니다.
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+
+void swap(int *pLeft, int *pRight) {
+  int temp = *pLeft;
+  *pLeft = *pRight;
+  *pRight = temp;
+}
+
+int main(void) {
+  int x = 10, y = 20;
+  printf("x : %d, y : %d\n", x, y);
+  swap(&x, &y);
+  printf("x : %d, y : %d\n", x, y);
+  return EXIT_SUCCESS;
+}
+/*x : 10, y : 20*/
+/*x : 20, y : 10*/
+```
+
+포인터 변수를 받아 교환합니다.
+
+다음은 문자열 길이를 측정하는 기능을 함수로 구현하는 것입니다. 문자열 길이를 측정하는 함수들은 많지만 이것도 그 중 하나입니다.
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+
+int getLength(const char *pszParam) {
+
+  int nLength = 0;
+  while (pszParam[nLength] != '\0') {
+    nLength += 1;
+  }
+  return nLength;
+}
+
+int main(void) {
+  char *pszData = "Hello";
+  printf("%d\n", getLength("Hi"));
+  printf("%d\n", getLength(pszData));
+
+  return EXIT_SUCCESS;
+}
+/*2*/
+/*5*/
+```
+
+`const` 타입한정어입니다. 상수로 간주한다는 의미입니다. 이렇게 되면 읽기만 가능하고 쓰기를 할 수 없습니다.
+
+이번에는 연습 문제입니다. 문자열 복사하는 함수를 만들기 바랍니다.
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+
+int main(void) {
+  char szBufferSrc[12] = {"TestString"};
+  char szBufferDst[12] = {0};
+
+  MyStrcpy(szBufferDst, sizeof(szBufferDst), szBufferSrc);
+  puts(szBufferDst);
+  return EXIT_SUCCESS;
+}
+```
+
+위 `MyStrcpy`를 함수를 정의하기 바랍니다.
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+
+void MyStrcpy(char *dist, int size, char *target) {
+  int nLength = 0;
+  while (target[nLength] != '\0' && nLength <= size) {
+    dist[nLength] = target[nLength];
+    nLength += 1;
+  }
+}
+
+int main(void) {
+  char szBufferSrc[12] = {"TestString"};
+  char szBufferDst[12] = {0};
+
+  MyStrcpy(szBufferDst, sizeof(szBufferDst), szBufferSrc);
+  puts(szBufferDst);
+  return EXIT_SUCCESS;
+}
+```
+
+저는 이렇게 해결 했습니다. 정답지는 예외처리가 추가되어 있습니다.
+
+다음은 잘못된 주소 전달입니다.
+
+정의자 함수가 포인터를 반환하는 경우 정의자 함수가 반환한 주소가 가리키는 대상 메모리 주소는 반드시 유효해야 합니다. 운영체제에 반환했거나 곧 사라질 메모리에 대한 주소를 반환하는 일은 없어야 합니다.
+
+다음 예제처럼 주소를 반환하면 심각한 문제를 만들 것입니다.
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+
+int *TestFunc(void) {
+  int nData = 10;
+  return &nData;
+}
+
+int main(void) {
+  int *pnResult = NULL;
+  pnResult = TestFunc();
+  printf("%d\n", *pnResult);
+
+  return EXIT_SUCCESS;
+}
+```
+
+린트부터 경고 표시합니다. 스텍에 저장하는데 반환시도 하는 것이 잘못되었다고 알여줍니다. 함수 내부에 선언된 자동변수의 주소를 반환하는 것입니다. 정적 할당된 메모리도 아니고 정적 변수도 아닙니다.
+
+스택은 스코프가 닫히면 그 내부에서 선언된 것들이 사실상 사라집니다. 사라질 자동변수의 주소를 반환하고 있습니다. 다행이 컴파일에러도 발생할 것입니다.
+
+흥미로운 이유는 플래그를 꺼두고 컴파일하고 실행하면 사라진 대상 메모리에 간접지정 연산으로 접근해도 별다른 문제가 없어 보입니다. 이런 현상은 스택 메모리가 사라지거나 해제한 것이 아니라 가용메모리 범위가 줄어든 것(지정해제)에 불과합니다.
+
+왜 작동하는가?
+
+심각한 문제가 있음에도 제대로 값을 출력하면 심각한 문제입니다. 이런 코드가 잘못된 것이라는 사실을 인식하기 어렵습니다. 컴파일 오류는 최신화된 프로젝트에서는 확인할 수 있지만 일반적인 레거시에서는 어렵습니다. 일단 이런 오류는 무조건 수정해야 합니다. 전문개발자들은 "왜 동작하는 것인지 모르겠다. 작동하지 않는 것보다 더 큰 문제야"라고 말합니다. 정상적으로 작동하지 말아야 할 코드가 동적한 것은 정반대인 경우보다 더 심각한 상황입니다. 그냥 덮으면 곤란합니다.
+
+### 스택 프레임 그리는 방법
+
+함수 내부에 선언된 변수와 매개변수는 기본적으로 '스택'을 사용합니다.
+
+스택은 선형 자료구조에 해당합니다. 이 스택 영역은 시스템이 관리합니다. 개발자가 스택 메모리의 지정과 해제에 관여할 필요도 없습니다. 또 관여하려고 하지 말아야 합니다.
+
+스택이 어떤 형식으로 관리되는지 구체적으로 알아야 합니다. 관리 형식은 스택 프레임(stack frame)이라 합니다. 이번에는 스택 프레임을 구성하는 핵심 내용입니다. 스택은 최대 크기가 처음부터 정해져있습니다. 스택은 일정 크기의 주소에 주소가 증가하는 방향이 아닌 역방향으로 증가하기 때문입니다.
+
+스택을 이해할 때는 그림을 그려보기 바랍니다.
+
+스택의 왼쪽에는 함수의 이름과 스코프의 시작 지점을 표시하고 오른쪽에는 식별자의 이름을 기술합니다. 우리가 작성한 모든 예제들은 항상 `main()`에서 시작하기 때문에 최초로 늘어난 스택은 `main` 함수에 속한 것으로 가정합니다. 스택은 위로 쌓입니다. 메모리의 주소는 아래로 증가합니다. 메모리 주소가 증가했다는 것은 스택이 줄어들었음을 의미하고 주솟값이 작아졌다는 것은 스택의 증가를 의미한다고 생각할 수 있습니다.
+
+```c
+#include <stdlib.h>
+
+int main(void) {
+  int x = 10, y = 20;
+  return EXIT_SUCCESS;
+}
+```
+
+함수 내부에 선언된 변수를 순서대로 스택에 그려 표시합니다.
+
+먼저 stack에 push했다는 개념으로 접근하면 됩니다.
+
+포인터 변수는 별도로 표시합니다.
+
+```c
+#include <stdlib.h>
+
+int main(void) {
+  int x = 10, y = 20;
+  int *pnData = &x;
+
+  *pnData = 100;
+
+  return EXIT_SUCCESS;
+}
+```
+
+포인터 변수에 담긴 주소를 따라가면 원래 주소에 도달할 수 있다고 표시합니다.
+
+포인터 변수는 간접지정 대상이 어디인지 포인터가 가리키는 지점을 표시해야 합니다. NULL로 초기화하면 NULL이라고 선을 그어 표시하지 않습니다. NULL 포인터는 아무것도 가리키지 않습니다.
+
+배열의 인덱스는 아래로 증가하게 그립니다.
+
+```c
+#include <stdlib.h>
+
+int main(void) {
+  int aList[3] = {10, 20, 30};
+  int *pnData = aList;
+  *(pnData + 1) = 100;
+
+  return EXIT_SUCCESS;
+}
+```
+
+배열의 인덱스는 주소가 증가하는 방향으로 표시해야 합니다.
+
+스택에 그릴 때 0번 요소가 스택의 상단에 표시되도록 그립니다. 배열의 이름은 주소상수이므로 그자체는 스택에 push하지 않습니다. 단지 주소에 대한 식별자로 표시만 합니다.
+
+연산의 결과로 얻은 상대주소가 어디인지 스스로 표시할 수 있어야 합니다.
+
+동적할당된 메모리는 따로 표시합니다. 메모리를 동적 할당하거나, 정정 영역을 사용하는 변수가 등장하면 이는 스택 영역이 아니므로 별도로 그려서 표시해야 합니다.
+
+한 가지 주의해야 할 사항은 반드시 동적 할당된 메모리의 크기를 기술하고 동적 할당된 메모리의 기준주소를 포인터 변수가 가리키도록 선을 그어 표시해야 합니다.
+
+```c
+#include <stdlib.h>
+#include <string.h>
+
+int main(void) {
+  int nData = 10;
+  char *pszBuffer = NULL;
+  pszBuffer = (char *)malloc(12);
+  strcpy(pszBuffer, "Hello");
+  free(pszBuffer);
+
+  return EXIT_SUCCESS;
+}
+```
+
+메모리는 해제하면 삭제표시도 하도록 합니다. 지워지지 않았다면 메모리 누수로 표시합니다. 스택프레임이 모두 사라져도 남는다면 메모리 누수를 발견한 것입니다.
+
+매개변수는 오른쪽부터 스택에 그리며 새 스코프는 기존 스택 위에 그립니다.
+
+```c
+#include <stdlib.h>
+
+int add(int a, int b) {
+  int nResult = 0;
+  nResult = a + b;
+  return nResult;
+}
+
+int main(void) {
+  int nResult = 0;
+  nResult = add(3, 4);
+  return EXIT_SUCCESS;
+}
+```
+
+함수가 함수를 호출해 함수 몸체에 대한 스코프가 형성되면 스택에 가로선을 길게 그어 표시합니다.
+
+스택을 `Add` 함수호출 전과 같은 상태로 되돌립니다.
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+
+char *GetName(void) {
+  char *pszName = NULL;
+  pszName = (char *)calloc(32, sizeof(char));
+  printf("이름을 입력하세요. : ");
+  fgets(pszName, sizeof(char) * 32, stdin);
+  return pszName;
+}
+
+int main(void) {
+  char *pszName = NULL;
+  pszName = GetName();
+  printf("당신의 이름은 %s입니다.\n", pszName);
+  free(pszName);
+  return EXIT_SUCCESS;
+}
+```
+
+만약 여기서 스택프레임을 그려본다면 `GetName`을 Pop하고 동적할 당한 메모리는 `main`이 받습니다. 스택 프레임을 봤을 때 나중에 `main`에서 해제한다는 사실이 중요합니다.
+
+스코프가 닫히면 그림에서 지웁니다.
+
+함수의 몸체는 스코프로 만들어집니다. 이름이 중복될 경우 식별자를 검색하는 순서는 가장 최근에 형성된 스코프가 우선하는 것인데, 이를 스택 프레임으로 설명하면 훨씬 더 정확하게 말할 수 있습니다.
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+
+int main(void) {
+  int nInput = 0;
+  scanf("%d", &nInput);
+
+  if (nInput > 10) {
+    int nInput = 0;
+    printf("%d\n", nInput);
+
+    if (nInput < 20) {
+
+      int nInput = 0;
+      printf("%d\n", nInput);
+    }
+  }
+
+  printf("%d\n", nInput);
+  return EXIT_SUCCESS;
+}
+```
+
+스택에서 식별자를 검색할 때는 스택의 맨 위에서 아래쪽으로 검색합니다. 그리고 최대 함수 몸체 스코프까지 검색합니다. 그래도 못 찾으면 전역 변수를 확인합니다.
+
+스택으로부터 꺼내어 진다(Pop)는 것은 변수가 사라진다는 의미입니다.
+
+정적변수, 전역변수는 별도로 표시합니다.
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+
+int TestFunc(void) {
+  static int nData = 10;
+  ++nData;
+  return nData;
+}
+
+int main(void) {
+  printf("%d\n", TestFunc());
+  printf("%d\n", TestFunc());
+  printf("%d\n", TestFunc());
+
+  return EXIT_SUCCESS;
+}
+/*11*/
+/*12*/
+/*13*/
+```
+
+이 경우가 정적변수가 존재하는 경우입니다. 스택이 늘고 줄고를 반복해도 데이터 영역은 아무 관련이 없습니다.
+
+스택프레임을 잘 이해해야 재귀호출을 정확히 이해할 수 있습니다. 또 `gets`가 Buffer overrun 보안 취약점을 갖는 원리도 파악할 수 있습니다. 매우 다양한 시스템 프로그래밍 이론을 정확히 이해하는데 유용한 도구입니다. 스택프레임을 그려보고 표시하는 연습을 자주 시도해봐야 합니다.
+
+### 재귀호출
+
+재귀호출은 함수가 내부에서 다시 자기 자신을 호출하는 것입니다. 우선 그게 가능한 것인가에 대한 의문이 들 수 있습니다. 하지만 안 될 이유도 없습니다.
+
+반복문과 스택 자료구조를 합친 것이 바로 재귀호출입니다. 논리적인 코드의 구조는 반복문과 같으나 반복 과정에서 선형 자료구조인 스택이 필요한 경우 재귀호출을 사용하는 것도 전략입니다.
+
+다음은 팩토리얼 함수를 반복문을 활용해 계산하는 코드입니다. 어려울 것이 없습니다.
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+
+int main(void) {
+  int i = 0, nFcat = 1;
+  for (i = 5; i >= 1; --i) {
+    nFcat *= i;
+  }
+  printf("5! == %d\n", nFcat);
+
+  return EXIT_SUCCESS;
+}
+/*5! == 120*/
+```
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+
+int factorial(int nParam) {
+
+  int nResutl = 0;
+  if (nParam == 1)
+    return 1;
+
+  nResutl = nParam * factorial(nParam - 1);
+  return nResutl;
+}
+int main(void) {
+
+  printf("5! == %d\n", factorial(5));
+  return EXIT_SUCCESS;
+}
+/*5! == 120*/
+```
+
+반복문에서 조건을 만족하지 못하면 반복이 멈추지만 재귀호출에서는 조건에 부합할 때 함수가 반환하는 방법으로 멈춥니다.
+
+재귀호출이 어려운 이유는 같은 이름을 가진 nParam이 계속 등장하는데다 자신이 자신을 호출하는 상식적이지 않은 사황이 반복되기 때문입니다. 기술적으로는 아무런 문제가 없다는 사실을 확인할 수 있습니다. 재귀호출도 그냥 함수호출입니다. 다만, 그 대상이 자기 자신일 뿐입니다.
+
+#### 재귀호출을 이용한 문자열 출력
+
+재귀호출을 사용하는 가장 흔한 경우는 비선형 자료구조를 다룰 때입니다. 비선형 자료구조에는 대표적으로 트리가 있습니다.
+
+다음 예제는 문자열을 한 문자씩 재귀호출로 반복하여 출력하는 프로그램입니다.
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+
+void putData(char *str) {
+  if (*str == '\0')
+    return;
+  putchar(*str);
+  putData(str + 1);
+}
+int main(void) {
+  putData("TestData");
+  putchar('\n');
+
+  return EXIT_SUCCESS;
+}
+/*TestData*/
+```
+
+`putchar`와 `putData`의 순서를 바꾸면 아마 반대로 출력되었을 것입니다.
+
+보통 스택은 되돌리기 기능과 같은 것을 구현하기 좋습니다.
+
+만약의 로그를 남겨도 스택형식이 더 유리합니다. 가장 최근에서 pop할 때마다 과거를 보기 때문에 파악하기 더 쉽습니다.
+
+#### 재귀호출의 장/단점
+
+재귀호출을 반복문과 스택 자료구조의 조합으로 정의할 수 있습니다. 재귀호출을 풀려고 하면 반복문과 스택자료구조를 활용하면 됩니다. 하지만 굳이 사용하는 이유는 이미 존재하기 때문입니다. 라이브러리를 사용할 필요가 별로 없습니다.
+
+재귀호출은 비용이 꽤 있습니다.
+
+1. 스택에 자동변수나 매개변수 말고도 스택 프레임을 관리하기 위한 정보를 포함합니다.
+2. 함수호출에 의해 프로그램의 흐름도 변경됩니다.
+3. 매개변수를 복사하는 연산도 수행해야 합니다.
+
+반복문보다 더 많은 연산을 수행해야 합니다. 가장 큰 단점은 기본 설정을 유지했을 때 1MB 정도에 불과한 스택 메모리를 순식간에 대량으로 소모할 가능성이 높습니다.
+
+스택 메모리를 모두 소진하면 스택 으버플로우 에러로 프로그램은 비정상 종료합니다.
+
+재귀호출은 신중히 사용해야 합니다. 단순한 반복문으로 해결할 수 있는 것을 모나드와 재귀함수로 풀어보겠다고 겉멋들린 짓거리는 자제하기 바랍니다.
+
+트리를 다룰 때 재귀를 사용하는 것은 보통 효과적입니다.
+
+### 문자/문자열 처리 함수
+
+C 언어도 당연히 C-Runtime Libraray가 있습니다. 연습문제로 직접 구현보는 것은 필요합니다. 하지만 업무 중에는 라이브러리를 사용합시다.
+
+표준함수는 호환성이나 안정성이 이미 오랜 시간 동안 검증된 좋은 코드입니다. 연습문제로 만든 코드는 방어적 프로그래밍의 방어체계가 부족해서 근본이 없습니다.
+
+#### 문자 처리 함수
+
+다음 표를 참고하기 바랍니다.
+
+| 함수이름     | 기능                                                                    |
+| ------------ | ----------------------------------------------------------------------- |
+| `isalpha()`  | `A~Z`, `a~z` 범위에 있는 문자인지 검사하는 함수                         |
+| `isdigit()`  | `0~9`에 범위에 있는 문자(`char`)인지 검사하는 함수                      |
+| `isxdigit()` | `0~9`, `A~F`, `a~f` 범위에 있는 문자(`char`)인지 검사하는 함수          |
+| `isalnum()`  | `0~9`, `A~Z`, `a~z` 범위에 있는 문자(`char`)인지 검사하는 함수          |
+| `islower()`  | 영문 소문자인지 검사하는 함수                                           |
+| `isupper()`  | 영문 대문자인지 검사하는 함수                                           |
+| `isspace()`  | `0x09~0x0D` 혹은 `0x20`에 속하는 화이트 스페이스 문자인지 검사하는 함수 |
+| `toupper()`  | 영문 대문자로 변환하는 함수                                             |
+| `tolower()`  | 영문 소문자로 변환하는 함수                                             |
+
+#### 문자열 처리 함수
+
+`gets`, `puts`, `printf`, `scanf` 모두 문자열 처리 함수들입니다.
+
+```c
+char *strcat(char * strDestination, const char *strSource);
+```
+
+```c
+char *strncat(char * strDestination, const char *strSource, size_t count);
+```
+
+- `strDestination` 문자열을 추가하여 저장할 메모리 주소
+- `strSource` 추가할 문자열이 저장된 메모리 주소
+- `count` 추가할 문자열 길이
+- `strDestination` 인자로 주어진 주소 반환
+- 첫 번째 인자로 전달된 주소에 저장된 문자열에 두 번째 인자로 전달된 문자열을 주어진 길이만큼만 추가해주는 함수
+
+Mac은 `strncat`을 사용하고 윈도우는 `strcat_s`을 사용하도록 합니다.
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+int main(void) {
+  char szPath[128] = {"/Home/main/C-programming-to-start-strong/"};
+  char szBuffer[128] = {0};
+  printf("input path: ");
+
+  fgets(szBuffer, sizeof(szBuffer), stdin);
+  strncat(szPath, szBuffer, sizeof(char) * 128);
+  puts(szPath);
+
+  return EXIT_SUCCESS;
+}
+/*input path: foo.txt*/
+/*/Home/main/C-programming-to-start-strong/foo.txt*/
+```
+
+정말로 파일 입출력하는 것은 아닙니다.
+
+`strcat`은 문자열 뒤에 붙여넣기 위해 대상 메모리에 저장된 문자열의 길이를 측정(`strlen`)할 수밖에 없습니다.
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+int main(void) {
+  char szPath[128] = {"C:\\Program File\\"};
+
+  strncat(szPath, "CHS\\", sizeof(char) * 128);
+  strncat(szPath, "C programming", sizeof(char) * 128);
+  puts(szPath);
+
+  strncpy(szPath, "C:\\Program File\\", sizeof(char) * 128);
+  strncat(szPath + strlen("C:\\Program File\\"), "CHS\\", sizeof(char) * 128);
+  strncat(szPath + strlen("C:\\Program File\\chs\\"), "C programming",
+          sizeof(char) * 128);
+  puts(szPath);
+
+  return EXIT_SUCCESS;
+}
+/*C:\Program File\CHS\C programming*/
+/*C:\Program File\CHS\C programming*/
+```
+
+이 코드를 컴파일 시도하면 경고가 발생할 것입니다. 일반적인 방법으로 컴파일하면 컴파일 에러가 발생할 것입니다.
+
+`strcat`은 문자열 뒤에 붙이는 함수인데 문자열의 길이가 늘어날수록 길이 측정하기 위해 반복해야 할 횟수가 늘어나고 그만큼 효율을 떨어뜨립니다.
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+int main(void) {
+  char szPath[128] = {"C:\\Program File\\"};
+
+  strncat(szPath + 17, "CHS\\", sizeof(char) * 128);
+  strncat(szPath + 17 + 8, "C programming", sizeof(char) * 128);
+  puts(szPath);
+
+  return EXIT_SUCCESS;
+}
+```
+
+`strlen`을 호출을 안하는 방법은 없습니다. 프로그래머가 의식해서 숫자를 바꾸는 것은 실수할 여지가 더 많습니다.
+
+가장 확실한 것은 대안으로 우리가 직접 새로운 `strncat` 함수를 만드는 것입니다.
+
+두번째 매개변수로 전달된 문자열을 이어 붙인 후 맨 마지막 문자(`\0`이 아닌 문자)가 저장된 메모리의 주소를 반환합니다.
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+
+char *mystrcat(char *pszDst, char *pszSrc) {
+
+  while (*pszDst != '\0') {
+    ++pszDst;
+  }
+
+  while (*pszSrc != '\0') {
+    *pszDst++ = *pszSrc++;
+  }
+  *++pszDst = '\0';
+
+  return --pszDst;
+}
+
+int main(void) {
+  char szPath[128] = {0};
+  char *pszEnd = NULL;
+
+  pszEnd = mystrcat(szPath, "C:\\Program File\\");
+  pszEnd = mystrcat(pszEnd, "CHS\\");
+  pszEnd = mystrcat(pszEnd, "C programming");
+
+  puts(szPath);
+
+  return EXIT_SUCCESS;
+}
+/*C:\Program File\CHS\C programming*/
+```
+
+복사할 사이즈를 명시 안해도 되는 것은 좋습니다.
+
+`sprintf` 함수를 이용해 문자열 붙이기
+
+문자열을 콘솔 화면이 아니라 '메모리'에 출력한다는 점이 다릅니다. 그 외에 문자열과 관련한 모든 내용은 `printf`와 같습니다.
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+
+int main(void) {
+  char szPath[128] = {0};
+  char szBuffer[128] = {0};
+  printf("input path: ");
+  fgets(szBuffer, sizeof(szBuffer), stdin);
+  sprintf(szPath, "C:\\Program File\\%s", szBuffer);
+  puts(szPath);
+  return EXIT_SUCCESS;
+}
+```
+
+알아두면 꽤 유용합니다. 하지만 `sprintf`도 보안 결함이 있습니다. 그래서 `snprintf`를 사용하는 것이 좋습니다.
+
+`strpbrk` 함수를 이용해 구문분석
+
+`strpbrk` 함수는 대상 문자열에 특정 문자열이 아닌 '문자들' 중 하나가 있는지 검색합니다. 그리고 한 글자라도 일치하면 주소를 반환합니다.
+
+```c
+char * strpbrk(const char * string, const char * strCharSet);
+```
+
+- `string` 검색할 대상 문자열이 저장된 주소
+- `strCharSet` 검색할 문자 집합
+- 찾으면 메모리 주소 반환 못찾으면 `NULL` 반환
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+int main(void) {
+  char szBuffer[128] = {0};
+  char szSet[128] = {0};
+  char *pszStart = szBuffer;
+
+  printf("Input string: ");
+  fgets(szBuffer, sizeof(szBuffer), stdin);
+
+  printf("Input character set: ");
+  fgets(szSet, sizeof(szSet), stdin);
+
+  while ((pszStart = strpbrk(pszStart, szSet)) != NULL) {
+    printf("[%p], index: %ld, %c \n", (void *)pszStart, pszStart - szBuffer,
+           *pszStart);
+    pszStart++;
+  }
+
+  return EXIT_SUCCESS;
+}
+/*Input string: Test string data*/
+/*Input character set: sa*/
+/*[0x16bc2b052], index: 2, s*/
+/*[0x16bc2b055], index: 5, s*/
+/*[0x16bc2b05d], index: 13, a*/
+/*[0x16bc2b05f], index: 15, a*/
+/*[0x16bc2b060], index: 16,*/
+```
+
+글자가 1개라도 찾으면 바로 메모리 주소르 반환합니다. 못찾으면 `NULL`을 반환하기 때문에 끝납니다.
+
+마지막에 주소를 가산해야 다음 이어서 검색할 수 있습니다.
+
+주로 구문분석에 유용한 함수입니다.
+
+`strtok` 함수를 이용한 구문분석
+
+다른 구문 분석 함수입니다. 하지만 골치하픈 점들이 있습니다.
+
+```c
+char * strtok(char * strToken, const char * strDelimit);
+```
+
+- `strToken` 토큰화 할 문자열이 저장된 메모리 주소
+- `strDelimit` 토큰의 기준이 되는 구분자 문자집합
+- 두번째 인자로 전달된 문자집합 중 하나라도 찾으면 해당 문자가 저장된 메모리의 내용을 `NULL`로 바꾸고 문자열의 시작주소 반환
+- 임의의 문자열을 구분자를 근거로 토큰화 하는 함수.
+  - 이 함수는 내부적으로 정적변수를 사용하므로 주의해야함
+
+다음은 소스코드를 토큰화하는 것을 흉내낸 코드입니다. 실제로 이렇게 하면 곤란합니다.
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+int main(void) {
+  char szBuffer[128] = {"nData = x + y;\nnResult = a * b;"};
+  char *szSep = " *-+=%;\n";
+  char *pszToken = NULL;
+
+  pszToken = strtok(szBuffer, szSep);
+  while (pszToken != NULL) {
+    puts(pszToken);
+    pszToken = strtok(NULL, szSep);
+  }
+
+  printf("\nszBuffer: %s\n", szBuffer);
+  return EXIT_SUCCESS;
+}
+/*nData*/
+/*x*/
+/*y*/
+/*nResult*/
+/*a*/
+/*b*/
+
+/*szBuffer: nData*/
+```
+
+멀티쓰레드가 기본인 현재 환경에 안 맞는 점이 많이 있습니다. 검색대상에 쓰기 시도를 하는 것이 문제가 됩니다. 또 내부적으로 정적변수를 사용한다는 것도 문제입니다.
+
+메모리에 쓰기가 가능해야 하고 반환 후 대상 메모리 내용이 수정된다는 점을 감안해야 합니다. 또 보안결함도 있습니다.
+
+그래서 `strtok`도 자제하고 `strpbrk`를 그나마 차선으로 사용하도록 합니다.
+
+#### 유니코드 문자열
+
+C 언어의 문자열은 2 종류로 구별할 수 있습니다. 첫번째는 MBCS(Multi-bytes Character Sets) 문자열입니다. 두번째는 유니코드 문자열입니다.
+
+자금까지 다룬 문자열은 MBCS 문자열입니다. 영문 한 글자는 1바이트입니다. 한글 한 글자는 2바이트입니다.
+
+영문, 한글, 한자 표현의 차이는 프로그램의 문자열 길이에도 영향을 줍니다.
+
+`String`은 문자가 6개이지만 저장하기 위해 7바이트가 필요합니다. 한글의 경우 `문자열`을 저장하는데 문자 개수는 3개입니다. 하지만 길이가 6이라는 애매한 부분이 있습니다. 문자열의 문자 개수와 길이가 서로 다르다는 문제가 발생합니다.
+
+나중에 인코딩 규칙 때문에 문제가 있을 수 있습니다. 이런 문제를 극복하기 위해 유니코드가 있습니다. 유니코드는 문자 1개당 16비트 혹은 32비트입니다.
+
+윈도우는 16비트이고 유니코드 타입은 `wchar_t`으로 2바이트입니다.
+
+유니코드는 상수 타입으로 표기할 때 문자열 앞에 `L`을 붙여 `L"String"`으로 표기합니다. 영문, 한글 상관 없이 필요한 메모리의 크기가 `(문자열의 길이 + 1) * sizeof(wchar_t)`으로 통일됩니다.
+
+유니코드 문자열을 MBCS 문자열로 처리 함수로 출력하면 첫 글자만 출력하는 현상이 발생할 수밖에 없습니다. `printf(L"Hello");`이라고 출력하면 화면에 `H`만 나옵니다.
+
+> `wprinf()`, `wcscpy()` 함수
+
+유니코드 문자열은 유니코드 문자열 전용 함수를 사용해야 합니다.
+
+대포적으로 `printf` 대신에 `wprintf`로 출력해야 합니다. `strcpy` 대신에 `wcscpy` 함수를 사용해 복사해야 합니다. 모든 문자열 처리함수는 MBCS 버전과 유니코드 버전이 같이 존재합니다.
+
+물론 MBCS 버전에 보안 결함이 있으면 유니코드 버전에도 보안 결함이 있습니다.
+
+```c
+#include <stdlib.h>
+#include <wchar.h>
+
+int main(void) {
+  wchar_t *pwszData = L"String\n";
+  wchar_t wszData[32];
+
+  wcscpy(wszData, pwszData);
+  wprintf(L"%s\n", wszData);
+
+  return EXIT_SUCCESS;
+}
+/*S*/
+```
+
+이렇게 출력하는 문제가 있습니다.
+
+```c
+#include <stdlib.h>
+#include <wchar.h>
+
+int main(void) {
+  wchar_t *pwszData = L"String\n";
+  wchar_t wszData[32];
+
+  wcscpy(wszData, pwszData);
+  wprintf(wszData);
+
+  return EXIT_SUCCESS;
+}
+/*String*/
+```
+
+이렇게 하면 잘 출력합니다.
+
+영문은 한글자에 대해 모두 뒤에 0을 붙입니다. 메모리상 2바이트를 확보하고 남는 공간은 0으로 패딩한 것입니다. 유니코드 문자열은 MBCS 함수로 다루는 실수를 하지 말도록 조심해야 합니다.
+
+```c
+size_t wcstombs(char *mbstr, const wchar_t *wcstr, size_t count);
+```
+
+```c
+size_t mbstowcs(wchar_t *wcstr, const char *mbstr, size_t count);
+```
+
+`wcstombs`은 유니코드 문자열을 MBCS 문자열로 변환할 수 있고 `mbstowcs`은 MBCS 문자열을 유니코드로 바꿀 수 있습니다.
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+#include <wchar.h>
+
+int main(void) {
+  wchar_t *pwszData = L"String";
+  char szData[32];
+  size_t nConverted = 0;
+
+  nConverted = wcstombs(NULL, pwszData, 32);
+  printf("%ld\n", nConverted);
+
+  nConverted = wcstombs(szData, pwszData, 32);
+  printf("%s (%ld)\n", szData, nConverted);
+
+  return EXIT_SUCCESS;
+}
+/*6*/
+/*String (6)*/
+```
+
+사용할 일이 자주 발생하는 함수이기도 합니다. 적어도 이런 함수가 있다는 사실을 자주 기억하게 될 것입니다.
+
+### 유틸리티 함수
+
+시스템 시간, 난수 생성처럼 사용빈도가 높은 함수도 필요합니다.
+
+물론 매번 유틸함수를 사용해보기 전에 어떻게 동작할것인지 정확하게 동작원리를 파악해야 합니다.
+
+#### `atoi( )`, `atol( )`, `atof( )`
+
+아스키문자를 원하는 숫자타입으로 변환하는 함수입니다. 공통적으로 모두 실패하면 `0`을 반환합니다.
+
+```c
+int atoi(const char *string);
+```
+
+`int`로 변환
+
+```c
+int atol(const char *string);
+```
+
+`long`으로 변환
+
+```c
+int atof(const char *string);
+```
+
+`double`로 변환
+
+마자찬가지로 유니코드의 경우 유니코드 전용 버전의 함수를 사용하기 바랍니다.
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+
+int main(void) {
+  char szBuffer[32];
+  int nResult = 0;
+
+  printf("Input string: ");
+  fgets(szBuffer, 32, stdin);
+
+  nResult = atoi(szBuffer);
+  printf("%d\n", nResult);
+  return EXIT_SUCCESS;
+}
+/*Input string: 42*/
+/*42*/
+```
+
+지금은 정상적인 숫자 범위 안에 있습니다. 이번에는 범위를 벗어나보겠습니다.
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+
+int main(void) {
+  printf("%d\n", atoi("2147483647"));
+  printf("%d\n", atoi("2147483648"));
+  printf("%e\n", atof("1.7e+308"));
+  printf("%e\n", atof("1.7e+309"));
+
+  return EXIT_SUCCESS;
+}
+/*2147483647*/
+/*-2147483648*/
+/*1.700000e+308*/
+/*inf*/
+```
+
+책에서 보여주는 예제랑 다른 결과를 출력합니다. 이것은 CPU 아키텍쳐별로 다른 것으로 보입니다. 오버플로우 현상이 타입별로 특이하게 발생하고 있습니다. `int` 타입은 가장 작은 수로 넘어갔습니다. 하지만 `double`은 무한대가 되었습니다.
+
+보통 이런 버그가 발생하면 찾아내기 어렵습니다. 비정상적인 종료도 아니고 그냥 계속 실행하고 있을 것이기 때문입니다.
+
+#### `time( )`, `localtime( )`, `ctime( )`
+
+컴퓨터에서 시간을 표시할 때는 UTC를 기준으로 표시합니다.
+
+과학분야에서는 UTC와 GMT 차이를 아는 것이 상당히 중요합니다. 지구의 보는 곳이 물리적으로 24시간이 아닙니다.
+
+C 언어 표준 라이브러리 함수 `time`은 1970년 1월 1일 자정부터 현재까지 흘러간 시간을 초단위로 계산해주는 함수입니다. 하지만 현재의 정확한 의미는 컴퓨터의 설정에 달려있습니다. 실제 시간과 관련이 없기 때문에 착오없기 바랍니다. 보통 반환 값을 활용하고자 하기 때문에 NULL을 대입하는 경우가 일반적입니다. 필요하면 포인터를 넣어도 됩니다.
+
+문제가 되는 부분은 사람이 읽을 수 있는 시간이 되어야 합니다. 별도의 함수를 또 사용해야 합니다. 직접 구현은 연습으로 하고 업무 중에는 `localtime`, `ctime`을 사용하기 바랍니다. 물론 보안 문제가 있어서 보안 문제가 없는 버전을 사용하기 바랍니다.
+
+이 시간 관련 함수도 유니코드 전용 버전이 따로 존재합니다. 맞게 사용하기 바랍니다.
+
+```c
+time_t time(time_t *timer);
+```
+
+```c
+struct tm *localtime(const time_t *timer);
+```
+
+```c
+char *ctime(const time_t *timer);
+```
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+
+int main(void) {
+  struct tm *ptime = {0};
+  time_t t = 0;
+
+  t = time(NULL);
+  ptime = localtime(&t);
+
+  printf("%ld\n", t);
+  printf("%s", ctime(&t));
+
+  printf("%04d-%02d-%02d\n", ptime->tm_year + 1900, ptime->tm_mon + 1,
+         ptime->tm_mday);
+
+  return EXIT_SUCCESS;
+}
+/*1714919364*/
+/*Sun May  5 23:29:24 2024*/
+/*2024-05-05*/
+```
+
+참고로 연도는 1900을 따로 더해줘야 합니다. 천단위를 정확히 표시하기 위해서는 1900년을 기준으로 합니다. 개발이 1970년이라 그렇습니다.
+
+또 조심해야 할 부분은 달표시십니다. 자바가 C 언어의 후손이고 업혀가려던 자바스크립트 사생아도 이 영향을 받은 것 같습니다. 달을 0부터 취급한다는 점입니다. 물론 서양은 달이 문자열이라 0부터 시작하는 것이 합리적일 수 있습니다. 아시아 문화권이 달을 숫자로 표시가 때문에 이것을 이상하게 보는 부분도 있습니다.
+
+#### `srand( )`, `rand( )`
+
+`rand` 함수는 임의의 숫자 `0 ~ 0x7FFF` 범위로 난수를 생성합니다. 10진수로 32767입니다. 난수 최대는 보통 `RAND_MAX` 상수를 대신 사용합니다.
+
+`srand` 함수를 호출하지 않으면 시작할 때마다 매번 같은 순서의 난수가 발생할 것입니다.
+
+```c
+void srand(unsigned int seed);
+```
+
+```c
+int rand(void);
+```
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+
+int main(void) {
+  int i = 0;
+  srand((unsigned)time(NULL));
+
+  for (i = 0; i < 10; ++i) {
+    printf("%6d\n", rand());
+  }
+
+  for (i = 0; i < 10; ++i) {
+    printf("%6d\n", rand() % 10);
+  }
+
+  return EXIT_SUCCESS;
+}
+/*1979198219*/
+/*2010258350*/
+/*51870199*/
+/*2051557558*/
+/*530441074*/
+/*918512021*/
+/*1319082311*/
+/*1342712996*/
+/*1219161096*/
+/*1299064445*/
+/*3*/
+/*4*/
+/*9*/
+/*7*/
+/*5*/
+/*9*/
+/*4*/
+/*8*/
+/*9*/
+/*9*/
+```
+
+#### `system( )`, `exit( )`
+
+`system`은 컨맨드라인을 코드로 작성할 수 있게 해줍니다. 유니코드 버전은 `_wsystem`입니다. 
+
+`exit`은 프로그램을 즉시 종료하게 해줍니다. `main` 함수의 반환 시점과 무관하게 종료하게 만들 수 있습니다.
+
+```c
+int system(const char *command);
+```
+
+- `command` 커맨드라인에 실행할 명령을 문자열
+- 성공하면 `0`을 반환하고 에러가 발생하면 `-1`을 반환
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+
+int main(void) {
+  char szCommand[512] = {0};
+  printf("Input command: ");
+
+  fgets(szCommand, 512, stdin);
+  system(szCommand);
+
+  return EXIT_SUCCESS;
+}
+/*Input command: pwd*/
+```
+
+
+```c
+void exit(int status);
+```
+
+- `status`은 응용 프로그램의 종료 상태 값을 넣습니다.
+- 반환 없습니다.
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+
+int main(void) {
+  char ch;
+  printf("Do you want to Exit? (Y/N)\n");
+  ch = getchar();
+
+  if (ch == 'y' || ch == 'Y') {
+
+    puts("Exit");
+    exit(1);
+  }
+
+  puts("End of main()");
+  return EXIT_SUCCESS;
+}
+/*Do you want to Exit? (Y/N)*/
+/*y*/
+/*Exit*/
+```
+
+1. 매개변수로 검색 대상 문자열이 저장된 메모리의 주소와 그 대상 문자에서 찾고 싶은 문자열이 저장된 메모리의 주소를 받아 검색에 성공하면 대상 메모리에서 찾고자 하는 문자열이 저장된 위치의 인덱스를 반환하는 함수를 작성하세요. 기능적으로는 `strstr` 함수와 같지만 반환 자료형은 `char *`가 아니라 대상 메모리에 대한 인덱스를 정수타입으로 반환해야 합니다. 만일 찾는 문자열이 없다면 `-1`을 반환하는 함수로 정의합니다.
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+int findCahr(char *str, char *charSet) {
+  int result = 0;
+  result = strstr(str, charSet) - str;
+  if (result < 0) {
+    return -1;
+  }
+
+  return result;
+}
+
+int main(void) {
+  char szBuffer[128] = {0};
+  char szSet[128] = {0};
+
+  printf("Input string: ");
+  fgets(szBuffer, sizeof(szBuffer), stdin);
+
+  printf("Input character set: ");
+  fgets(szSet, sizeof(szSet), stdin);
+
+  printf("%d\n", findCahr(szBuffer, szSet));
+  return EXIT_SUCCESS;
+}
+```
+
+2. 매개변수로 `char *`의 배열이름과 요소의 개수를 인자로 받아 오름차순으로 문자열을 정리하는 `SortString` 함수를 작성하세요, 다음 `main` 함수의 코드에 대한 출력 예를 참고하고 작성합니다.
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+
+void SortString(char *aList[], int idx) {
+  // 유니코드 문자열 처리
+}
+
+int main(void) {
+  char *aList[5] = {
+      "정형돈", "노홍철", "하하", "유재석", "박명수",
+  };
+  int i = 0;
+  SortString(aList, 5);
+
+  for (i = 0; i < 5; ++i) {
+    puts(aList[i]);
+  }
+
+  return EXIT_SUCCESS;
+}
+```
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+// 비교 함수
+int CompareStrings(const void *a, const void *b) {
+  // 두 문자열을 가나다 순서로 비교
+  return strcmp(*(const char **)a, *(const char **)b);
+}
+
+void SortString(char *aList[], int idx) {
+  // qsort 함수를 사용하여 문자열 배열을 정렬
+  qsort(aList, idx, sizeof(char *), CompareStrings);
+}
+
+int main(void) {
+  char *aList[5] = {
+      "정형돈", "노홍철", "하하", "유재석", "박명수",
+  };
+  int i = 0;
+  SortString(aList, 5);
+
+  for (i = 0; i < 5; ++i) {
+    puts(aList[i]);
+  }
+
+  return EXIT_SUCCESS;
+}
+/*노홍철*/
+/*박명수*/
+/*유재석*/
+/*정형돈*/
+/*하하*/
+```
+
+그냥 질문해서 해결했습니다. `qsort` 함수라는 것이 존재하는 것도 신기합니다. 유니코드 문자열인데 받아서 잘 비교합니다.
+
+3. `int` 타입 5행 4열 배열에서 각 원소의 총합을 계산하고 반환하는 `GetTotal` 함수를 작성하세요.
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+
+int GetTotal(int arr[][4], int row, int col) {
+  int result = 0, i = 0, j = 0;
+  for (i = 0; i < row; ++i) {
+    for (j = 0; j < col; ++j) {
+      result += arr[i][j];
+    }
+  }
+
+  return result;
+}
+
+int main(void) {
+  int arr[5][4] = {
+      {1, 2, 3, 4},     {5, 6, 7, 8},     {9, 10, 11, 12},
+      {13, 14, 15, 16}, {17, 18, 19, 20},
+  };
+
+  printf("%d\n", GetTotal(arr, 5, 4));
+
+  return EXIT_SUCCESS;
+}
+/*210*/
+```
+
+의도는 이차원 배열을 처리하는 방법을 질문 한 것입니다. 행과 열이 구체적인데 상황에 따라 매개변수만으로 유연하게 바뀌게 만들고자 했던 것이 의도 같습니다.
+
+이차원 배열은 포인터와 힙메모리 활용으로 구현하기 바란 것 같지만 나중에 하겠습니다.
+
+4. 매개변수 `char *` 두 개를 답아 각 포인터가 가리키는 대상 문자열이 같은 문자열인지 비교하는 함수를 작성합니다. 만일 같으면 `0`을 반환하고 그렇지 않으면 1을 반환합니다. 기본적인 기능은 `strcmp` 함수와 같습니다. 단, 영문 대소문자를 구별하지 않고 비교합니다. 따라서 `h`, `H`는 같다고 인식해야 합니다.
+
+```c
+#include <ctype.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+int cmp(char *str1, char *str2, int size) {
+  for (int i = 0; i < size; ++i) {
+    char c1 = tolower(str1[i]);
+    char c2 = tolower(str2[i]);
+    if (c1 != c2) {
+      return 1; // 문자열이 다르면 1 반환
+    }
+    if (c1 == '\0' && c2 == '\0') {
+			return 0; // 둘 다 NULL 문자를 만나면 0 반환
+    }
+  }
+  return 0; // 끝까지 순회했는데 문자열이 같으면 0 반환
+}
+
+int main(void) {
+  char szBuffer[128] = {0};
+  char szSet[128] = {0};
+
+  printf("Input string: ");
+  fgets(szBuffer, sizeof(szBuffer), stdin);
+
+  printf("Input character set: ");
+  fgets(szSet, sizeof(szSet), stdin);
+
+  // 불필요한 개행 문자 제거
+  szBuffer[strcspn(szBuffer, "\n")] = '\0';
+  szSet[strcspn(szSet, "\n")] = '\0';
+
+  printf("%d\n", cmp(szBuffer, szSet, 128));
+
+  return EXIT_SUCCESS;
+}
+```
+
+5. 난수를 구하는 함수를 사용하여 가위바위보 게임을 구현합니다. 0 ~ 2 범위 숫자를 발생시켜서 0은 가위, 1은 바위, 2는 보라고 가정합니다. 게임 방식은 사용자로부터 0 ~ 2 범위의 정수를 입력받은 후, 이에 대응하는 0 ~ 2 범위의 난수를 발생시켜 사용자가 입력한 정보와 비교하는 방식으로 게임을 진행합니다. 반드시 사용자, 컴퓨터가 선정한 것이 무엇이며 누가 승자인지 표시해야 합니다.
+
+```c
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+
+// 컴퓨터가 선택한 값을 반환하는 함수
+int computerChoice() {
+    // 난수 초기화
+    srand(time(NULL));
+    // 0부터 2까지의 난수 발생
+    return rand() % 3;
+}
+
+int main() {
+    int user, computer;
+
+    // 사용자 입력 받기
+    printf("가위(0), 바위(1), 보(2) 중 하나를 선택하세요: ");
+    scanf("%d", &user);
+
+    // 사용자 입력 유효성 검사
+    if (user < 0 || user > 2) {
+        printf("잘못된 입력입니다.\n");
+        return EXIT_FAILURE;
+    }
+
+    // 컴퓨터 선택
+    computer = computerChoice();
+
+    // 결과 출력
+    printf("사용자: ");
+    switch(user) {
+        case 0:
+            printf("가위");
+            break;
+        case 1:
+            printf("바위");
+            break;
+        case 2:
+            printf("보");
+            break;
+    }
+    printf(", 컴퓨터: ");
+    switch(computer) {
+        case 0:
+            printf("가위");
+            break;
+        case 1:
+            printf("바위");
+            break;
+        case 2:
+            printf("보");
+            break;
+    }
+    printf("\n");
+
+    // 승패 결정
+    if (user == computer) {
+        printf("무승부!\n");
+    } else if ((user == 0 && computer == 2) || 
+               (user == 1 && computer == 0) || 
+               (user == 2 && computer == 1)) {
+        printf("사용자 승!\n");
+    } else {
+        printf("컴퓨터 승!\n");
+    }
+
+    return EXIT_SUCCESS;
+}
+```
+
+6. 오늘 기준으로 10일 후와 100일 후의 날짜를 계산하여 출력하는 프로그램을 작성하세요.
+
+```c
+#include <stdio.h>
+#include <time.h>
+
+int main() {
+    // 현재 시간 구하기
+    time_t now;
+    struct tm *current;
+    time(&now);
+    current = localtime(&now);
+
+    // 10일 후 계산
+    current->tm_mday += 10;
+    mktime(current);
+    printf("10일 후의 날짜: %d년 %d월 %d일\n", current->tm_year + 1900, current->tm_mon + 1, current->tm_mday);
+
+    // 100일 후 계산
+    current->tm_mday += 90; // 100일 후는 10일 후에 90일을 더한 것과 같음
+    mktime(current);
+    printf("100일 후의 날짜: %d년 %d월 %d일\n", current->tm_year + 1900, current->tm_mon + 1, current->tm_mday);
+
+    return 0;
 }
 ```
