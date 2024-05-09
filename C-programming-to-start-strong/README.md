@@ -8083,3 +8083,499 @@ int main() {
     return 0;
 }
 ```
+
+## 구조체와 공용체
+
+만일 `int` 타입이나 `char` 타입 같은 기본 자료형이 그릇이라면 구조체는 식판입니다. 이 식판이라는 것이 "서로 다른 다양한 그릇들이 모여 새로운 그릇을 형성한 것"이라 할 수 있기 때문입니다. 마찬가지로 구조체는 다양한 기본 자료형을 가진 요소들을 모아 새로운 타입으로 만든 것입니다.
+
+구조체는 각 요소를 멤버라고 부릅니다. 공용체도 구조체처럼 멤버들이 모여 하나를 이룹니다. 그런데 구조체와 달리 한 자료에 대해 해석방법만 여러 가지를 부여한 것입니다.
+
+흔하게 멤버는 5개를 달아둡니다.
+
+```c
+#include <stdio.h>
+
+struct 식판{
+  int 반찬[3];
+  char 국[32];
+  char 밥[32];
+};
+
+int main(void){
+  struct 군용식판 철수꺼;
+  return 0;
+}
+```
+
+구조체를 선언하면 새로운 타입이 만들어집니다. 공용체, 구조체는 사용자 정의 타입입니다.
+
+새로운 자료형이라고 할만 한게 구조체에 대한 변수를 선언 및 정의할 수 있기 때문입니다. 절대로 구조체의 선언과 인스턴스 정의를 혼동하면 안됩니다. 변수, 함수를 정의한 것과 호출한 것의 차이를 모르는 것과 같습니다. 구조체 선언은 선언입니다. 자료구조의 설계에 불과합니다.
+
+구조체는 넓은 의미에서 자료구조입니다.
+
+묶은 한 덩어리를 레코드라 하고 레코드 내부를 구성하는 요소들을 필드라고 합니다. 레코드를 모아 레코드 단위의 정보를 관리할 수 있는 시스템을 데이터 베이스라고 합니다.
+
+이 중에 레코드를 코드로 기술하는 것이 가장 적절한 것이 구조체입니다. 학생에 대한 정보를 담는다면 이름, 주소, 학점 같은 정보를 필드가 구조체의 멤버가 됩니다.
+
+### 구조체 선언 및 정의
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+struct USERDATA {
+  int nAge;
+  char szName[32];
+  char szPhone[32];
+};
+
+int main(void) {
+  struct USERDATA user = {0, "", ""};
+  user.nAge = 10;
+  strcpy(user.szName, "Hoon");
+  strcpy(user.szPhone, "010-1234-5678");
+
+  printf("%d살, %s, %s\n", user.nAge, user.szName, user.szPhone);
+
+  return EXIT_SUCCESS;
+}
+/*10살, Hoon, 010-1234-5678*/
+```
+
+struct는 예약어이고 생략도 가능합니다.
+
+구조체 정의는 형 재선언이 합쳐진 경우에 해당합니다.
+
+구조체가 자료형이 되기 때문에 구조체 변수를 배열로 선언도 가능합니다. 대표적으로 SLL에 이용합니다. 이렇게 사용하는 이유는 배열이 연속되지 않고 존재할 수 있게 만들기 위해서입니다. 
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+
+typedef struct USERDATA {
+  int nAge;
+  char szName[32];
+  char szPhone[32];
+} USERDATA;
+
+int main(void) {
+
+  USERDATA userdata[4] = {
+      {10, "foo", "1234"},
+      {11, "bar", "2345"},
+      {17, "baz", "3456"},
+      {12, "qux", "4567"},
+  };
+  int i = 0;
+
+  for (i = 0; i < 4; ++i) {
+    printf("%d살\t%s\t%s\n", userdata[i].nAge, userdata[i].szName,
+           userdata[i].szPhone);
+  }
+
+  return EXIT_SUCCESS;
+}
+/*10살	foo	1234*/
+/*11살	bar	2345*/
+/*17살	baz	3456*/
+/*12살	qux	4567*/
+```
+
+### 구조체 동적 할당
+
+구조체는 사용자가 그 구조를 설계한 자료형입니다. 따라서 메모리를 해석하는 방법이라고 봐야 합니다. 구조체는 자동변수, 전역변수, 힙할당도 가능합니다. 
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+typedef struct USERDATA {
+  int nAge;
+  char szName[32];
+  char szPhone[32];
+} USERDATA;
+
+int main(void) {
+  USERDATA *pUser = NULL;
+  pUser = (USERDATA *)malloc(sizeof(USERDATA));
+
+  pUser->nAge = 10;
+  strcpy(pUser->szName, "Hoon");
+  strcpy(pUser->szPhone, "9876");
+
+  printf("%d살\t%s\t%s\n", pUser->nAge, pUser->szName, pUser->szPhone);
+  free(pUser);
+
+  return EXIT_SUCCESS;
+}
+/*10살	Hoon	9876*/
+```
+
+`sizeof` 연산자로 리팩토링하면서 바뀔 수 있는 구조체 크기를 구독하기 바랍니다.
+
+참고로 `pUser->szName`은 `(*pUser).szName`으로 표기할 수 있습니다. 간접지정 연산자 보다 구조체 멤버 접근연산자가 더 우선이기는 합니다.
+
+### 반환자료, 매개변수 구조체
+
+구조체도 함수의 반환 자료형이나 매개변수가 될 수 있습니다. 구조체 변수는 배열의 이름(주소상수)와 달리 l-value가 될 수 있습니다. 함수가 구조체를 반환하면 이를 r-value로 사용해 대입연산을 수행할 수 있습니다. 
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+
+typedef struct USERDATA {
+  int nAge;
+  char szName[32];
+  char szPhone[32];
+} USERDATA;
+
+USERDATA GetUser(void) {
+  USERDATA user = {0};
+
+  scanf("%d%*c", &user.nAge);
+  fgets(user.szName, sizeof(user.szName), stdin);
+  fgets(user.szPhone, sizeof(user.szPhone), stdin);
+
+  return user;
+}
+
+int main(void) {
+  USERDATA user = GetUser();
+
+  printf("%d살\t%s\t%s\n", user.nAge, user.szName, user.szPhone);
+  return EXIT_SUCCESS;
+}
+```
+
+개행 문자도 저장되는 문제가 있습니다.
+
+구조체 변수를 매개변수나 반환 자료타입으로 사용하는 것은 비효율적입니다. 복사해야 할 정보 양이 기본 타입보다 크기 때문입니다. 구조체가 매개변수나 반환타입이 될 때는 주소로 주고 받는 것이 좋습니다. 다음 예시를 보기 바랍니다.
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+
+typedef struct USERDATA {
+  int nAge;
+  char szName[32];
+  char szPhone[32];
+} USERDATA;
+
+void GetUser(USERDATA *user) {
+  scanf("%d%*c", &user->nAge);
+  fgets(user->szName, sizeof(user->szName), stdin);
+  fgets(user->szPhone, sizeof(user->szPhone), stdin);
+}
+
+int main(void) {
+  USERDATA user = {0};
+  GetUser(&user);
+  printf("%d살\t%s\t%s\n", user.nAge, user.szName, user.szPhone);
+  return EXIT_SUCCESS;
+}
+```
+
+개행문자 저장 문제는 여전히 있습니다.
+
+구조체 함수의 인자로 전달하면 주소를 전달합니다. 스택메모리 사용양이 작습니다. 구조체는 선언할 때마다 사이즈가 달라질 수 있습니다. 하지만 주소는 사이즈가 고정입니다. 호출 과정에서 메모리를 복사하는 연산을 수행할 때 효율이 좋습니다.
+
+### 구조체를 멤버로 가지는 구조체
+
+구조체 속에 구조를 가질 수 있게 선언할 수 있습니다. 자주 사용하는 문법입니다. 구조체 연산을 접근을 여러번 수행해야 할 수 있습니다.
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+
+typedef struct MYBODY {
+  int nHeight;
+  int nWeight;
+} MYBODY;
+
+typedef struct USERDATA {
+  char szName[32];
+  char szPhone[32];
+  MYBODY body;
+} USERDATA;
+
+int main(void) {
+  USERDATA user = {"Hoon", "1234", {175, 70}};
+  printf("%s\t%s\t%d\t%d\n", user.szName, user.szPhone, user.body.nHeight,
+         user.body.nWeight);
+  return EXIT_SUCCESS;
+}
+/*Hoon	1234	175	70*/
+```
+
+자기참조도 가능합니다. 구조체 멤버로 구조체에 대한 포인터 변수도 선언도 가능합니다. 즉 자기참조라고 합니다. 링크드 리스트에 대표적으로 많이 사용합니다. 링크드 리스트는 값과 다음 원소 주소를 가리키게 만들수 있습니다.
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+
+typedef struct USERDATA {
+  char szName[32];
+  char szPhone[32];
+  struct USERDATA *pNext;
+} USERDATA;
+
+int main(void) {
+  USERDATA user = {"foo", "1234", NULL};
+  USERDATA newUser = {"bar", "2345", NULL};
+
+  user.pNext = &newUser;
+
+  printf("%s\t%s\n", user.szName, user.szPhone);
+  printf("%s\t%s\n", user.pNext->szName, user.pNext->szPhone);
+
+  return EXIT_SUCCESS;
+}
+/*foo	1234*/
+/*bar	2345*/
+```
+
+단일 연결리스트를 만들었습니다. 심지어 화살표연산자로 다음을 접근하고 있습니다.
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+
+typedef struct USERDATA {
+  char szName[32];
+  char szPhone[32];
+  struct USERDATA *pNext;
+} USERDATA;
+
+int main(void) {
+  USERDATA userList[4] = {
+      {"foo", "1234", NULL},
+      {"bar", "2345", NULL},
+      {"baz", "3456", NULL},
+      {"qux", "4567", NULL},
+  };
+  USERDATA *pUser = NULL;
+
+  userList[0].pNext = &userList[1];
+  userList[1].pNext = &userList[2];
+  userList[2].pNext = &userList[3];
+  userList[3].pNext = NULL;
+
+  pUser = &userList[0];
+  while (pUser != NULL) {
+    printf("%s\t%s\n", pUser->szName, pUser->szPhone);
+    pUser = pUser->pNext;
+  }
+
+  return EXIT_SUCCESS;
+}
+/*foo	1234*/
+/*bar	2345*/
+/*baz	3456*/
+/*qux	4567*/
+```
+
+연결을 만드는 과정이 불편하지만 지금은 링크드 리스트를 순회하는 것을 보여줍니다.
+
+### 구조체 멤버 맞춤
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+
+typedef struct USERDATA {
+  char ch;
+  int nAge;
+} USERDATA;
+
+typedef struct MYDATA {
+  char ch;
+  int nAge;
+  double dData;
+} MYDATA;
+
+int main(void) {
+  printf("%ld\n", sizeof(USERDATA));
+  printf("%ld\n", sizeof(MYDATA));
+
+  return EXIT_SUCCESS;
+}
+```
+
+결과를 예상해보세요.
+
+`8`, `16`입니다.
+
+`char`는 `1`이고 `int`는 `4`입니다. 또 `double`은 `8`입니다. 그렇게 되면 `5`, `13`을 예상하지만 아닙니다. 구조체는 8바이트 단위로 확보할 공간을 늘립니다. 
+
+`#pragma pack` 전처리기를 사용해서 제어는 가능합니다. 하지만 어지간히 공간복잡성이 크리티컬하지 않는 이상 권장하지 않습니다.
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+
+#pragma pack(push, 1)
+typedef struct USERDATA {
+  char ch;
+  int nAge;
+} USERDATA;
+
+typedef struct MYDATA {
+  char ch;
+  int nAge;
+  double dData;
+} MYDATA;
+#pragma pack(pop)
+
+int main(void) {
+  printf("%ld\n", sizeof(USERDATA));
+  printf("%ld\n", sizeof(MYDATA));
+
+  return EXIT_SUCCESS;
+}
+/*5*/
+/*13*/
+```
+
+이렇게 하면 구조체는 공간이 최적화됩니다. 연속된 공간을 모두활용하면서 공간복잡성 효율이 더욱더 좋아집니다. 
+
+주의할점들이 있습니다. 
+
+파일에 저장하거나 읽어오는 경우
+
+네트워크로 전송하거나 수신하는 경우
+
+지금 설정한 최적화 오류가 발생할 가능성이 없는지 확인해야 합니다.
+
+### 비트필드
+
+구조체의 멤버가 바이트 단위가 아니라 비트 단위 데이터를 다루는 멤버로 선언되는 구조체입니다.
+
+비트 필드를 이용하지 않고 일정 비트를 잘라내려면 마스크 연산을 사용해야 합니다. 
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+
+typedef struct DATAFLAG {
+  unsigned char main : 1;
+  unsigned char left : 2;
+  unsigned char right : 3;
+  unsigned char top : 2;
+} DATAFLAG;
+
+int main(void) {
+  DATAFLAG flagSwitch = {0, 3, 7, 4};
+
+  printf("%d\n", flagSwitch.main);
+  printf("%d\n", flagSwitch.left);
+  printf("%d\n", flagSwitch.right);
+  printf("%d\n", flagSwitch.top);
+
+  printf("%x\n", *((unsigned char *)&flagSwitch));
+  printf("%ld\n", sizeof(flagSwitch));
+
+  return EXIT_SUCCESS;
+}
+/*0*/
+/*3*/
+/*7*/
+/*0*/
+/*3e*/
+/*1*/
+```
+
+컴파일 할 때는 flag를 많이 꺼야 합니다. `4`는 오버플로우가 발생해서 `0`이 되었습니다. 표현 범위를 초과한 것입니다.
+
+여기는 각각의 필드 단위로 비트단위로 제어해야 합니다.
+
+장치를 직접 제어하는 소프트웨어를 개발할 때 유용하다고 합니다.
+
+### 공용체
+
+공용체(union)는 서로 다른 자료형 여러 개가 모여 새로운 한 덩어리를 이룬 구조체와 달리 한 가지 자료에 대해 여러가지 해석방법(타입)을 부여하는 문법입니다. 4바이트인 int를 char 4개로 short 2개로 처리할 수 있습니다.
+
+다음은 네트워크 관련된 프로그래밍을 흉내낸 것입니다. 
+
+이런 공용체 개념은 TCP/IP 소켓 프로그래밍을 배우다보면 만나게 될 수 있습니다. 물론 용어만 같은 것입니다.
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+
+typedef union IP_ADDR {
+  int nAddress;
+  short awData[2];
+  unsigned char addr[4];
+} IP_ADDR;
+
+int main(void) {
+  IP_ADDR Data = {0};
+  Data.nAddress = 0x41424344;
+
+  printf("%c%c%c%c\n", Data.addr[0], Data.addr[1], Data.addr[2], Data.addr[3]);
+
+  printf("%x, %d\n", Data.awData[0], Data.awData[0]);
+  printf("%x, %d\n", Data.awData[1], Data.awData[1]);
+  return EXIT_SUCCESS;
+}
+/*DCBA*/
+/*4344, 17220*/
+/*4142, 16706*/
+```
+
+메모리를 3가지 방법으로 해석할 수 있습니다.
+
+내부적으로 ipV4를 다룰 때 32비트 단위로 통신하는데 공용체를 활용하면 유용할 것입니다. 8비트 4개로 끊어 처리하면 됩니다.
+
+1. 다음 예제의 실행결과와 이유는 무엇인가?
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+
+typedef struct USERDATA {
+  char ch;
+  int nAge;
+} USERDATA;
+
+typedef struct MYDATA {
+  char ch;
+  int nAge;
+  double dData;
+} MYDATA;
+
+int main(void) {
+  printf("%ld\n", sizeof(USERDATA));
+  printf("%ld\n", sizeof(MYDATA));
+
+  return EXIT_SUCCESS;
+}
+```
+
+8하고 16입인다.
+
+char는 1바이트 공간을 차지하고 int는 4바이트 공간을 차지합니다. 5바이트 공간을 사용해야 하는데 구조체는 8바이트 단위로 확장하기 때문에 가장 작은 8바이트만큼 공간을 확보합니다.
+
+double은 8바이트 만큼 필요하고 1바이트 char와 4바이트 int 모두 13바이트 이상 필요합니다. 8바이트 단위로 공간을 확보하는데 13바이트 이상 8배수는 16이라 16바이트를 확보합니다.
+
+이 문제는 메모리 레이아웃과 메모리 지역성 문제입니다.
+
+2. 자기 자신에 대한 포인터를 멤버로 갖는 구조체는 무엇이라고 하는가?
+
+자기참고 구조체라고 부릅니다. 링크드 리스트, 트리의 Node로 많이 사용합니다.
+
+## 파일 입출력
+
+보조기억장치는 용량 문제에 둔감합니다. 
+
+최초 크기는 0인 상태에서 정보를 써 넣으면 자동으로 크기가 증가합니다. 메모리 크기를 미리 알고 있을 필요가 거의 없습니다. 
+
+메모리이지만 사용법은 주기억장치 보조기억장치가 서로 상당히 다릅니다. 
+
+내부적인 차이를 인식할 수 있어야 파일 관리 관련 각종 함수를 더 정확히 이해할 수 있습니다.
+
+### 파일 시스템 기본 이론
+
+
