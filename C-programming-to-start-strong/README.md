@@ -4399,7 +4399,7 @@ int main(void) {
 21 22 23 24 25
 ```
 
-- 이렇게 채우면 됩니다. 정답을 다양하게 인정하고 싶지만 대부분 대학교 시험문제라고 생각하면 10점 만점에 5점만 줄 것입니다. 기존 템플릿을 최대한 활용하고 중첩 for 문을 통해서 구현해야 합니다. 추가 변수는 금지입니다. 구현되고 성능도 같지만 비즈니스 요구사항에서 10개 중 9개만 된 것이라면 가치가 50%가 감소합니다. 당신은 개발자입니다. 배로 키우는 것은 없어도 깎아먹는 짓거리를 하는데 돈받아 먹고 싶으면 깎아먹는 짓거리 하지 말라고 이렇게 할 것입니다.
+- 이렇게 채우면 됩니다. 정답을 다양하게 인정하고 싶지만 대부분 대학교 시험문제라고 생각하면 10점 만점에 5점만 줄 것입니다. 기존 템플릿을 최대한 활용하고 중첩 for 문을 통해서 구현해야 합니다. 추가 변수는 금지입니다. 구현되고 성능도 같지만 비즈니스 요구사항에서 10개 중 9개만 된 것이라면 가치가 50%가 감소합니다. 당신은 개발자입니다. 배로 키우���� 것은 없어도 깎아먹는 짓거리를 하는데 돈받아 먹고 싶으면 깎아먹는 짓거리 하지 말라고 이렇게 할 것입니다.
 
 하지만 오답들도 학습 리소스입니다.
 
@@ -6159,7 +6159,7 @@ int main(void) {
 
 - 먼저 `fgets`를 사용해야 컴파일러 에러를 통과할 수 있습니다.
 
-- 문자열이 깨졌다라는 말이 가끔 있습니다. 문자열 입출력 과정에서 메모리를 잘못 사용한 것입니다. 가장 흔한 실수는 메모리의 경계를 넘긴 입/출력을 수행한 것입니다. 자신에게 할당된 메모리가 아니라 엉뚱한 메모리에 대해 입출력을 수행한 경우입니다. 이런 오류를 해결할 때는 메모리를 그림으로 그려보고 디버거를 사용하기 바랍니다.
+- 문자열이 깨졌다라는 말이 가끔 있습니다. 문��열 입출력 과정에서 메모리를 잘못 사용한 것입니다. 가장 흔한 실수는 메모리의 경계를 넘긴 입/출력을 수행한 것입니다. 자신에게 할당된 메모리가 아니라 엉뚱한 메모리에 대해 입출력을 수행한 경우입니다. 이런 오류를 해결할 때는 메모리를 그림으로 그려보고 디버거를 사용하기 바랍니다.
 
 ### 포인터의 배열과 다중 포인터
 
@@ -6383,7 +6383,7 @@ static 변수는 전역변수처럼 선언될 때 단 한번만 초기화합니�
 
 함수가 반환해(메모리가 사라지지 않으므로) `nData` 변수는 전역변수처럼 그대로 존재합니다.
 
-- 기술적으로 전역변수나 정적변수는 모두 동시성을 지원하가 어렵습니다. 멀티 스레드를 넘어 물리적으로 CPU 코어 개수가 여러 개인 지금 동시성, 병렬처리랑 직결되고 병렬처리를 다시 성능과 직결됩니다.
+- 기술적으로 전역변수나 정적변수는 ������ 동시성을 지원하가 어렵습니다. 멀티 스레드를 넘어 물리적으로 CPU 코어 개수가 여러 개인 지금 동시성, 병렬처리랑 직결되고 병렬처리를 다시 성능과 직결됩니다.
 
 #### 레지스터 변수 register
 
@@ -7754,7 +7754,7 @@ int main(void) {
 
 #### `system( )`, `exit( )`
 
-`system`은 컨맨드라인을 코드로 작성할 수 있게 해줍니다. 유니코드 버전은 `_wsystem`입니다. 
+`system`은 컨맨드라인을 코드로 작성할 수 있게 해줍니다. 유니코드 버전은 `_wsystem`입니다.
 
 `exit`은 프로그램을 즉시 종료하게 해줍니다. `main` 함수의 반환 시점과 무관하게 종료하게 만들 수 있습니다.
 
@@ -7780,7 +7780,6 @@ int main(void) {
 }
 /*Input command: pwd*/
 ```
-
 
 ```c
 void exit(int status);
@@ -8045,8 +8044,8 @@ int main() {
     // 승패 결정
     if (user == computer) {
         printf("무승부!\n");
-    } else if ((user == 0 && computer == 2) || 
-               (user == 1 && computer == 0) || 
+    } else if ((user == 0 && computer == 2) ||
+               (user == 1 && computer == 0) ||
                (user == 2 && computer == 1)) {
         printf("사용자 승!\n");
     } else {
@@ -8086,7 +8085,7 @@ int main() {
 
 ## 구조체와 공용체
 
-만일 `int` 타입이나 `char` 타입 같은 기본 자료형이 그릇이라면 구조체는 식판입니다. 이 식판이라는 것이 "서로 다른 다양한 그릇들이 모여 새로운 그릇을 형성한 것"이라 할 수 있기 때문입니다. 마찬가지로 구조체는 다양한 기본 자료형을 가진 요소들을 모아 새로운 타입으로 만든 것입니다.
+만일 `int` 타입이나 `char` 타입 같은 기본 자료형이 그릇이라면 구조체는 식판입니다. 이 식판이라는 것이 "서로 다른 다양��� 그릇들이 모여 새로운 그릇을 형성한 것"이라 할 수 있기 때문입니다. 마찬가지로 구조체는 다양한 기본 자료형을 가진 요소들을 모아 새로운 타입으로 만든 것입니다.
 
 구조체는 각 요소를 멤버라고 부릅니다. 공용체도 구조체처럼 멤버들이 모여 하나를 이룹니다. 그런데 구조체와 달리 한 자료에 대해 해석방법만 여러 가지를 부여한 것입니다.
 
@@ -8147,7 +8146,7 @@ struct는 예약어이고 생략도 가능합니다.
 
 구조체 정의는 형 재선언이 합쳐진 경우에 해당합니다.
 
-구조체가 자료형이 되기 때문에 구조체 변수를 배열로 선언도 가능합니다. 대표적으로 SLL에 이용합니다. 이렇게 사용하는 이유는 배열이 연속되지 않고 존재할 수 있게 만들기 위해서입니다. 
+구조체가 자료형이 되기 때문에 구조체 변수를 배열로 선언도 가능합니다. 대표적으로 SLL에 이용합니다. 이렇게 사용하는 이유는 배열이 연속되지 않고 존재할 수 있게 만들기 위해서입니다.
 
 ```c
 #include <stdio.h>
@@ -8184,7 +8183,7 @@ int main(void) {
 
 ### 구조체 동적 할당
 
-구조체는 사용자가 그 구조를 설계한 자료형입니다. 따라서 메모리를 해석하는 방법이라고 봐야 합니다. 구조체는 자동변수, 전역변수, 힙할당도 가능합니다. 
+구조체는 사용자가 그 구조를 설계한 자료형입니다. 따라서 메모리를 해석하는 방법이라고 봐야 합니다. 구조체는 자동변수, 전역변수, 힙할당도 가능합니다.
 
 ```c
 #include <stdio.h>
@@ -8219,7 +8218,7 @@ int main(void) {
 
 ### 반환자료, 매개변수 구조체
 
-구조체도 함수의 반환 자료형이나 매개변수가 될 수 있습니다. 구조체 변수는 배열의 이름(주소상수)와 달리 l-value가 될 수 있습니다. 함수가 구조체를 반환하면 이를 r-value로 사용해 대입연산을 수행할 수 있습니다. 
+구조체도 함수의 반환 자료형이나 매개변수가 될 수 있습니다. 구조체 변수는 배열의 이름(주소상수)와 달리 l-value가 될 수 있습니다. 함수가 구조체를 반환하면 이를 r-value로 사용해 대입연산을 수행할 수 있습니다.
 
 ```c
 #include <stdio.h>
@@ -8407,7 +8406,7 @@ int main(void) {
 
 `8`, `16`입니다.
 
-`char`는 `1`이고 `int`는 `4`입니다. 또 `double`은 `8`입니다. 그렇게 되면 `5`, `13`을 예상하지만 아닙니다. 구조체는 8바이트 단위로 확보할 공간을 늘립니다. 
+`char`는 `1`이고 `int`는 `4`입니다. 또 `double`은 `8`입니다. 그렇게 되면 `5`, `13`을 예상하지만 아닙니다. 구조체는 8바이트 단위로 확보할 공간을 늘립니다.
 
 `#pragma pack` 전처리기를 사용해서 제어는 가능합니다. 하지만 어지간히 공간복잡성이 크리티컬하지 않는 이상 권장하지 않습니다.
 
@@ -8438,9 +8437,9 @@ int main(void) {
 /*13*/
 ```
 
-이렇게 하면 구조체는 공간이 최적화됩니다. 연속된 공간을 모두활용하면서 공간복잡성 효율이 더욱더 좋아집니다. 
+이렇게 하면 구조체는 공간이 최적화됩니다. 연속된 공간을 모두활용하면서 공간복잡성 효율이 더욱더 좋아집니다.
 
-주의할점들이 있습니다. 
+주의할점들이 있습니다.
 
 파일에 저장하거나 읽어오는 경우
 
@@ -8452,7 +8451,7 @@ int main(void) {
 
 구조체의 멤버가 바이트 단위가 아니라 비트 단위 데이터를 다루는 멤버로 선언되는 구조체입니다.
 
-비트 필드를 이용하지 않고 일정 비트를 잘라내려면 마스크 연산을 사용해야 합니다. 
+비트 필드를 이용하지 않고 일정 비트를 잘라내려면 마스크 연산을 사용해야 합니다.
 
 ```c
 #include <stdio.h>
@@ -8486,7 +8485,7 @@ int main(void) {
 /*1*/
 ```
 
-컴파일 할 때는 flag를 많이 꺼야 합니다. `4`는 오버플로우가 발생해서 `0`이 되었습니다. 표현 범위를 초과한 것입니다.
+컴파일 할 때는 flag를 많이 꺼야 합니다. `4`는 오버플로우가 발생해서 `0`이 되었습니��. 표현 범위�� 초과한 것입니다.
 
 여기는 각각의 필드 단위로 비트단위로 제어해야 합니다.
 
@@ -8496,7 +8495,7 @@ int main(void) {
 
 공용체(union)는 서로 다른 자료형 여러 개가 모여 새로운 한 덩어리를 이룬 구조체와 달리 한 가지 자료에 대해 여러가지 해석방법(타입)을 부여하는 문법입니다. 4바이트인 int를 char 4개로 short 2개로 처리할 수 있습니다.
 
-다음은 네트워크 관련된 프로그래밍을 흉내낸 것입니다. 
+다음은 네트워크 관련된 프로그래밍을 흉내낸 것입니다.
 
 이런 공용체 개념은 TCP/IP 소켓 프로그래밍을 배우다보면 만나게 될 수 있습니다. 물론 용어만 같은 것입니다.
 
@@ -8568,14 +8567,730 @@ double은 8바이트 만큼 필요하고 1바이트 char와 4바이트 int 모�
 
 ## 파일 입출력
 
-보조기억장치는 용량 문제에 둔감합니다. 
+보조기억장치는 용량 문제에 둔감합니다.
 
-최초 크기는 0인 상태에서 정보를 써 넣으면 자동으로 크기가 증가합니다. 메모리 크기를 미리 알고 있을 필요가 거의 없습니다. 
+최초 크기는 0인 상태에서 정보를 써 넣으면 자동으로 크기가 증가합니다. 메모리 크기를 미리 알고 있을 필요가 거의 없습니다.
 
-메모리이지만 사용법은 주기억장치 보조기억장치가 서로 상당히 다릅니다. 
+메모리이지만 사용법은 주기억장치 보조기억장치가 서로 상당히 다릅니다.
 
 내부적인 차이를 인식할 수 있어야 파일 관리 관련 각종 함수를 더 정확히 이해할 수 있습니다.
 
 ### 파일 시스템 기본 이론
+
+파일 시스템은 파일 단위의 정보를 생성, 삭제, 저장, 검색할 수 있도록 정보를 구성하는 방법을 말합니다. 이 정보에는 파일의 이름이나 위치 등 정보도 있습니다.
+
+폴더라는 말은 디렉터리라는 말과 같습니다.
+
+파일의 위치는 경로(path)라고 부릅니다. 이런 위치는 논리적 위치입니다.
+
+디스크 볼륨 이름부터 파일명까지 전체 정보를 표시하는 것을 절대경로라고 부릅니다. 드라이브 이름은 생략하고 표시하면 상대 경로입니다. 상대 경로는 보통 현재 경로를 기준으로 합니다.
+
+파일시스템은 여러가지가 있습니다. NTFS, FAT32 등 많이 있습니다.
+
+택스트 파일과 바이너라 파일입니다.
+
+파일은 크게 텍스트 파일과 바이너리 파일로 나눌 수 있습니다. 텍스트 파일은 파일에 저장된 정보가 모두 아스키 코드나 문자열로 해석할 수 있는 정보입니다.
+
+메모장으로 열고 볼 수 있는 파일들이 해당합니다. 텍스트 파일의 가장 중요한 특징 중 하나는 `-1`이라는 정수값을 파일의 끝(EOF)라고 표현한다는 점입니다.
+
+텍스트 파일을 제외한 모든 파일들은 바이너리 파일입니다. 바이너리 파일은 저장 되는 정보가 어떤 것인지 구별하거나 차별하지 않습니다. 큰 의미에서 텍스트 파일이라는 것도 파이너리 파일의 한 부분으로 생각할 수 있습니다.
+
+여기까지가 기본이론입니다.
+
+`fopen` 함수는 특정 경로에 있는 파일을 열어서 접근할 수 있도록 FILE 구조체를 반환합니다. 파일을 열기 혹은 생성에 성공하면 `NULL`이 아니면 `fclose`로 닫아줘야 합니다. `malloc`, `free`처럼 짝으로 기억하기 바랍니다. 윈도우는 `fopen`이 보안취약점이 있어서 `fopen_s`를 사용해야 합니다.
+
+```c
+FILE *fopen(const char *filename, const char *mode);
+```
+
+- `filename`은 열고자 하는 파일의 절대경로 입니다.
+- `mode`는 접근 모드입니다.
+  - 문자열 주소를 줘야 합니다.
+  - 파일모드는 텍스트, 바이너리랑 접근 방법인 읽기, 쓰기를 표시한 문자를 조합할 수 있습니다.
+- 에러면 `NULL` 반환 성공하면 구조체의 주소를 반환할 것입니다.
+
+| 모드 | 의미                         | 존재하는 경우           | 없는 경우 |
+| ---- | ---------------------------- | ----------------------- | --------- |
+| r    | 텍스트 읽기(Read)            | 파일 열기               | 에러      |
+| w    | 텍스트 쓰기(Write)           | 기존 내용을 지우고 열기 | 새로 만듦 |
+| a    | 텍스트 추가(Append)          | 기존 내용 뒤에 추가     | 새로 만듦 |
+| r+   | 텍스트 읽기 + 갱신(Read)     | 파일 열기               | 에러      |
+| w+   | 텍스트 쓰기 + 갱신(Write)    | 기존 내용을 지우고 열기 | 새로 만듦 |
+| a+   | 텍스트 추가 + 갱신(Append)   | 기존 내용 뒤에 추가     | 새로 만듦 |
+| rb   | 바이너리 읽기(Read)          | 파일 열기               | 에러      |
+| wb   | 바이너리 쓰기(Write)         | 기존 내용을 지우고 열기 | 새로 만듦 |
+| ab   | 바이너리 추가(Append)        | 기존 내용 뒤에 추가     | 새로 만듦 |
+| rb+  | 바이너리 읽기 + 갱신(Read)   | 파일 열기               | 에러      |
+| wb+  | 바이너리 쓰기 + 갱신(Write)  | 기존 내용을 지우고 열기 | 새로 만듦 |
+| ab+  | 바이너리 추가 + 갱신(Append) | 기존 내용 뒤에 추가     | 새로 만듦 |
+
+뭐 패턴이 안 보이면 프로그래밍 접기 바랍니다.
+
+```c
+FILE fclose(FILE *stream);
+```
+
+```c
+int _fcloseall(void);
+```
+
+위 함수는 모든 파일 닫습니다. 방법이 없으면 이것도 전략입니다.
+
+다음은 예시입니다.
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+
+int main(void) {
+  FILE *fp = NULL;
+
+  fp = fopen("Text.txt", "w");
+  if (fp == NULL) {
+    printf("ERROR: Failed to open file!");
+    return EXIT_FAILURE;
+  }
+
+  fclose(fp);
+  return EXIT_SUCCESS;
+}
+```
+
+실행 파일을 파일을 실행하는 위치에서 생성한다는 것이 의외입니다.
+
+파일 접근 제어입니다.
+
+프로그램이 파일을 이미 열어 두었으면 접근이 제한될 수 있습니다. 열려 있는 동안 삭제를 UI에서 차단 하는 것도 비슷합니다. 파일에 저장된 정보를 여러 프로그램을 동시에 편집을 차단해야 합니다. 파일을 다룰 때는 접근 제어를 반드시 고려 해야 합니다.
+
+- 파일에 접근하려면 우선 파일을 열어야 합니다. 파일에 대한 입출력을 완료한 후에는 파일을 닫아야 합니다.
+- 파일을 개방할 때는 반드시 목적(입출력, 수정)을 명시해야 합니다.
+- 파일이 이미 사용 중인 경우(열려있는 상태), 접근이 제한될 수 있습니다. 그러나 경우에 따라 읽기는 허용될 수 있습니다.
+- 만일 파일의 속성이 읽기 전용이면 쓰기모드는 제한됩니다.
+- 경우 따라 보안 문제로 읽기도 제한될 수 있습니다.
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+
+int main(void) {
+  FILE *fp = NULL;
+  int nClosed = 0;
+  fopen("Test1.txt", "w");
+  fopen("Test2.txt", "w");
+  fopen("Test3.txt", "w");
+
+  nClosed = _fcloseall();
+  printf("%d\n", nClosed);
+
+  return EXIT_SUCCESS;
+}
+```
+
+C99 표준이 아니라서 실행하지 않겠습니다.
+
+프로그램이 종료되면 대부분의 경우 운영체제가 대신 닫아줍니다. 하지만 개발자 스스로 처리하는 것이 바람직합니다. 모든 프로그램이 CLI나 컴파일러처럼 짧게 실행하는 것이 아닙니다. 
+
+특별한 경우 운영체제가 파일을 안 닫습니다. 이것은 운영체제의 커널이 특정 파일을 안 놔주는 경우입니다. 비동기 파일 입출력시도할 때 발생합니다. 
+
+### 텍스트 파일 입출력
+
+파일 입출력 전용 함수들은 표준입출력처럼 사용하면 됩니다. 
+
+```c
+int fprintf(FILE *stream, const char *format [, argument]...);
+```
+
+- `stream`은 파일 포인터 구조체입니다.
+- `format`은 형식 문자열이 저장된 메모리 주소입니다.
+- 형식문자열에 대응할 가변인자가 마지막입니다.
+- 출력된 바이트 수를 반환홥니다.
+- 형식 문자열의 형식을 맞춰서 출력하는 함수입니다.
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+
+int main(void) {
+  FILE *fp = NULL;
+  fp = fopen("Test.txt", "w");
+  if (fp == NULL) {
+    printf("ERROR: Failed to open file!");
+    return EXIT_FAILURE;
+  }
+  fprintf(fp, "%s\n", "Test string");
+  fprintf(fp, "%s\n", "Hello world!");
+
+  fclose(fp);
+
+  return EXIT_SUCCESS;
+}
+```
+
+```txt
+Test string
+Hello world!
+```
+
+파일에 문자열을 이렇게 쓰기를 할 수 있습니다.
+
+```c
+int fscanf(FILE *stream, const char *format [, argument]...);
+```
+
+- 파일 구조체와 형식문자열도 동일합니다.
+- 성공적으로 읽어 들인 항목의 개수를 반환합니다.
+- 형식 문자열에 맞춰서 대상 파일로부터 정보를 읽습니다. 가변인자는 정보가 저장될 메모리 주소입니다.
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+
+int main(void) {
+  int nData = 0;
+  char szBuffer[128] = {0};
+  FILE *fp = NULL;
+  fp = fopen("fscanfTest.txt", "w");
+  fprintf(fp, "%d,%s\n", 20, "Test");
+  if (fp == NULL) {
+    printf("ERROR: Failed to open file!");
+    return EXIT_FAILURE;
+  }
+  fclose(fp);
+
+  fp = fopen("fscanfTest.txt", "r");
+  fscanf(fp, "%d,%s\n", &nData, szBuffer);
+  fclose(fp);
+
+  printf("%d, %s\n", nData, szBuffer);
+  return EXIT_SUCCESS;
+}
+/*20, Test*/
+```
+
+문장 전체를 읽을 때는 `fscanf`을 사용하기보단 `fgets`를 사용하는 것이 더 적절합니다. 행마다 문자를 분석하는 방식이 더 적절합니다.
+
+```c
+int fgetc(char * stream);
+```
+
+- `stream`은 파일 구조체의 주소를 받습니다.
+- 정상적이면 파일에서 읽은 문자를 반환합니다. 에러가 발생하면 `EOF`을 반환합니다.
+- 대상 파일에서 문자를 읽는 함수입니다.
+
+```c
+int fputc(int c, FILE * stream);
+```
+
+- `c`는 파일에 쓸 문자입니다. `stream`은 `FILE` 포인터입니다.
+- 정상적이면 쓴 문자를 반환합니다. 에러가 발생하면 `EOF`을 반환합니다.
+- 대상 파일에 문자를 읽어 들이는 함수입니다.
+
+파일을 입출력으로 읽고 쓰기를 합니다.
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+
+int main(void) {
+  FILE *fp = NULL;
+  char ch;
+
+  fp = fopen("Test.txt", "w");
+  if (fp == NULL) {
+    printf("ERROR: Failed to open file!");
+    return EXIT_FAILURE;
+  }
+  fputs("Test string!", fp);
+  fclose(fp);
+
+  fp = fopen("Test.txt", "r");
+  if (fp == NULL) {
+    printf("ERROR: Failed to open file!");
+    return EXIT_FAILURE;
+  }
+
+  while ((ch = fgetc(fp)) != EOF) {
+    putchar(ch);
+  }
+  fclose(fp);
+
+  return EXIT_SUCCESS;
+}
+/*Test string!*/
+```
+
+```c
+char *fgets(char *string, int n, FILE *stream);
+```
+
+- 이제야 설명을 봅니다.
+- `string`은 읽어 들인 문자열이 저장될 버퍼의 주소입니다. `n`은 입력 버퍼의 바이트 단위 크기입니다. `streame`은 `FIEL` 구조체를 받습니다.
+- 에러는 `NULL` 정상이면 문자열을 반환합니다.
+- 대상의 문자열을 읽습니다.
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+int main(void) {
+  FILE *fp = NULL;
+  char szBuffer[512] = {0};
+  fp = fopen("Test.txt", "w");
+  if (fp == NULL) {
+    printf("ERROR: Failed to open file!");
+    return EXIT_FAILURE;
+  }
+  fputs("Test\n", fp);
+  fputs("String\n", fp);
+  fputs("Data\n", fp);
+
+  fclose(fp);
+
+  fp = fopen("Test.txt", "r");
+  if (fp == NULL) {
+    printf("ERROR: Failed to open file!");
+    return EXIT_FAILURE;
+  }
+  while (fgets(szBuffer, sizeof(szBuffer), fp)) {
+    printf("%s", szBuffer);
+    memset(szBuffer, 0, sizeof(szBuffer));
+  }
+
+  fclose(fp);
+  return EXIT_SUCCESS;
+}
+/*Test*/
+/*String*/
+/*Data*/
+```
+
+`fgets`의 본래 활용법입니다. `szBuffer`를 넘기면 문제가 될 것입니다. 나눠서 읽는 문제가 발생합니다. 512바이트까지 인데 1024면 512, 512 두번 읽습니다. 또 마지막 요소가 `\n`이 아닌지도 확인해봐야 합니다.
+
+```c
+int fputs(const char * string, FILE *stream);
+```
+
+- `string`은 출력할 문자열이 저장된 주소입니다. `stream`은 파일입니다.
+- 정상적이면 음수가 아닌 값을 반환합니다. 에러가 발생하면 `EOF`를 반환합니다.
+
+전달된 문자열을 쓰기하는 함수입니다. `fgets`의 반대입니다. 정보를 조합해서 쓰기를 해야 한다면 `fprintf`를 사용하는 것이 적절합니다.
+
+```c
+int fflush(FILE * stream);
+```
+
+- `stream`은 대상 파일입니다.
+- 성공하면 `0`을 반환하고 실패하면 `EOF`입니다. 
+- 파일에 대한 입출력을 완료하고 파일 입출력과 관련된 정보를 초기화합니다. 메모리는 초기화하지 않습니다.
+
+버퍼에 남아있는 정보를 제거하는 것과 동일합니다. 출력 플러싱을 한다고 합니다. 카운터 값을 초기화한다고 하는데 다음 예제 코드의 포인터에 주의하기 바랍니다. 구조체 멤버에 어떤 변화를 가하는지 파악하기 바랍니다.
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+
+int main(void) {
+  FILE *fp = stdin;
+  printf("Input string: ");
+
+  printf("getchar( ) - %c\n", getchar());
+
+	// 버퍼에 남은 문자열 정보를 window용으로 출력
+	/*printf("[%d] %s", fp ->_cnt, fp->_base);*/
+	/*printf("Read: %d\n", fp ->_ptr - fp->_base);*/
+
+	printf("\n\ngetchar( ) - %c\n", getchar());
+	/*printf("[%d] %s", fp ->_cnt, fp->_base);*/
+	/*printf("Read: %d\n", fp ->_ptr - fp->_base);*/
+
+	fflush(fp);
+	/*printf("\n\nAfter flushing\n[%d] %s", fp->_cnt, fp->_base);*/
+	/*printf("Read: %d\n", fp ->_ptr - fp->_base);*/
+
+  return EXIT_SUCCESS;
+}
+```
+
+윈도우 환경에서만 사용할 수 있는 코드입니다. 운영체제마다 동직이 달라서 C 언어가 다른 것으로 보입니다. 파일 시스템이 충분히 다를 수 있습니다.
+
+### 바이너리 파일 입출력
+
+바이너리 파일은 텍스트 파일을 제외한 모든 파일입니다.  MP3를 열고 싶으면 `fopen` 함수에 접근 모드 문자열에 `b`를 반드시 앞에 붙여야 합니다.  
+
+fread,  fwrite 함수 모두 fgets, fputs 함수와 달리 입출력 길이가 일정한 메모리  덩어리 입니다.  문자열의 경우 전체 문자열의 길이가 달라질 수 있습니다.  사용되는 메모리랑 실제 입출력 정보가 매번 달라질 수 있습니다.
+
+바이너리 모드 파일 입출력은 항상 정해진 길이만큼 읽고 써야 합니다.
+
+텍스트 모드의 EOF이라도 문제 없이 읽고 쓸 수 있습니다.
+
+```c
+size_t fread(void *buffer, size_t size, size_t count, FILE *stream);
+```
+
+```c
+size_t fwrite(const void *buffer, size_t size, size_t count, FILE *stream);
+```
+
+문자열 저장하는 방법보다 메모리 낭비는 더 있지만 처리속도는 유리합니다.
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+
+typedef struct USERDATA {
+  char szName[16];
+  char szPhone[16];
+} USERDATA;
+
+int main(void) {
+  FILE *fp = NULL;
+  USERDATA UserData = {"Ho-sung", "123-1234"};
+
+  fp = fopen("Test.dat", "wb");
+  if (fp == NULL)
+    return EXIT_FAILURE;
+
+  fwrite(&UserData, sizeof(USERDATA), 1, fp);
+
+  fclose(fp);
+
+  return EXIT_SUCCESS;
+}
+```
+
+바이너리는 vim에서 확인하기는 어렵습니다. 설정으로 확인하게 하는 방법은 있습니다. 
+
+텍스트 파일접근 하듯이 바이너리 파일을 접근해서 메모장을 여는 것처럼 해동하면 잘 안보일 것입니다.
+
+이번에는 바이너리 파일을 읽기 시도를 하겠습니다. 경로만 같으면 문제 없습니다.
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+
+typedef struct USERDATA {
+  char szName[16];
+  char szPhone[16];
+} USERDATA;
+
+int main(void) {
+  FILE *fp = NULL;
+  USERDATA UserData = {0};
+
+  fp = fopen("Test.dat", "rb");
+  if (fp == NULL)
+    return EXIT_FAILURE;
+
+  fread(&UserData, sizeof(USERDATA), 1, fp);
+  puts(UserData.szName);
+  puts(UserData.szPhone);
+  fclose(fp);
+  return EXIT_SUCCESS;
+}
+/*Ho-sung*/
+/*123-1234*/
+```
+
+알아 둬야 할 점이 있습니다. `fread`함수는 반환값에 따라 실패를 알아낼 수 있습니다. 읽어들이는 정보의 길이가 구조체의 길이보다 작으면 `0`을 반환해서 실패를 알아낼 수 있습니다. 그렇다는 것은 `0`이 아닌 성공 중인 1인 동안 저장된 정보 모두를 load할 수 있습니다.
+
+파일은 논리적으로 봤을 때, 마치 배열처럼 하나로 이어진 선형 메모리라고 할 수 있습니다. 그러나 배열과 다리 파일 길이가 늘어날 수 있습니다. 파일을 처음 생성했을 때는 길이가 `0`이지만 파일에 정보를 쓰면 그만큼 파일 길이는 자동으로 늘어납니다.
+
+실제 파일 입출력이 완료된 위치를 저장하고 있는 포인터가 존재하는데 이것을 파일 입출력 포인터라고 합니다. 일반적으로 파일 포인터는 파일을 열었을 때 맨 앞에 있으며 입출력이 발생하는 길이만큼 증가합니다.
+
+파일 길이는 쓰기가 발생하는 만큼 자동으로 증가시켜줍니다.
+
+문제는 입출력이 발생하는 위치입니다. 엉뚱한 위치에 의도하지 않은 입출력을 할 여지가 많습니다. 이런 이유로 `fseek`, `ftell` 함수가 있습니다. 파일 입출력 포인터를 특정 위치로 강제 이동시킵니다. 바이너리 모드로 파일 입출력할 때 이 함수는 자주 사용합니다.
+
+```c
+int fseek(FILE *stream, long offset, int origin);
+```
+
+- `stream`은 구조체 포인터입니다. `offset`은 기준 위치에 대한 바이트 단위 오프셋입니다. `origin`은 기준 위치(`SEEK_SET`, `SEEK_CUR`, `SEEK_END`)입니다. 
+- 성공하면 `0`, 실패하면 음수를 반환합니다. 
+- 특정 위치로 파일 포인터(입출력 대상지점)를 이동합니다.
+
+```c
+int ftell(FILE *stream);
+```
+
+- `stream`은 구조체 포인터입니다.
+- 성공하면 파일 포인터의 현재 위치(`0` 이상의 값)를 반환하며, 실패하면 `-1L`을 반환합니다.
+- 입출력 대상이 되는 파일 포인터의 위치를 알아내는 함수이고, 이를 이용해서 파일의 크기를 계산할 수 있습니다.
+
+다음 예제는 바이너리 파일을 읽기모드로 열어 파일의 바이트 단위 크기를 알아내고 출력하는 프로그램입니다. 파일을 열었을 때는 포인터는 `0`번에 위치합니다.  `fseek`를 이용하면 파일 입출력 포인터를 강제로 끝으로 이동할 수 있습니다  
+
+`ftell`을 사용하면 현재 위치를 알아내고 파일의 크기를 알아낼 수 있습니다.
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+
+int main(void) {
+  FILE *fp = NULL;
+  fp = fopen("Test.dat", "rb");
+
+  fseek(fp, 0, SEEK_END);
+
+  printf("size of Test.dat : %lu\n", ftell(fp));
+  fclose(fp);
+  return EXIT_SUCCESS;
+}
+/*size of Test.dat : 32*/
+```
+
+이렇게 하면 파일의 크기를 알아 낼 수 있습니다. 지금 `0`을 대입한 상황에서는 포인터 그대로 보여줍니다. 오프셋으로 포인터 앞뒤로 갈 수 있습니다.
+
+`rewind` 함수는 파일 포인터가 현재 어디에 있는 상관없이 맨 앞으로 강제 이동하는 함수입니다. 자주는 아니지만 같이 알아둘 필요 있습니다.
+
+```c
+void rewind(FILE * stream);
+```
+
+- `stream`은 구조체 포인터입니다.
+- 반환 값은 없습니다.
+- 파일 포인터를 맨 앞으로 이동시킵니다. `fseek(fp, 0, SEEK_SET)`과 결과가 같습니다.
+
+이제는 알아두면 유용한 함수들입니다.
+
+`feof`는 파일 포인터가 맨 끝에 있는지 확인하는 함수입니다. 자주 사용하는 편은 아닙니다. `_access`는 자주 사용합니다. 특정 파일이 존재하는지, 존자하면 읽기/쓰기 전용 모드인지 확인할 수 있습니다. 
+
+파일 존재를 확인하고 싶으면 fopen 읽기모드로 사용할 수 있습니다. 하지만 실제로 파일이 존재하지만 쓰기 전용엔데 읽기모드로는 확인할 수 없습니다. 파일 접근 모드를 직접 조사해야 할 때 사용합니다. 
+
+문제는 운영체제마다 다른 함수를 사용해야 합니다. 윈도우는 `_access`이고 리눅스는 `access`입니다. `_access`는 보안 문제가 있어서 `_access_s`를 대신 사용할 수 있습니다. 유니코드 버전 함수는 `_waccess`입니다.
+
+```c
+int feof(FILE *stream);
+```
+
+- `stream`은 구조체 포인터입니다.
+- `0`을 반환하면 파일 포인터가 끝에 있는 것이 아닙니다. 그외는 파일 끝입니다.
+
+```c
+int _access(const char * path, int mode);
+```
+
+- `path`는 접근 검사를 할 파일이 저장된 경로가 저장된 메모리에 대한 포인터입니다. `mode`는 접근 검사 값입니다. `0`은 유무, `2`는 쓰기 전용인지 확인, `4`는 읽기 전용인지 확인, `6`은 읽기 쓰기 모두 가능한지 확인합니다.
+- `0`을 반환하면 해당 접근을 허용합니다. `-1`을 반환하면 파일이 존재하지 않거나 접근할 수 없을 의미합니다.
+
+1. 표준입력장치에서 문자열을 입력받은 후, 표준출력장치로 출력하는 프로그램을 작성하세요. 단 `fgets`, `fputs`를 무조건 사용해야 합니다.
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+#define MAX_BUF_SIZE 512
+
+int main(void) {
+  FILE *fp = NULL;
+  char szBuffer[MAX_BUF_SIZE] = {0};
+
+  fp = fopen("Test.txt", "w");
+  if (fp == NULL) {
+    printf("ERROR: Failed to open file!");
+    return EXIT_FAILURE;
+  }
+  printf("이런저런 입력하세요: ");
+  fgets(szBuffer, sizeof(szBuffer), stdin);
+  fputs(szBuffer, fp);
+
+  memset(szBuffer, 0, sizeof(szBuffer));
+  fclose(fp);
+
+  fp = fopen("Test.txt", "r");
+  if (fp == NULL) {
+    printf("ERROR: Failed to open file!");
+    return EXIT_FAILURE;
+  }
+  while (fgets(szBuffer, sizeof(szBuffer), fp)) {
+    printf("%s", szBuffer);
+    memset(szBuffer, 0, sizeof(szBuffer));
+  }
+  fclose(fp);
+  return EXIT_SUCCESS;
+}
+/*이런저런 입력하세요: test string*/
+/*test string*/
+```
+
+표준입출력에 파일입출력까지 활용했습니다.
+
+2. 현재 경로에서 `TestFile.txt`를 연 후, 사용자가 입력한 문자열을 뒤에 이어서 추가한 뒤 다시 저장하는 프로그램을 작성하세요.
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+#define MAX_BUF_SIZE 512
+
+int main(void) {
+  FILE *fp = NULL;
+  char szStdioBuffer[MAX_BUF_SIZE] = {0};
+  char szDiskBuffer[MAX_BUF_SIZE] = {0};
+  char TARGET_FILE[16] = {"Test.txt"};
+
+  fp = fopen(TARGET_FILE, "r");
+  if (fp == NULL) {
+    printf("ERROR: Failed to open file!");
+    return EXIT_FAILURE;
+  }
+  printf("저장 전 파일 내용입니다.\n");
+  while (fgets(szDiskBuffer, sizeof(szDiskBuffer), fp)) {
+    printf("%s", szDiskBuffer);
+    memset(szDiskBuffer, 0, sizeof(szDiskBuffer));
+  }
+  fclose(fp);
+
+  fp = fopen(TARGET_FILE, "a");
+  if (fp == NULL) {
+    printf("ERROR: Failed to open file!");
+    return EXIT_FAILURE;
+  }
+  printf("이런저런 입력하세요: ");
+  fgets(szStdioBuffer, sizeof(szStdioBuffer), stdin);
+  fputs(szStdioBuffer, fp);
+  fclose(fp);
+
+  fp = fopen(TARGET_FILE, "r");
+  if (fp == NULL) {
+    printf("ERROR: Failed to open file!");
+    return EXIT_FAILURE;
+  }
+  printf("저장 후 파일 내용입니다.\n");
+  while (fgets(szDiskBuffer, sizeof(szDiskBuffer), fp)) {
+    printf("%s", szDiskBuffer);
+    memset(szDiskBuffer, 0, sizeof(szDiskBuffer));
+  }
+  fclose(fp);
+  return EXIT_SUCCESS;
+}
+```
+
+3. 현재 경로에서 `TestFile.txt`를 연 후, 원본 파일에서 행 단위로 문자열을 읽어 들여 대상 파일에 복사하는 프로그램을 작성하세요. 단, 대상 파일도 현재 경로에 생성하며, 파일명은 `DstFile.txt`입니다.
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+#define MAX_BUF_SIZE 512
+
+int main(void) {
+  FILE *rp = NULL;
+  FILE *wp = NULL;
+  char szDiskBuffer[MAX_BUF_SIZE] = {0};
+  char START_FILE[16] = {"Test.txt"};
+  char TARGET_FILE[16] = {"DstFile.txt"};
+
+  rp = fopen(START_FILE, "r");
+  wp = fopen(TARGET_FILE, "w");
+  if (rp == NULL || wp == NULL) {
+    printf("ERROR: Failed to open file!");
+    return EXIT_FAILURE;
+  }
+
+  printf("복사할 파일의 내용입니다.\n");
+  while (fgets(szDiskBuffer, sizeof(szDiskBuffer), rp)) {
+    printf("%s", szDiskBuffer);
+    fputs(szDiskBuffer, wp);
+    memset(szDiskBuffer, 0, sizeof(szDiskBuffer));
+  }
+
+  fclose(rp);
+  fclose(wp);
+
+  printf("복사한 파일의 내용입니다.\n");
+  rp = fopen(TARGET_FILE, "r");
+  if (rp == NULL) {
+    printf("ERROR: Failed to open file!");
+    return EXIT_FAILURE;
+  }
+  while (fgets(szDiskBuffer, sizeof(szDiskBuffer), rp)) {
+    printf("%s", szDiskBuffer);
+    memset(szDiskBuffer, 0, sizeof(szDiskBuffer));
+  }
+  fclose(rp);
+
+  return EXIT_SUCCESS;
+}
+```
+
+4. `main` 함수의 인자로 두 바이너리 파일의 경로를 입력받아 바이너리 모드로 열고, 원본 파일의 내용을 읽어들여 대상 파일로 복사하는 프로그램을 작성하세요. 단 복사의 진행 과정을 백분율로 화면에 출력하고 한 번에 `4KB` 단위로 복사합니다. 그리고 대상 파일이 존재 유무에 상관없이 무조건 생성하며, 파일의 크기가 최대 `100MB` 이상인 경우는 고려하지 않습니다.
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+/* 4KB */
+#define UNIT_SIZE 4096
+
+/*
+ * `main` 함수의 인자로 두 바이너리 파일의 경로를 입력받아 바이너리 모드로
+ * 열고, 원본 파일의 내용을 읽어들여 대상 파일로 복사하는 프로그램을 작성하세요.
+ * 단 복사의 진행 과정을 백분율로 화면에 출력하고 한 번에 `4KB` 단위로
+ * 복사합니다. 그리고 대상 파일이 존재 유무에 상관없이 무조건 생성하며, 파일의
+ * 크기가 최대 `100MB` 이상인 경우는 고려하지 않습니다.
+ */
+int main(int argc, char *argv[]) {
+  FILE *rp = NULL, *wp = NULL;
+  char buffer[UNIT_SIZE] = {0};
+  size_t bytesRead, totalBytesRead = 0;
+  /*int startAdd = 0, endAdd = 0;*/
+  long fileSize;
+  if (argc != 3) {
+    printf("현재 %d개의 파일 주소를 입력했습니다. 2개의 파이너리 파일 주소를 "
+           "입력해주세요.\n",
+           argc);
+    printf(argv[0], argv[1], argv[2]);
+    return EXIT_FAILURE;
+  }
+
+  rp = fopen(argv[1], "rb");
+  wp = fopen(argv[2], "wb");
+  if (rp == NULL || wp == NULL) {
+    printf("ERROR: Failed to open file!");
+    return EXIT_FAILURE;
+  }
+
+  fseek(rp, 0, SEEK_END);
+  fileSize = ftell(rp);
+  fseek(rp, 0, SEEK_SET);
+
+  // 파일 복사
+  while ((bytesRead = fread(buffer, 1, UNIT_SIZE, rp)) > 0) {
+    fwrite(buffer, 1, bytesRead, wp);
+    totalBytesRead += bytesRead;
+    printf("\r%.2f%%", (double)totalBytesRead / fileSize * 100);
+  }
+  /*while (fgets(szCopy, sizeof(szCopy), rp)) {*/
+  /*printf("%.2f%%\n",*/
+  /*(double)(((unsigned char *)&szCopy - rp->_p) / endAdd * 100));*/
+  /*fputs(szCopy, wp);*/
+  /*memset(szCopy, 0, sizeof(szCopy));*/
+  /*}*/
+  fclose(rp);
+  fclose(wp);
+  return EXIT_SUCCESS;
+}
+```
+
+이 문제는 나중에 다시 풀어볼 문제입니다. 결국 도움받아 해결했습니다. 이미 언어 하나 다룰 줄 아는데 도움받으면 곤란합니다.
+
+## 변수와 상수 고급 이론
+
+변수의 본질은 메모리입니다. 상수의 본질은 메모리에 저장된 정보 그 자체를 의미합니다. 이번에는 고급 이론을 배웁니다. 문법적인 요소만 다루면 암기입니다. 최적화를 배우려면 시스템과 관련된 이론을 이해해야 합니다.
+
+C 언어 초보자로 시작하려면 이번 장의 내용을 모두 밀도높게 알아야 합니다. 모든 이론을 정확히 알고 적절하게 활용할 수 있어야 합니다. 방어적인 프로그래밍 요소도 다룰 것입니다. 이것도 못하면 곤란합니다. 최소 중 최소한입니다.
+
+우리가 작성한 코드를 기계어로 번역해주는 컴파일러의 특성에 대해서 어느정도는 알아야 합니다. 또 언젠가는 직접 기계어를 작성해야 합니다. 하지만 당장은 최소한 어떤식으로 번역되는지 잘 알아야 합니다.
+
+### 형한정어
+
+형한정어는 변수에 적용되는 문법으로서 컴파일러의 최적화와 매우 밀접하게 관련되어 있습니다. 우리가 배우고 있는 C 언어는 당연히 고급 언어입니다. 기계가 인식할 수 있게 기계어로 번역해서 실행할 수 밖에 없는데 의도에 맞게 번역했는지 어떻게 알 수 있는가? 이런 문제가 있습니다. 의도하지 않게 문제가 발생할 여지가 없는지 가능성이 있어도 문법으로 차단할 수 있어야 합니다.
+
+#### `const`
 
 
