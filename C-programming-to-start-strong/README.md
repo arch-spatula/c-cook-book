@@ -9894,3 +9894,472 @@ int main(void) {
 
 런타임 시점에 함수 호출로 발생하는 오버해드를 제거합니다.
 
+## 함수에 대한 고급 이론
+
+함수의 이름도 배열의 이름처럼 주소상수에 부여한 식별자입니다. 즉 포인터 변수에 담을 수 있습니다. 만약 함수의 매개변수를 알고 있으면 이름 대신에 주소를 알고 있다면 함수를 호출하는데 문제 없습니다. 응용하면 다른 함수에 내가 만든 함수의 주소를 알려줘서 호출하도록 코드를 만들 수 있습니다.
+
+프로그램의 설계적 측면에서 함수를 다루거나 사용법을 익히는데 주력했습니다. 이번에는 내부를 살펴볼 것입니다. 함수가 호출하고 반환하는 일련의 과정을 종합적으로 이해해볼 것입니다.
+
+### 성능 향상을 위한 이론
+
+함수를 호출하려면 비용(CPU + 메모리 사용)이 듭니다. 함수호출 그 자체가 이미 연산입니다. 스택 메모리를 사용해야 합니다. 또 프로그램의 흐름이 변경되기 위해 각종 연산이 필요합니다. 간단한 작업을 함수로 만드는 것은 효율적이지 못합니다.
+
+과거에는 외형은 함수이지만 사실 함수가 아닌 일반연산으로 처리하는 매크로를 이용해 함수의 장점을 활용하면서 효율적인 코드를 작성했습니다. 지금도 매크로는 많이 사용합니다. 매크로의 단점이 있는데 이 단점을 보완해 `__inline` 함수가 도입되었습니다. 완전히 대체는 가능합니다.
+
+#### 컴파일러 최적화
+
+릴리즈 모드로 프로그램을 컴파일하면 최적화 규칙이 적용됩니다. 이미 배운 것입니다. 이것은 물론 변수만 해당하는 것이 아닙니다. 최근 컴파일러는 과거와 비교하면 강력한 최적화 기능이 포함되어 있습니다. 불필요한 코드를 제거하거나 연산을 줄이는 수준에서 함수를 한줄로 요약까지 할정도입니다. 
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+
+int Add(int a, int b) {
+  int nResult = 0;
+  nResult = a + b;
+  return nResult;
+}
+
+int main(void) {
+  int nResult = 0;
+  nResult = Add(3, 4);
+  printf("%d\n", nResult);
+  return EXIT_SUCCESS;
+}
+/*7*/
+```
+
+릴리즈모드의 어쎔블리 코드를 보면 `printf("%d\n", 7)`과 사실상 동일합니다. 컴파일러가 이런 최적화를 할 수 있는 이유는 매개변수를 상수로 작성했기 때문입니다. 값이 확정되지 않은 숫자에 대해 변수에 대해 의존적인 것이 당연합니다. 사용자가 숫자를 확정하기 전까지 연산에 참여할 수 없습니다. 하지만 지금은 인자가 상수로 넣었기 때문에 가능합니다. 
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+
+int Add(int a, int b) {
+  int nResult = 0;
+  nResult = a + b;
+  return nResult;
+}
+
+int main(void) {
+  int nResult = 0, x, y;
+  scanf("%d %d", &x, &y);
+  nResult = Add(x, y);
+  printf("%d\n", nResult);
+  return EXIT_SUCCESS;
+}
+/*3 4*/
+/*7*/
+```
+
+이번에도 릴리즈 모드 어쎔블리를 확인해봐야 합니다. 확인하면 상수가 아니라서 어쎔블리 동작이 늘어난 것을 확인할 수 있습니다. 사용자가 입력한 정보를 받는 동작 덧셈하는 동작 등 늘어났습니다.
+
+컴파일러가 하는 것이 번역하는 것이 아닙니다. 컴파일러는 최적화까지 합니다. 최적화 과정에서 Add 함수가 번역 하지 않은 이유는 인라인 함수 확장 설정이 필요하기 때문입니다. 이렇게 되면 컴파일러는 모두 인라인처리할 것입니다.
+
+#### `__inline 함수`
+
+인라인 함수는 매크로가 갖고 있던 단점을 보완합니다. 타입을 명시해서 실수할 여지를 줄여줍니다. C 99 표준으로 지원하기 시작했습니다. 
+
+그렇다고 모든 것이 허용된 것은 아닙니다. 최적화가 불가능해보이면 일반함수로 간주하고 처리합니다.
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+
+int Add(int a, int b) {
+  int nResult = 0;
+  nResult = a + b;
+  return nResult;
+}
+
+__inline int NewAdd(int a, int b) {
+  int nResult = 0;
+  nResult = a + b;
+  return nResult;
+}
+
+int main(void) {
+  printf("%d\n", Add(3, 4));
+  printf("%d\n", NewAdd(3, 4));
+
+  return EXIT_SUCCESS;
+}
+/*7*/
+/*7*/
+```
+
+컴파일러 옵션을 다르게 처리하고 다시 어쎔블리를 확인해보면 이전에 `printf("%d\n", 7)`과 같은 결과를 볼 수 이습니다.
+
+코드상 함수라고 해서 기계어로도 함수라고 생각하면 곤란합니다.
+
+### 함수 호출 규칙
+
+함수 호출 규칙은 호출자 함수가 정의자 함수를 호출하는 과정에서 매개변수를 전달하는 순서 및 매개변수가 사용한 메모리 관리방법에 관한 규칙입니다.
+
+대표적으로 `__cdecl`, `__stdcall`, `__fastcall` 등 3가지 정도 있습니다. C 언어 표준에서 정의한 것은 아닙니다. 3가지 모두 액간 차이가 있습니다. C/C++ 컴파일러의 기본 함수 호출 규칙은 `__cdecl`입니다. 자동 변수랑 비슷하게 생략할 수 있습니다. 표시하면 함수의 반환 자료형과 이름사이 위치해야 합니다. 
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+
+int __cdecl main(void) {
+  printf("Hello, World\n");
+
+  return EXIT_SUCCESS;
+}
+/*Hello, World*/
+```
+
+| 호출 규칙    | 매개변수 스택 정리 | 매개변수 메모리  |
+| ------------ | ------------------ | ---------------- |
+| `__cdecl`    | Caller             | Stack            |
+| `__stdcall`  | Caller             | Stack            |
+| `__fastcall` | Caller             | Stack + Register |
+
+#### `__cdecl`
+
+호출 규칙상 매개변수를 오른쪽부터 스택에 push합니다. 스택 프레임 그리는 방법에서 배웠습니다. 매개변수로 인해 증가한 스택을 호출자 함수가 본래 크기로 줄입니다.
+
+자동변수는 스택 메모리 사용영역이라는 것은 이미 알고 있습니다. 메모리가 자동으로 관리된다고 하는데 스택 영역이 늘었다가 줄어드는 것에 불과합니다. 
+
+힙 영역은 메모리처럼 운영체제에 반환해야 하는 형태로 관리하는 것은 아닙니다. 다음 예시에서 스택의 최대 사이즈는 12바이트입니다.
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+
+int __cdecl GetMax(int a, int b, int c) {
+  int max = a;
+  if (b > max)
+    max = b;
+  if (c > max)
+    max = c;
+  return max;
+}
+
+int __cdecl main(void) {
+  int nResult = 0;
+  nResult = GetMax(1, 2, 3);
+  printf("%d\n", nResult);
+
+  return EXIT_SUCCESS;
+}
+```
+
+주소가 증가했다는 것은 스택의 감소를 의미합니다. 반환이후에는 스택은 호출 이전 상태로 복원됩니다. 이것은 자동변수로 관리됩니다.
+
+#### `__stdcall`
+
+`__cdecl`처럼 매개변수를 오른쪽부터 스택에 push합니다. 매개변수로 증가한 스택을 호출자 함수가 정리하는 것이 아니라 정의자가 정리합니다. 이것은 어셈블리로 확인해봐야 합니다. 이번에는 어셈블리가 길 것입니다.
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+
+int __stdcall GetMax(int a, int b, int c) {
+  int max = a;
+  if (b > max)
+    max = b;
+  if (c > max)
+    max = c;
+  return max;
+}
+
+int __cdecl main(void) {
+  int nResult = 0;
+  nResult = GetMax(1, 2, 3);
+  printf("%d\n", nResult);
+
+  return EXIT_SUCCESS;
+}
+```
+
+`GetMax` 함수 내부에서 정리합니다. 문제는 macOS 타겟 머신과 호환이 안됩니다.
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+
+int __fastcall GetMax(int a, int b, int c) {
+  int max = a;
+  if (b > max)
+    max = b;
+  if (c > max)
+    max = c;
+  return max;
+}
+
+int __cdecl main(void) {
+  int nResult = 0;
+  nResult = GetMax(1, 2, 3);
+  printf("%d\n", nResult);
+
+  return EXIT_SUCCESS;
+}
+```
+
+매개변수가 메모리에 복사되는 횟수를 줄이고 연산속도를 향상시킬 수 있습니다.
+
+### 함수 포인터와 역호출 구조
+
+함수의 이름도 배열처럼 주소상수를 부여한 식별자입니다. 따라서 함수의 이름도 포인터 변수에 저장할 수 있습니다. 변수의 자료형이 함수 호출에 필요한 정보(매개변수, 호출 규칙, 반환 자료형)을 포함해야 변수를 이용해서 함수를 호출할 수 있습니다. 그래서 `void *`에 함수의 이름을 저장할 수는 있으나 호출할 수는 없습니다.
+
+함수 포인터를 구체적으로 다루기에 앞서 함수의 이름이 주소임을 확인하기 위한 예지입니다.
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+
+int main(void) {
+  void *pData = main;
+  printf("%p\n", main);
+  printf("%p\n", pData);
+
+  return EXIT_SUCCESS;
+}
+/*0x1020d7f34*/
+/*0x1020d7f34*/
+```
+
+컴파일러 옵션을 많이 꺼야 하지만 함수도 결국 메모리 주소를 갖는다는 것을 볼 수 있습니다.
+
+변수도 함수도 다 주소로 식별합니다. 그 주소의 저장공간으로 활용할지, 그 주소에 저장된 정보를 CPU가 인식하는 옵트코드로 볼 것인지 다를 뿐입니다.
+
+#### 함수 포인터
+
+함수 포인터 변수의 문법은 간단합니다. 포인터가 기술되는 위치 중간에 기술합니다. 반드시 괄호로 묶어야 합니다.
+
+```c
+반환_자료형(호출_규칙 * 변수이름)(매개변수);
+```
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+
+int GetMax(int a, int b, int c) {
+  int max = a;
+  if (b > max)
+    max = b;
+  if (c > max)
+    max = c;
+  return max;
+}
+
+int main(void) {
+  int (*pfGetMax)(int, int, int) = GetMax;
+  printf("MAX: %d\n", pfGetMax(1, 3, 2));
+
+  return EXIT_SUCCESS;
+}
+/*MAX: 3*/
+```
+
+컴파일에러도 없습니다.
+
+즈금은 호출 규칙을 생략했습니다. 함수호출 연산자자 사실 괄호입니다. `주소(매개변수)` 이런 형태입니다. 주소는 함수 이름입니다. 함수 포인트터도 가능합니다. 주소이기 때문에 가능하고 이 예제는 주소를 담은 경우입니다.
+
+#### 역호출 구조
+
+함수호출 연산자나 함수 포인터도 배웠습니다. 필요성은 이제알 수 있습니다. 또 중요성도 알게 될 것입니다.
+
+- 동적 연결 라이브러리(DLL)를 사용하는 경우
+- 역호출 구조를 구현하는 경우
+
+DLL은 자제하겠습니다. 시스템 프로그래밍여역입니다. 하지만 역호출 구조는 다룹니다.
+
+사용자 정의함수를 자신이 작성한 함수에 직접호출하는 방식으로 프로그램을 작성했습니다. 하지만 다른 코드가 사용자의 함수를 호출하도록 만들 수 있습니다. 역호출은 호출된다는 것에 불과합니다. `qsort`를 뒤로 미룬 것도 이런 이유 때문입니다.
+
+```c
+void qsort(void *base, size_t num, size_t width, int (__cdecl *compare)(const void *, const void *));
+```
+
+- `base`는 정렬대상 배열의 기준 주소, `num`은 배열요소의 개수, `width`는 배열요소의 바이트단위 크기, `compare`는 각 요소를 비교하고 같을 경우0, 그렇지 않으면 양수 혹은 음수를 반환하는 함수
+- 반환 값은 없습니다.
+- 퀵 정렬 알고리즘을 이용해 배열에 담긴 요소를 정리하는 함수입니다. 사용자 정의 콜백 함수를 만들어 인자를 전달하는 방법으로 각항을 비교합니다. 
+
+참고로 퀵정렬은 평균 정렬 속도가 가장 빠른 알고리즘입니다. 공식유도는 나중에 본인이 알아서 학습하기 바랍니다.
+
+`const void *` 둘을 매개변수로 받고 `int` 타입으로 반환하는 함수 포인터를 의미합니다. 
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+
+int MyCompare(const void *pParamPre, const void *pParamPost) {
+  return *(int *)pParamPre - *(int *)pParamPost;
+}
+
+int main(void) {
+  int aList[5] = {30, 10, 40, 50, 20};
+  int i = 0;
+  qsort(aList, 5, sizeof(int), MyCompare);
+
+  for (i = 0; i < 5; ++i) {
+    printf("%d\n", aList[i]);
+  }
+
+  return EXIT_SUCCESS;
+}
+/*10*/
+/*20*/
+/*30*/
+/*40*/
+/*50*/
+```
+
+각항을 비교하고 결과를 반환하는 함수입니다. 간접지정연산을 인스턴화가 불가능합니다. 그리고 강제로 형변환을 해서 결과를 얻습니다.
+
+예제 코드를 보면 몇번 역호출되는지 모릅니다. 두항을 비교할 때마다 호출되는 것입니다. 알고리즘을 정확히 알고 있는 사람이라면 예측할 수 있습니다. 
+
+역호출(call back)이라는 이름이 붙은 이유는 `qsort` 함수를 호출자는 `main` 함수이지만 정의자는 `qsort` 함수가 다시 `MyCompare` 함수 호출자가 되기 때문입니다.
+
+이 예제는 직접 호출하는 것이 아니라 자동으로 호출된다는 개념이 중요합니다. 콜백함수는 다른 언어에서도 자주 볼 수 있습니다. 함수 정의자가 호출자의 함수를 특정한 조건에 맞게 호출한다는 것입니다. 이런 것을 프로그램 설계에 반영할 수 있어야 합니다.
+
+### 정적 라이브러리의 구현
+
+문법적으로 오류가 없다고 가정하고 `Test.c` 파일을 컴파일하면 `Test.obj` 파일이 생성될 것입니다. 그리고 이어서 링크하면 `Test.exe` 파일이 생성될 것입니다. 만일 `TestFunc` 라는 함수가 코드에 들어 있으면 `TestFunc` 함수를 기계어로 번역한 결과는 `Test.obj` 파일에 들어있을 것입니다.
+
+이 과정에서 우리가 언급 안한 것이 있습니다. `Test.c` 파일은 `main`, `TestFunc` 함수 내부에서 `printf` 함수를 호출했다고 가정하면 `printf` 함수의 소스코드 혹은 번역한 기계어가 들어있는 `obj` 파일이 빌드 과정에서 반드시 필요할 텐데, 어디에도 `printf` 함수가 `obj` 파일에서도 찾을 수 없습니다.
+
+이런 것은 정적 라이브러리에 들어있습니다. 여기서 정적이라는 것은 라이브러리를 사용한 코드를 컴파일하고 링크하는 과정에서 마치 하나의 `obj` 파일처럼 실행 바이너리의 일부로 포함된다는 뜻입니다.
+
+#### 라이브러리 프로젝트 생성
+
+생각보다 단계가 많습니다. 
+
+```c title="LibTest.c"
+#include <stdio.h>
+
+void PrintData(int nParam) { printf("PrintData( ): %d\n", nParam); }
+
+void PrintString(const char *pszParam) {
+  printf("PrintString( ): %s\n", pszParam);
+}
+```
+
+이 예제파일을 빌드합니다. 확장자가 `lib`입니다. `gcc`는 따로 찾아봐야 합니다. `lib` 확장자 파일은 링크타임에 `exe` 파일을생성하는 시점에 필요합니다. 단독으로 실행은 불가능합니다. `obj` 파일이랑 그런점에서 비슷합니다.
+
+#### 헤더파일의 구성
+
+많은 코드를 작성하면서 `stdio.h` 파일을 소스에 포함했습니다. 이 내부에 원형선언이 들어있습니다. 원형 선언와 정의로 나눌 수 있는데 일반적으로 확장자 `.c` 소스파일에 정의가 들어가 `.h`인 헤더파일에 원형 선언이 있습니다. 소스코드가 아니라 빌드된 결과 바이너리 파일로 정의가 제공될 때는 `.lib` 파일로 제공됩니다. 헤더와 라이브러리 파일은 한 세트로 생각할 수 있습니다.
+
+이 실습에서 중요한 것은 경로입니다.
+
+```c title="LibTest.h"
+#pragma once
+
+void PrintData(int);
+void PrintString(const char *);
+```
+
+같은 경로에 있으면 됩다. 헤더파일과 라이브러리 파일은 한 세트입니다.
+
+헤더 파일은 컴파일타임에 필요하고 라이브러리 파일은 링크타임에 필요합니다.
+
+헤더파일은 `#include` 전처리기로 소스가 포함되었던 것인데 보통 에디터가 숨겨서 인지하지 못했을 수 있습니다.
+
+#### 정적 라이브러리 사용하기
+
+함수들을 따로 모아서 라이브러리 파일로 만든 이유는 모듈화 때문입니다.
+
+- 함수의 원형만 공개하고 실제 코드는 감출 수 있습니다.
+- 프로그램을 작성하는데 필요한 함수들을 마치 부품처럼 관리할 수 있습니다.
+- 한 프로그램의 주요 기능을 여러 명의 개발자가 동시에 개발할 수 있습니다.
+
+```c
+#include "LibTest.h"
+#include <stdlib.h>
+
+int main(void) {
+  PrintData(10);
+  PrintString("Test string");
+
+  return EXIT_SUCCESS;
+}
+```
+
+여기까지만 작성하면 오류가 발생할 것입니다. 에디터가 자동완성으로 만들 수 있게 지원받을 수 있지만 부족합니다. 이 오류는 링크 오류입니다. 링크 타임에 해당 파일을 못찾은 문제입니다.
+
+```c
+#include "LibTest.h"
+#include <stdlib.h>
+
+#pragma comment(lib, "LibTest")
+
+int main(void) {
+  PrintData(10);
+  PrintString("Test string");
+
+  return EXIT_SUCCESS;
+}
+```
+
+`#pragma once`은 해더 중복을 막습니다. 
+
+이렇게 하면 컴파일이 성공해야 하지만 gcc CLI 만 사용해서는 저는 모르겠습니다.
+
+### 가변인자 사용하기
+
+매개변수가 직접 관련이 있는 스택 프레임이나 함수 호출 규칙 같은 이론들을 배운 지금 당연한 것입니다.
+
+다음은 가변인자를 지원하도록 구현입니다. 왼쪽 첫번째 인자는 고정입니다. 나머지 오른쪽은 인자들의 개수가 전달됩니다. 다음은 인자수와 무관하게 최댓값을 구하는 프로그램입니다.
+
+```c
+#include <stdarg.h>
+#include <stdio.h>
+#include <stdlib.h>
+
+int GetMax(int nCount, ...) {
+  int nMax = -9999, nParam = 0, i = 0;
+  char *plist = NULL;
+
+  va_start(plist, nCount);
+  for (i = 0; i < nCount; ++i) {
+    nParam = va_arg(plist, int);
+    if (nParam > nMax)
+      nMax = nParam;
+  }
+  va_end(plist);
+
+  return nMax;
+}
+
+int main(void) {
+  printf("MAX: %d\n", GetMax(3, 10, 30, 20));
+  printf("MAX: %d\n", GetMax(4, 40, 10, 30, 20));
+  printf("MAX: %d\n", GetMax(5, 40, 10, 50, 30, 20));
+  return EXIT_SUCCESS;
+}
+/*MAX: 30*/
+/*MAX: 40*/
+/*MAX: 50*/
+```
+
+상당히 단순하게 구현할 수 있습니다. 물론 타입을 조심해야 합니다.
+
+`va_start`운 매크로에 불과합니다.
+
+매크로의 내용을 풀어보면 `(sizeof(nCount) + sizeof(int) - 1) & ~(sizeof(int) -1)`에 불과합니다. 
+
+1. C/C++ 언어에서 사용하는 기본 함수 호출 규약을 쓰세요.
+
+`__cdecl`
+
+2. 원형이 `char * __stdcall TestFunc(int, double);`인 함수에 대한 포인터 변수를 선언하려고 합니다. 적절한 타입 정의를 해주세요.
+
+```c
+char *(__stdcall * foo)(int, double);
+```
+
+3. 특정 함수를 호출할 때 함수의 주소를 매개변수로 전달한 후, 주소가 전달된 함수가 특정 함수로부터 호출되는 구조를 무엇인지 쓰시오.
+
+콜백함수 구조
+
+4. 정적 라이브러리 파일의 확장명은 무엇인지 쓰세요.
+
+`lib`
+
+5. 헤더파일이 여러 번 중복해서 포함되는 것을 막기 위한 전처리기 코드는 무엇이고, 이 코드를 기술하는 위치는 헤더파일 내부 중 어디인지 쓰세요.
+
+`#pragma once`이고 헤더파일 최상단에 작성합니다.
