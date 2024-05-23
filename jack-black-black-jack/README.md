@@ -10,6 +10,10 @@ C 언어 관련된 책을 읽거나 공부할 때마다 만들 것을 <C를 배�
 
 <!-- TODO: 일단 쉽게 1덱으로 플레이합니다. 나중에는 N 덱이상 설정을 지원합니다.-->
 
+```txt title=".gitignore"
+JackBlackBlackJack
+```
+
 ```sh
 gcc -o JackBlackBlackJack JackBlackBlackJack.c -Wall -Wextra -Werror -O2 -std=c99 -pedantic
 ```
