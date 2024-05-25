@@ -1,23 +1,38 @@
+#include <stddef.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
+#include <time.h>
 
-#define DECK_UNIT 104
+#define DECK_UNIT 105
 /*
  *  INFO: S는 스페이드, H는 하트, D는 다이아몬드, C는 클러버
+ *  TODO: 나중에 모양들을 nerdfont로 표현하기
  */
 #define CARD_SHAPE "SHDC"
+#define CARD_SHAPE_SIZE 4
 /*
- *  TODO: T는 화면서 10을 표현하지만 값은 T로 표현함 UI상 T를 10으로 처리하는
+ *  INFO: T는 화면서 10을 표현하지만 값은 T로 표현함 UI상 T를 10으로 처리하는
  *  것이 내부 셔플을 처리하는 것보다 쉬움
  */
 #define CARD_VALUE "A23456789TJQK"
+#define CARD_VALUE_SIZE 13
+
+#define INIT_DECK                                                              \
+  "SAS2S3S4S5S6S7S8S9STSJSQSKHAH2H3H4H5H6H7H8H9HTHJHQHKDAD2D3D4D5D6D7D8D9DTDJ" \
+  "DQDKCAC2C3C4C5C6C7C8C9CTCJCQCK"
 
 enum SESSION { HOUSE_BROKE, PLAYER_BROKE, END_GAME, PLAYING };
 
 enum SESSION beforeRoundStart(int *rounds, int playerMoney, int dealerMoney);
 
+int placeBet(int playerMoney);
+
 int exitSession(enum SESSION, int rounds, int playerMoney, int playerWins,
                 int dealerMoney, int dealerWins);
+
+void initDeck(char *deck);
+void shuffle(char *deck);
 
 /*
  * 21에 딜러보다 더 가까이 만들면 이기는 게임
@@ -73,14 +88,20 @@ int main(void) {
   int playerMoney = 1000, playerWins = 0, dealerMoney = 1000000, dealerWins = 0,
       rounds = 0;
   enum SESSION session = PLAYING;
-  int i = 0;
-  // TODO: 덱 구현
+  int playerBet = 0;
+  /*int i = 0;*/
+
+  // NOTE: 덱
   // (2 ~ 10, J, Q, K, A) * (S, H, D, C) -> 13 * 4 = 52개 조합
-  // 카드 1장 당 갖고 있어야 할 공간은 2바이트 CA 52장의 카드를 바이트단위로
-  // 갖고 있기 위해서는 104바이트가 필요함
+  // 카드 1장 당 갖고 있어야 할 공간은 2바이트 클로버 A는 CA로 표현
+  //  52장의 카드를 바이트단위로 갖고 있기 위해서는 104바이트가 필요함
   char deck[DECK_UNIT] = {0};
-  // 2개의 반복문
-	// 셔플로 2개 자리 교환 시 2바이트 단위로 이동
+
+  // INFO: 덱 셔플(shuffle)
+  // 마지막 모양  i * 2  숫자 i * 2 + 1
+  // 무작위 모양 swapPoint * 2 숫자 swapPoint * 2 + 1
+  srand(time(NULL));
+	printf("time: %ld, \n", time(NULL));
 
   // NOTE: 게임 시작 출력
   printf("Jack Black Black Jack\n\n");
@@ -93,29 +114,89 @@ int main(void) {
   // NOTE: 판(round) 루프
   while (session == PLAYING) {
     session = beforeRoundStart(&rounds, playerMoney, dealerMoney);
-    printf("%d 판\n", rounds);
-    // TODO: 베팅
-    // TODO: 범위 설정(전재산 최소 10%)
-    printf("베팅액을 정해주세요. 최대 %d 원까지 가능합니다.\n", playerMoney);
-    // TODO: 범위 초과하면 다시 입력
-    // TODO: 이상한 입력도 시 입력
-    // TODO: 덱 셔플
+		printf("deck: %s\n", deck);
+    if (session != PLAYING) {
+      break;
+    }
 
+    printf("%d번째 판입니다.\n", rounds);
+
+    playerBet = placeBet(playerMoney);
+    printf("베팅은 %d원입니다.\n", playerBet);
+
+    initDeck(deck);
+    shuffle(deck);
     // TODO: start 2장 뽑기
-    // TODO: 승부 판단
-    // TODO: Hit
-    // TODO: Stay
+    // 포인터 이동으로 카드 뽑기 구현
+    // 유저의 현재 패 판단
+    // 패의 크기는 스택메모리를 활용하면 14바이트를 활용하거나 게임마다
+    // 힙메모리를 활용
+    // TODO: 승부 판단(checkWin)
+    // TODO: Hit/Stay
     // TODO: 배당
   }
 
-  int exitStatus = -1;
-  exitStatus = exitSession(session, rounds, playerMoney, playerWins,
-                           dealerMoney, dealerWins);
-  if (exitStatus == EXIT_SUCCESS) {
-    return EXIT_SUCCESS;
-  } else {
-    return EXIT_FAILURE;
+  // NOTE: 종료 방식에 따라 처리
+  return exitSession(session, rounds, playerMoney, playerWins, dealerMoney,
+                     dealerWins);
+}
+
+/*
+ *  NOTE: 덱초기화
+ * 덱의 주소는 필요합니다.
+ */
+void initDeck(char *deck) {
+  int i = 0;
+  for (i = 0; i < DECK_UNIT; i++) {
+    deck[i] = INIT_DECK[i];
   }
+  deck[DECK_UNIT] = '\0';
+}
+
+void shuffle(char *deck) {
+  int i = 0, swapPoint = 0;
+  char tempCard[3] = {"ii\0"};
+  printf("\n");
+  for (i = 102; i >= 0; i -= 2) {
+    swapPoint = (rand() % 52) * 2;
+
+    tempCard[0] = deck[i];
+    tempCard[1] = deck[i + 1];
+
+    deck[i] = deck[swapPoint];
+    deck[i + 1] = deck[swapPoint + 1];
+
+    deck[swapPoint] = tempCard[0];
+    deck[swapPoint + 1] = tempCard[1];
+  }
+}
+
+int placeBet(int playerMoney) {
+  int playerBet = 0, stdIOCheck = 0;
+  while (playerBet < playerMoney / 10 || playerBet > playerMoney) {
+    printf("베팅액을 정해주세요. 최소 %d부터 최대 %d 원까지 가능합니다.\n금액:",
+           playerMoney / 10, playerMoney);
+    stdIOCheck = scanf("%d%*c", &playerBet);
+    if (stdIOCheck == 0) {
+      printf("뇌절 오셨습니까? 문자는 숫자가 아닙니다.\n");
+      while (getchar() != '\n') {
+        continue;
+      }
+    }
+    if (playerBet < playerMoney / 10) {
+      printf("금액이 너무 작습니다.\n");
+    }
+    if (playerBet > playerMoney) {
+      printf("뇌절 오셨습니까?\n");
+    }
+    if (playerBet == playerMoney / 10) {
+      printf("최소 베팅 쌉하남자 오지는군요.\n");
+    }
+    if (playerBet == playerMoney) {
+      printf("전재산 베팅 상남자 인정합니다.\n");
+    }
+  }
+  return playerBet;
 }
 
 enum SESSION beforeRoundStart(int *rounds, int playerMoney, int dealerMoney) {
@@ -152,9 +233,11 @@ enum SESSION beforeRoundStart(int *rounds, int playerMoney, int dealerMoney) {
   return END_GAME;
 }
 
+/*
+ *  NOTE: 메뉴 선택에 따라 출력
+ */
 int exitSession(enum SESSION session, int rounds, int playerMoney,
                 int playerWins, int dealerMoney, int dealerWins) {
-  // NOTE: 메뉴 선택에 따라 출력
   switch (session) {
   case HOUSE_BROKE:
     /*printf("Winner winner chicken dinner\n");*/
