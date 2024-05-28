@@ -6,7 +6,7 @@ typedef struct MYBODY {
   int nWeight;
 } MYBODY;
 
-typedef struct USERDATA {
+typedef struct person {
   char szName[32];
   char szPhone[32];
   MYBODY body;
