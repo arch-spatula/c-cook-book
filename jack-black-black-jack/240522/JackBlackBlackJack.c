@@ -26,15 +26,28 @@ enum SESSION { HOUSE_BROKE, PLAYER_BROKE, END_GAME, PLAYING };
 
 enum SESSION beforeRoundStart(int *rounds, int playerMoney, int dealerMoney);
 
+typedef struct Person {
+  int money;
+  int wins;
+  char cards[DECK_UNIT];
+  int stay;
+} Person;
+
 int placeBet(int playerMoney);
 
-int exitSession(enum SESSION, int rounds, int playerMoney, int playerWins,
-                int dealerMoney, int dealerWins);
+int exitSession(enum SESSION, int rounds, Person *player, Person *dealer);
 
 void initDeck(char *deck);
+
 void shuffle(char *deck);
 
-int hit(char *deck, char *cards, int drawIdx);
+void hit(char *deck, char *cards, int *drawIdx);
+
+void decision(Person *player, Person *dealer, char *deck, int *drawIdx);
+
+void playerDecision(Person *player, int *drawIdx, char *deck);
+
+void dealerDecision(Person *player, int *drawIdx, char *deck);
 
 /*
  * 21에 딜러보다 더 가까이 만들면 이기는 게임
@@ -86,15 +99,12 @@ int hit(char *deck, char *cards, int drawIdx);
  *   - 게임 시작 시점에 인슈어런스 적용시 push 효과 적용 무승부로 게임 종료
  */
 int main(void) {
-  // TODO: 구조체로 리팩토링
-  int playerMoney = 1000, playerWins = 0, dealerMoney = 1000000, dealerWins = 0,
-      rounds = 0;
-  char playerCards[DECK_UNIT] = {0};
-  char dealerCards[DECK_UNIT] = {0};
-  int playerStay = 0, dealerStay = 0;
+  int rounds = 0;
+  Person player = {1000, 0, {0}, 0};
+  Person dealer = {1000000, 0, {0}, 0};
   enum SESSION session = PLAYING;
   int playerBet = 0;
-  int i = 0;
+  /*int i = 0;*/
 
   // NOTE: 덱
   // (2 ~ 10, J, Q, K, A) * (S, H, D, C) -> 13 * 4 = 52개 조합
@@ -112,11 +122,11 @@ int main(void) {
   printf(
       "게임을 시작합니다. 도박사 닝겐 재산은 %d원입니다. 호구카지노 콤퓨타의 "
       "재산은 %d원입니다.\n\n",
-      playerMoney, dealerMoney);
+      player.money, dealer.money);
 
   // NOTE: 판(round) 루프
   while (session == PLAYING) {
-    session = beforeRoundStart(&rounds, playerMoney, dealerMoney);
+    session = beforeRoundStart(&rounds, player.money, dealer.money);
     if (session != PLAYING) {
       break;
     }
@@ -126,67 +136,26 @@ int main(void) {
     playerBet = 0;
     drawIdx = 0;
 
-    playerBet = placeBet(playerMoney);
+    playerBet = placeBet(player.money);
     printf("베팅은 %d원입니다.\n", playerBet);
 
     initDeck(deck);
     shuffle(deck);
 
     // NOTE: 판 시작에 2장 뽑기
-    drawIdx = hit(deck, dealerCards, drawIdx);
-    drawIdx = hit(deck, dealerCards, drawIdx);
+    hit(deck, dealer.cards, &drawIdx);
+    hit(deck, dealer.cards, &drawIdx);
 
     // TODO: 딜러 패 공개 전에 다이 혹은 진행 결정
-    drawIdx = hit(deck, playerCards, drawIdx);
-    drawIdx = hit(deck, playerCards, drawIdx);
+    hit(deck, player.cards, &drawIdx);
+    hit(deck, player.cards, &drawIdx);
 
-    printf("딜러의 패: [%s]\n", dealerCards);
-    printf("본인의 패: [%s]\n", playerCards);
+    printf("딜러의 패: [%s]\n", dealer.cards);
+    printf("본인의 패: [%s]\n", player.cards);
 
-    // TODO: hit/stay 루프
-    printf("\n[h] 뽑기(Hit) \n[s] 중단(Stay)\n\n");
-
-    char choice = '\0';
-    int waitChoice = 1;
-    while (waitChoice) {
-      waitChoice = 0;
-      printf("입력: ");
-      choice = getchar();
-      // NOTE: 표준 입력 이후 즉시 버퍼 비우기
-      while (getchar() != '\n') {
-        continue;
-      }
-      if (choice == 'h' || choice == 'H') {
-        drawIdx = hit(deck, playerCards, drawIdx);
-      } else if (choice == 's' || choice == 'S') {
-        playerStay = 1;
-      } else {
-        printf("\n잘못된 입력입니다.\n");
-        waitChoice = 1;
-      }
-    }
-    // TODO:
-    // - 딜러 로직: 16 이하면 무조건 히트, 17 이상이면 무조건 스테이
-    // - 유저랑 같이 뽑기 결정했을 때 딜러도 판단하기
-    i = 1;
-    char foo = '\0';
-    int sum = 0;
-    while (foo != '\0') {
-      foo = dealerCards[i];
-      i += 1;
-      if (i % 2 == 1) {
-        sum += atoi(&foo);
-      }
-    }
-    if (sum <= 16) {
-      drawIdx = hit(deck, dealerCards, drawIdx);
-    } else {
-      dealerStay = 1;
-    }
-
-    printf("딜러의 패: [%s]\n", dealerCards);
-    printf("본인의 패: [%s]\n", playerCards);
-    if (playerStay && dealerStay) {
+    // TODO: hit/stay decision 루프
+    decision(&player, &dealer, deck, &drawIdx);
+    if (player.stay && dealer.stay) {
       printf("승부 결정합니다!\n");
     }
     // TODO: Hit/Stay 입력 받기
@@ -198,20 +167,69 @@ int main(void) {
   }
 
   // NOTE: 종료 방식에 따라 처리
-  return exitSession(session, rounds, playerMoney, playerWins, dealerMoney,
-                     dealerWins);
+  return exitSession(session, rounds, &player, &dealer);
 }
 
 /*
  * 패를 추가하는 메서드
  */
-int hit(char *deck, char *cards, int drawIdx) {
+void hit(char *deck, char *cards, int *drawIdx) {
   unsigned long cardIdx = strlen(cards);
-  cards[cardIdx] = deck[drawIdx];
-  cards[cardIdx + 1] = deck[drawIdx + 1];
+  cards[cardIdx] = deck[*drawIdx];
+  cards[cardIdx + 1] = deck[*drawIdx + 1];
   cards[cardIdx + 2] = '\0';
-  drawIdx += 2;
-  return drawIdx;
+  *drawIdx += 2;
+}
+
+void playerDecision(Person *player, int *drawIdx, char *deck) {
+  char choice = '\0';
+  int waitChoice = 1;
+  while (waitChoice) {
+    waitChoice = 0;
+    printf("입력: ");
+    choice = getchar();
+    // NOTE: 표준 입력 이후 즉시 버퍼 비우기
+    while (getchar() != '\n') {
+      continue;
+    }
+    if (choice == 'h' || choice == 'H') {
+      hit(deck, player->cards, drawIdx);
+    } else if (choice == 's' || choice == 'S') {
+      player->stay = 1;
+    } else {
+      printf("\n잘못된 입력입니다.\n");
+      waitChoice = 1;
+    }
+  }
+}
+
+void dealerDecision(Person *dealer, int *drawIdx, char *deck) {
+  int i = 0;
+  char cardValue = '\0';
+  int score = 0;
+  while (cardValue != '\0') {
+    cardValue = dealer->cards[i];
+    i += 1;
+    if (i % 2 == 1) {
+      score += atoi(&cardValue);
+    }
+  }
+  if (score <= 16) {
+    hit(deck, dealer->cards, drawIdx);
+  } else {
+    dealer->stay = 1;
+  }
+}
+
+void decision(Person *player, Person *dealer, char *deck, int *drawIdx) {
+
+  while (player->stay == 0 && dealer->stay == 0) {
+    printf("\n[h] 뽑기(Hit) \n[s] 중단(Stay)\n\n");
+    playerDecision(player, drawIdx, deck);
+    dealerDecision(dealer, drawIdx, deck);
+    printf("딜러의 패: [%s]\n", dealer->cards);
+    printf("본인의 패: [%s]\n", player->cards);
+  }
 }
 
 /*
@@ -309,8 +327,8 @@ enum SESSION beforeRoundStart(int *rounds, int playerMoney, int dealerMoney) {
 /*
  *  NOTE: 메뉴 선택에 따라 출력
  */
-int exitSession(enum SESSION session, int rounds, int playerMoney,
-                int playerWins, int dealerMoney, int dealerWins) {
+int exitSession(enum SESSION session, int rounds, Person *player,
+                Person *dealer) {
   switch (session) {
   case HOUSE_BROKE:
     /*printf("Winner winner chicken dinner\n");*/
@@ -322,7 +340,7 @@ int exitSession(enum SESSION session, int rounds, int playerMoney,
     return EXIT_SUCCESS;
   case END_GAME:
     printf("[%d]판 닝겐: %d원 [%d]승, 콤퓨타 %d원 [%d]승\n", rounds,
-           playerMoney, playerWins, dealerMoney, dealerWins);
+           player->money, player->wins, dealer->money, dealer->wins);
     return EXIT_SUCCESS;
   case PLAYING:
     puts("ERROR: PLAYING이 될 수 없습니다.");

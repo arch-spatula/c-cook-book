@@ -2,14 +2,14 @@
 #include <stdlib.h>
 #include <string.h>
 
-struct USERDATA {
+struct person {
   int nAge;
   char szName[32];
   char szPhone[32];
 };
 
 int main(void) {
-  struct USERDATA user = {0, "", ""};
+  struct person user = {0, "", ""};
   user.nAge = 10;
   strcpy(user.szName, "Hoon");
   strcpy(user.szPhone, "010-1234-5678");
