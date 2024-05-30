@@ -26,7 +26,7 @@ enum SESSION { HOUSE_BROKE, PLAYER_BROKE, END_GAME, PLAYING };
 
 enum SESSION beforeRoundStart(int *rounds, int playerMoney, int dealerMoney);
 
-enum STATUS { DEFAULT, STAY, BUST, BLACK_JACK };
+enum STATUS { DEFAULT, STAY, BUST, BLACK_JACK, PLAYER_DIE };
 
 typedef struct Person {
   int money;
@@ -36,7 +36,7 @@ typedef struct Person {
   int score;
 } Person;
 
-enum GAME_RESULT { PLAYER_WIN, DEALER_WIN, DRAW };
+enum GAME_RESULT { PLAYER_WIN, DEALER_WIN, DRAW, DIE };
 
 int placeBet(int playerMoney);
 
@@ -50,6 +50,8 @@ void hit(char *deck, char *cards, int *drawIdx);
 
 void decision(Person *player, Person *dealer, char *deck, int *drawIdx);
 
+int gameStart(Person *player, Person *dealer, char *deck, int *drawIdx);
+
 void playerDecision(Person *player, int *drawIdx, char *deck);
 
 void dealerDecision(Person *player, int *drawIdx, char *deck);
@@ -59,6 +61,8 @@ void checkScore(Person *person);
 void checkWin(Person *player, Person *dealer, enum GAME_RESULT *gameResult);
 
 void transaction(Person *winner, Person *loser, int bet);
+
+void die(Person *player, int *drawIdx, char *deck);
 
 /*
  * 21에 딜러보다 더 가까이 만들면 이기는 게임
@@ -85,12 +89,12 @@ void transaction(Person *winner, Person *loser, int bet);
  *   - 합이 21이 넘지 않는 한 무제한으로 뽑을 수 있는 카드를 이후 단 하나만 더
  * 받는 조건으로 돈을 두 배
  *   - 모든 경우 허용
- * - A유리한쪽으로 선택
+ * - A 유리한쪽으로 선택
  * - 인슈어런스
  *   - 딜러의 오픈된 카드가 스페이드 A일 경우, 딜러가 블랙잭이 나올 가능성에
  * 대비해 보험
  *   - 딜러가 블랙잭일 경우 딜러는 보험금의 4배를 보험수당으로 지불
- *   - 건 금액의 절반이 보험금으로 지불
+ *   - 베팅 금액의 절반이 보험금으로 지불
  * - Five card Charlie
  *   - 플레이어 패가 5장 이되고 딜러가 블랙잭이 아니면 플레이어 승리
  *   - 딜러 5장에 블랙잭이 아니면 플레이어 승리
@@ -161,13 +165,8 @@ int main(void) {
     initDeck(deck);
     shuffle(deck);
 
-    // NOTE: 판 시작에 2장 뽑기
-    hit(deck, dealer.cards, &drawIdx);
-    hit(deck, dealer.cards, &drawIdx);
-
-    hit(deck, player.cards, &drawIdx);
-    hit(deck, player.cards, &drawIdx);
-    // TODO: 다이, 인슈런스 그냥 진행 결정
+    // NOTE: 판 시작에 2장 뽑고 판단하기
+    gameStart(&player, &dealer, deck, &drawIdx);
 
     // NOTE: hit/stay decision 루프
     decision(&player, &dealer, deck, &drawIdx);
@@ -175,6 +174,9 @@ int main(void) {
 
     // NOTE: 배당
     switch (gameResult) {
+    case DIE:
+      transaction(&dealer, &player, playerBet / 2);
+      break;
     case PLAYER_WIN:
       transaction(&player, &dealer, playerBet);
       break;
@@ -198,10 +200,38 @@ void transaction(Person *winner, Person *loser, int bet) {
   winner->money += bet;
 }
 
+void die(Person *player, int *drawIdx, char *deck) {
+  char choice = '\0';
+  int waitChoice = 1;
+  while (waitChoice) {
+    waitChoice = 0;
+    printf("입력: ");
+    choice = getchar();
+    // NOTE: 표준 입력 이후 즉시 버퍼 비우기
+    while (getchar() != '\n') {
+      continue;
+    }
+    if (choice == 'd' || choice == 'D') {
+      player->status = PLAYER_DIE;
+    } else if (choice == 'h' || choice == 'H') {
+      hit(deck, player->cards, drawIdx);
+    } else if (choice == 's' || choice == 'S') {
+      player->status = STAY;
+    } else {
+      printf("\n잘못된 입력입니다.\n");
+      waitChoice = 1;
+    }
+  }
+}
+
 void checkWin(Person *player, Person *dealer, enum GAME_RESULT *gameResult) {
-  // INFO: 동시에 BUST 혹은 BLACK_JACK일 경우 딜러 승리
-  if ((player->status == BLACK_JACK && dealer->status == BLACK_JACK) ||
-      (player->status == BUST && dealer->status == BUST)) {
+  if (player->status == PLAYER_DIE) {
+    printf("플레어 다이로 딜러 승리\n");
+    dealer->wins += 1;
+    *gameResult = DIE;
+  } else if ((player->status == BLACK_JACK && dealer->status == BLACK_JACK) ||
+             (player->status == BUST && dealer->status == BUST)) {
+    // INFO: 동시에 BUST 혹은 BLACK_JACK일 경우 딜러 승리
     dealer->wins += 1;
     printf("딜러가 우선권으로 승리\n");
     *gameResult = DEALER_WIN;
@@ -270,10 +300,51 @@ void dealerDecision(Person *dealer, int *drawIdx, char *deck) {
   }
 }
 
+int gameStart(Person *player, Person *dealer, char *deck, int *drawIdx) {
+  // TODO: 인슈런스
+  // TODO: 스플릿
+  hit(deck, dealer->cards, drawIdx);
+  hit(deck, dealer->cards, drawIdx);
+
+  hit(deck, player->cards, drawIdx);
+  hit(deck, player->cards, drawIdx);
+  printf("딜러의 패: [%s]\n", dealer->cards);
+  printf("본인의 패: [%s]\n", player->cards);
+
+  checkScore(player);
+  checkScore(dealer);
+  if (player->status == BLACK_JACK || dealer->status == BLACK_JACK) {
+    return 0;
+  }
+  printf("\n[d] 다이(Die) \n[h] 뽑기(Hit) \n[s] 중단(Stay)\n\n");
+  die(player, drawIdx, deck);
+  checkScore(player);
+
+  if (player->status != PLAYER_DIE) {
+    dealerDecision(dealer, drawIdx, deck);
+    checkScore(dealer);
+  }
+  // TODO: 인슈런스 그냥 진행 결정
+  /*if ((dealer->cards[0] == 'S' && dealer->cards[1] == 'A') ||*/
+  /*(dealer->cards[2] == 'S' && dealer->cards[3] == 'A')) {*/
+  /*printf("\n[i] 인슈런스(Insurance)");*/
+  /*}*/
+
+  return 0;
+}
+
 void decision(Person *player, Person *dealer, char *deck, int *drawIdx) {
+  // TODO: 시작할 2장 뽑는 로직으로 이동
   while (player->status == DEFAULT || dealer->status == DEFAULT) {
+    // NOTE: 게임의 결과가 결정되었기 때문에 바로 루프를 깨기
+    if (player->status == PLAYER_DIE || player->status == BLACK_JACK ||
+        player->status == BUST || dealer->status == BLACK_JACK ||
+        dealer->status == BUST) {
+      break;
+    }
     printf("딜러의 패: [%s]\n", dealer->cards);
     printf("본인의 패: [%s]\n", player->cards);
+
     printf("\n[h] 뽑기(Hit) \n[s] 중단(Stay)\n\n");
     if (player->status == DEFAULT) {
       playerDecision(player, drawIdx, deck);
@@ -283,11 +354,6 @@ void decision(Person *player, Person *dealer, char *deck, int *drawIdx) {
     }
     checkScore(player);
     checkScore(dealer);
-    // NOTE: 게임의 결과가 결정되었기 때문에 바로 루프를 깨기
-    if (player->status == BLACK_JACK || player->status == BUST ||
-        dealer->status == BLACK_JACK || dealer->status == BUST) {
-      break;
-    }
   }
 }
 
