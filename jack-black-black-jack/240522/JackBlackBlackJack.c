@@ -36,7 +36,9 @@ typedef struct Person {
   int score;
 } Person;
 
-enum GAME_RESULT { PLAYER_WIN, DEALER_WIN, DRAW, DIE };
+enum GAME_RESULT { PLAYER_WIN, DEALER_WIN, DRAW, DIE, PLAYER_BLACK_JACK };
+
+void resetPerson(Person *person);
 
 int placeBet(int playerMoney);
 
@@ -50,7 +52,8 @@ void hit(char *deck, char *cards, int *drawIdx);
 
 void decision(Person *player, Person *dealer, char *deck, int *drawIdx);
 
-int gameStart(Person *player, Person *dealer, char *deck, int *drawIdx);
+int gameStart(Person *player, Person *dealer, Person *split, char *deck,
+              int *drawIdx);
 
 void playerDecision(Person *player, int *drawIdx, char *deck);
 
@@ -63,6 +66,8 @@ void checkWin(Person *player, Person *dealer, enum GAME_RESULT *gameResult);
 void transaction(Person *winner, Person *loser, int bet);
 
 void die(Person *player, int *drawIdx, char *deck);
+
+char choose(void);
 
 /*
  * 21에 딜러보다 더 가까이 만들면 이기는 게임
@@ -82,7 +87,7 @@ void die(Person *player, int *drawIdx, char *deck);
  *
  * 플레이어는 사용자
  * - 플레이어가 버스트 되면 딜러가 무조건 이긴다
- * - 서렌더 허용
+ * - 서렌더(다이) 허용
  *   - 플레이어가 게임을 포기하고, 베팅액의 절반을 돌려 받는 규칙
  * - AA 스플릿 후 또 A가 나왔을 시 다시 스플릿 허용
  * - 더블다운
@@ -90,11 +95,6 @@ void die(Person *player, int *drawIdx, char *deck);
  * 받는 조건으로 돈을 두 배
  *   - 모든 경우 허용
  * - A 유리한쪽으로 선택
- * - 인슈어런스
- *   - 딜러의 오픈된 카드가 스페이드 A일 경우, 딜러가 블랙잭이 나올 가능성에
- * 대비해 보험
- *   - 딜러가 블랙잭일 경우 딜러는 보험금의 4배를 보험수당으로 지불
- *   - 베팅 금액의 절반이 보험금으로 지불
  * - Five card Charlie
  *   - 플레이어 패가 5장 이되고 딜러가 블랙잭이 아니면 플레이어 승리
  *   - 딜러 5장에 블랙잭이 아니면 플레이어 승리
@@ -102,11 +102,6 @@ void die(Person *player, int *drawIdx, char *deck);
  * - 원아이드잭
  *   - 스페이드J 와 하트J이 같은 무늬의 A 가 조합된 블랙잭시 배당 2배
  * - Stay 카드 뽑기 넘기기
- * - 스플릿
- *   - 처음 받은 2장의 카드가 같은 숫자일 경우, 패를 두 개로 나누어 게임을
- * 동시에 두 번
- *   - 이후 또 똑같은 숫자가 나오면 계속해서 스플릿해서 진행 가능
- *   - 본인 재산만큼 베팅 가능
  * - Even Money
  *   - 플레이어가 블랙잭이 나오고, 딜러의 보여진 패가 스페이드 A인 경우 선택
  * 발동
@@ -117,6 +112,7 @@ int main(void) {
   int rounds = 0;
   Person player = {1000, 0, {0}, DEFAULT, 0};
   Person dealer = {1000000, 0, {0}, DEFAULT, 0};
+  Person split = {0, 0, {0}, DEFAULT, 0};
   enum SESSION session = PLAYING;
   int playerBet = 0;
   /*int i = 0;*/
@@ -151,12 +147,9 @@ int main(void) {
     printf("%d번째 판입니다.\n", rounds);
     playerBet = 0;
     drawIdx = 0;
-    player.status = DEFAULT;
-    dealer.status = DEFAULT;
-    strcpy(player.cards, "");
-    strcpy(dealer.cards, "");
-    player.score = 0;
-    dealer.score = 0;
+    resetPerson(&player);
+    resetPerson(&split);
+    resetPerson(&dealer);
     gameResult = DRAW;
 
     playerBet = placeBet(player.money);
@@ -166,7 +159,7 @@ int main(void) {
     shuffle(deck);
 
     // NOTE: 판 시작에 2장 뽑고 판단하기
-    gameStart(&player, &dealer, deck, &drawIdx);
+    gameStart(&player, &dealer, &split, deck, &drawIdx);
 
     // NOTE: hit/stay decision 루프
     decision(&player, &dealer, deck, &drawIdx);
@@ -174,6 +167,9 @@ int main(void) {
 
     // NOTE: 배당
     switch (gameResult) {
+    case PLAYER_BLACK_JACK:
+      transaction(&player, &dealer, playerBet * 2);
+      break;
     case DIE:
       transaction(&dealer, &player, playerBet / 2);
       break;
@@ -194,6 +190,22 @@ int main(void) {
   return exitSession(session, rounds, &player, &dealer);
 }
 
+char choose(void) {
+  char choice = '\0';
+  choice = getchar();
+  // NOTE: 표준 입력 이후 즉시 버퍼 비우기
+  while (getchar() != '\n') {
+    continue;
+  }
+  return choice;
+}
+
+void resetPerson(Person *person) {
+  person->status = DEFAULT;
+  strcpy(person->cards, "");
+  *person->cards = 0;
+}
+
 // TODO: 플레이어가 블랙잭으로 승리하면 2배 배당 딜러 승리에는 없음
 void transaction(Person *winner, Person *loser, int bet) {
   loser->money -= bet;
@@ -206,11 +218,7 @@ void die(Person *player, int *drawIdx, char *deck) {
   while (waitChoice) {
     waitChoice = 0;
     printf("입력: ");
-    choice = getchar();
-    // NOTE: 표준 입력 이후 즉시 버퍼 비우기
-    while (getchar() != '\n') {
-      continue;
-    }
+    choice = choose();
     if (choice == 'd' || choice == 'D') {
       player->status = PLAYER_DIE;
     } else if (choice == 'h' || choice == 'H') {
@@ -225,15 +233,20 @@ void die(Person *player, int *drawIdx, char *deck) {
 }
 
 void checkWin(Person *player, Person *dealer, enum GAME_RESULT *gameResult) {
+  // TODO: 딜러가 stay 이고 플레이어가 더 높으면 자동 승리
   if (player->status == PLAYER_DIE) {
     printf("플레어 다이로 딜러 승리\n");
     dealer->wins += 1;
     *gameResult = DIE;
+  } else if (player->status == BLACK_JACK && dealer->status != BLACK_JACK) {
+    printf("당신은 잭 블랙 아니 블랙 잭!!!\n");
+    player->wins += 1;
+    *gameResult = PLAYER_BLACK_JACK;
   } else if ((player->status == BLACK_JACK && dealer->status == BLACK_JACK) ||
              (player->status == BUST && dealer->status == BUST)) {
     // INFO: 동시에 BUST 혹은 BLACK_JACK일 경우 딜러 승리
-    dealer->wins += 1;
     printf("딜러가 우선권으로 승리\n");
+    dealer->wins += 1;
     *gameResult = DEALER_WIN;
   } else if (player->status == BLACK_JACK || dealer->status == BUST) {
     printf("플레이어 승리\n");
@@ -276,11 +289,7 @@ void playerDecision(Person *player, int *drawIdx, char *deck) {
   while (waitChoice) {
     waitChoice = 0;
     printf("입력: ");
-    choice = getchar();
-    // NOTE: 표준 입력 이후 즉시 버퍼 비우기
-    while (getchar() != '\n') {
-      continue;
-    }
+    choice = choose();
     if (choice == 'h' || choice == 'H') {
       hit(deck, player->cards, drawIdx);
     } else if (choice == 's' || choice == 'S') {
@@ -300,9 +309,13 @@ void dealerDecision(Person *dealer, int *drawIdx, char *deck) {
   }
 }
 
-int gameStart(Person *player, Person *dealer, char *deck, int *drawIdx) {
-  // TODO: 인슈런스
-  // TODO: 스플릿
+/*
+ * 게임 시작할 때 선택
+ */
+int gameStart(Person *player, Person *dealer, Person *split, char *deck,
+              int *drawIdx) {
+  char allow[3] = {0};
+  allow[2] = '\0';
   hit(deck, dealer->cards, drawIdx);
   hit(deck, dealer->cards, drawIdx);
 
@@ -316,19 +329,87 @@ int gameStart(Person *player, Person *dealer, char *deck, int *drawIdx) {
   if (player->status == BLACK_JACK || dealer->status == BLACK_JACK) {
     return 0;
   }
-  printf("\n[d] 다이(Die) \n[h] 뽑기(Hit) \n[s] 중단(Stay)\n\n");
-  die(player, drawIdx, deck);
+  // TODO: 스플릿
+  if (1) {
+    // TODO: 임시 분기처리 허용
+    /*if (player->cards[1] == player->cards[3]) {*/
+    allow[0] = 's';
+    // 처음 받은 2장의 카드가 같은 숫자일 경우, 패를 두 개로 나누어 게임을
+    // 동시에 두 번 진행
+    printf("\n [%c%c]과 [%c%c]으로 스플릿이 가능합니다. \n", player->cards[0],
+           player->cards[1], player->cards[2], player->cards[3]);
+    // TODO: 이후 또 똑같은 숫자가 나오면 계속해서 스플릿해서 진행 가능
+    // 쓰레드 관점으로 생각해보도록 합시다. player는 메인 쓰레드가 될 것입니다.
+    // 배당이 나중에 합쳐질 것입니다. 개별 게임은 개별 쓰레드가 생성된다고
+    // 생각해볼 수 있습니다. 서브 쓰레드는 각각 hit를 지원합니다.
+    // - 이후 또 똑같은 숫자가 나오면 계속해서 스플릿해서 진행 가능
+    // - 본인 재산만큼 베팅 가능
+  }
+  // TODO: 인슈런스
+  if ((dealer->cards[0] == 'S' && dealer->cards[1] == 'A') ||
+      (dealer->cards[2] == 'S' && dealer->cards[3] == 'A')) {
+    allow[1] = 'i';
+    printf("\n[i] 인슈런스(Insurance) 선택지를 지원할 것입니다.");
+    //   - 딜러의 오픈된 카드가 스페이드 A일 경우, 딜러가 블랙잭이 나올 가능성에
+    // 대비해 보험
+    //   - 딜러가 블랙잭일 경우 딜러는 보험금의 4배를 보험수당으로 지불
+    //   - 베팅 금액의 절반이 보험금으로 지불
+  }
+  // TODO: 조건별로 허용 선택지 플레그 추가
+  /* 선택지 */
+  char choice = '\0';
+
+  /* 정상 선택지 플래그 */
+  int waitChoice = 1;
+  while (waitChoice) {
+    if (allow[0] == 's') {
+      printf("\n[s] 스플릿(split)");
+    }
+    printf("\n[d] 다이(Die) \n[h] 뽑기(Hit) \n[s] 중단(Stay)\n\n");
+
+    waitChoice = 0;
+    printf("입력: ");
+    choice = choose();
+
+    // 선택
+    if (choice == 'd' || choice == 'D') {
+      // 다이는 첫 차례에 어떻게든 선택 가능
+      player->status = PLAYER_DIE;
+    } else if (allow[1] == 'i' && (choice == 'i' || choice == 'I')) {
+      // 다이는 첫 차례에 어떻게든 선택 가능
+      printf("\n[i] 인슈런스(Insurance) 선택지 관련된 비즈니스 로직을 처리할 "
+             "것 입니다.\n");
+    } else if (allow[0] == 's' && (choice == 's' || choice == 'S')) {
+      split->status = DEFAULT;
+      printf("\n[s] 스플릿(split) 선택지 관련된 비즈니스 로직을 처리할 것 "
+             "입니다.\n");
+
+      // 스플릿이 되면 각각 1장식 나눈다.
+      split->cards[0] = player->cards[2];
+      player->cards[2] = '\0';
+      split->cards[1] = player->cards[3];
+      player->cards[3] = '\0';
+
+      // 플레이어별로 각각 hit
+      hit(deck, player->cards, drawIdx);
+      hit(deck, split->cards, drawIdx);
+
+      // TODO: 다시 순회하고 기존 선택지에서 소거
+    } else if (choice == 'h' || choice == 'H') {
+      hit(deck, player->cards, drawIdx);
+    } else if (choice == 's' || choice == 'S') {
+      player->status = STAY;
+    } else {
+      printf("\n잘못된 입력입니다.\n");
+      waitChoice = 1;
+    }
+  }
   checkScore(player);
 
   if (player->status != PLAYER_DIE) {
     dealerDecision(dealer, drawIdx, deck);
     checkScore(dealer);
   }
-  // TODO: 인슈런스 그냥 진행 결정
-  /*if ((dealer->cards[0] == 'S' && dealer->cards[1] == 'A') ||*/
-  /*(dealer->cards[2] == 'S' && dealer->cards[3] == 'A')) {*/
-  /*printf("\n[i] 인슈런스(Insurance)");*/
-  /*}*/
 
   return 0;
 }
@@ -465,14 +546,9 @@ enum SESSION beforeRoundStart(int *rounds, int playerMoney, int dealerMoney) {
   int waitChoice = 1;
   printf("\n[p] 게임하기(play) \n[e] 게임중단(end)\n\n\n");
   while (waitChoice) {
-
     waitChoice = 0;
     printf("입력: ");
-    choice = getchar();
-    // NOTE: 표준 입력 이후 즉시 버퍼 비우기
-    while (getchar() != '\n') {
-      continue;
-    }
+    choice = choose();
     if (choice == 'p' || choice == 'P') {
       *rounds += 1;
       return PLAYING;
