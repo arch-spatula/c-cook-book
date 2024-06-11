@@ -348,6 +348,8 @@ int gameStart(Person *player, Person *dealer, Person *split, char *deck,
   // TODO: 인슈런스
   if ((dealer->cards[0] == 'S' && dealer->cards[1] == 'A') ||
       (dealer->cards[2] == 'S' && dealer->cards[3] == 'A')) {
+    // TODO: 확률 문제 때문에 처음부터 블랙잭이 아니면 'A'만 나오면 바로
+    // 인슈런스 이벤트 발동 시키기
     allow[1] = 'i';
     printf("\n[i] 인슈런스(Insurance) 선택지를 지원할 것입니다.");
     //   - 딜러의 오픈된 카드가 스페이드 A일 경우, 딜러가 블랙잭이 나올 가능성에
